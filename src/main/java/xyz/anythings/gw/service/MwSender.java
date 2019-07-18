@@ -3,6 +3,7 @@ package xyz.anythings.gw.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.gw.config.ModuleProperties;
 import xyz.anythings.gw.model.IMessageBody;
 import xyz.anythings.gw.model.MessageObject;
 import xyz.anythings.gw.service.util.MwMessageUtil;
@@ -29,6 +30,10 @@ public class MwSender extends MwCommon {
 	 */
 	@Autowired
 	private DomainController domainCtrl;
+	
+	
+	@Autowired
+	private ModuleProperties modulePorperties;
 	
 	private Domain domain; 
 	
@@ -155,7 +160,7 @@ public class MwSender extends MwCommon {
 		}
 
 		String value = MwMessageUtil.messageObjectToJson(message);
-		this.mwSystemClient.sendMessage(virtualHost, msgProp.getDestId(), value);
+		this.mwSystemClient.sendMessage(virtualHost, this.modulePorperties.getRabbitQueue(), msgProp.getDestId(), value);
 	}
 	
 	/**

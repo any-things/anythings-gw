@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +46,7 @@ import xyz.elidom.sys.util.ValueUtil;
  * @author shortstop
  */
 @Component
-public class MwReceiver extends MwCommon implements ApplicationListener<SystemMessageReceiveEvent> {
+public class MwReceiver extends MwCommon  {
 	/**
 	 * Event Publisher
 	 */
@@ -69,9 +69,9 @@ public class MwReceiver extends MwCommon implements ApplicationListener<SystemMe
 		}
 	}
 
-	@Override
 	@Transactional
-	public void onApplicationEvent(SystemMessageReceiveEvent event) {
+	@EventListener(condition = "#event.queueName == 'anythings_gw_server'")
+	public void messageReceiveEvent(SystemMessageReceiveEvent event) {
 		// 1. 이벤트를 MessageObject로 파싱
 		MessageObject msgObj = MwMessageUtil.toMessageObject(event);
 		
