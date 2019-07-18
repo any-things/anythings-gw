@@ -1,5 +1,6 @@
 package xyz.anythings.gw.service.util;
 
+import xyz.anythings.base.LogisBaseConstants;
 import xyz.anythings.gw.LogisGwConfigConstants;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
@@ -16,6 +17,15 @@ import xyz.elidom.util.ValueUtil;
  * @author shortstop
  */
 public class MpiSetting {
+	/**
+	 * Lock
+	 */
+	private static Object LOCK = new Object();
+	/**
+	 * 기본 색상 로테이션 순서
+	 */
+	public static String DEFAULT_ROTATION_SEQ = LogisBaseConstants.COLOR_RED + SysConstants.COMMA + LogisBaseConstants.COLOR_BLUE + SysConstants.COMMA + LogisBaseConstants.COLOR_GREEN + SysConstants.COMMA + LogisBaseConstants.COLOR_YELLOW;
+
 	/**
 	 * 표시기 점등을 위한 세그먼트 기본 값
 	 */
@@ -95,6 +105,60 @@ public class MpiSetting {
 	 * (N: 사용 안 함, T: 총 수량, R: 총 남은 수량, F: 총 처리한 수량, P: 방금 전 처리한 낱개 수량, B: 방금 전 처리한 박스 수량)
 	 */
 	public static final String MPI_DISP_SEGMENT_MAPPING_ROLE_PREVIOUS_PICKED_BOX = "B";
+	
+	/**
+	 * 다음 MPI 색상을 추출
+	 *
+	 * @param domainId
+	 * @param currentColor
+	 * @return
+	 */
+	public static String getNextMpiColor(Long domainId, String currentColor) {
+		String[] colorRotations = getMpiColorRotations(domainId);
+
+		if(ValueUtil.isEmpty(currentColor)) {
+			return colorRotations[0];
+		}
+
+		int currentIdx = 0;
+		for(int i = 0 ; i < colorRotations.length ; i++) {
+			if(ValueUtil.isEqualIgnoreCase(colorRotations[i], currentColor)) {
+				currentIdx = i;
+				break;
+			}
+		}
+
+		currentIdx = (currentIdx == (colorRotations.length - 1)) ? 0 : (currentIdx + 1);
+		return colorRotations[currentIdx];
+	}
+	
+	/**
+	 * MPI 색상 로테이션 값 배열
+	 *
+	 * @param domainId
+	 * @return
+	 */
+	public static String[] getMpiColorRotations(Long domainId) {
+		return getMpiColorRotationSeq(domainId).split(SysConstants.COMMA);
+	}
+	
+	/**
+	 * MPI 색상 로테이션 값
+	 *
+	 * @param domainId
+	 * @return
+	 */
+	public static String getMpiColorRotationSeq(Long domainId) {
+		if(DEFAULT_ROTATION_SEQ == null) {
+			synchronized(LOCK) {
+				if(DEFAULT_ROTATION_SEQ == null) {
+					DEFAULT_ROTATION_SEQ = LogisBaseConstants.COLOR_RED + SysConstants.COMMA + LogisBaseConstants.COLOR_BLUE + SysConstants.COMMA + LogisBaseConstants.COLOR_GREEN + SysConstants.COMMA + LogisBaseConstants.COLOR_YELLOW;
+				}
+			}
+		}
+		
+		return SettingUtil.getValue(domainId, LogisGwConfigConstants.MPI_COLOR_ROTATION_SEQ, DEFAULT_ROTATION_SEQ);
+	}
 	
 	/**
 	 * Gateway 펌웨어 최신 릴리즈 버전

@@ -8,6 +8,7 @@ import java.util.StringJoiner;
 
 import xyz.anythings.base.LogisBaseConstants;
 import xyz.anythings.base.entity.Gateway;
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobProcess;
 import xyz.anythings.base.entity.Location;
 import xyz.anythings.base.entity.MPI;
@@ -105,21 +106,20 @@ public class MpiServiceUtil {
 	/**
 	 * 작업이 완료된 표시기에 END 표시를 복원
 	 * 
-	 * @param domainId
-	 * @param jobType
+	 * @param batch
 	 * @param gateway
 	 * @return
 	 */
-	public static List<Location> restoreMpiDisplayBoxingEnd(Long domainId, String jobType, Gateway gateway) {
+	public static List<Location> restoreMpiDisplayBoxingEnd(JobBatch batch, Gateway gateway) {
 		// 1. DAS, RTN에 대해서 로케이션의 jobStatus가 END, ENDED 상태인 모든 로케이션을 조회
-		Query condition = AnyOrmUtil.newConditionForExecution(domainId, 0, 0, "domain_id", "loc_cd", "mpi_cd", "job_status", "job_process_id");
+		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId(), 0, 0, "domain_id", "loc_cd", "mpi_cd", "job_status", "job_process_id");
 		condition.addFilter("mpiCd", SysConstants.IN, gateway.mpiCdList());
 		condition.addFilter("jobStatus", SysConstants.IN, LogisBaseConstants.LOCATION_JOB_STATUS_END_LIST);
 		condition.addOrder("locCd", true);
 		List<Location> locations = BeanUtil.get(IQueryManager.class).selectList(Location.class, condition);
 		
 		// 2. 로케이션 별로 상태별로 END (ReadOnly = false), END (ReadOnly = true)를 표시
-		return restoreMpiDisplayBoxingEnd(jobType, locations);
+		return restoreMpiDisplayBoxingEnd(batch.getJobType(), locations);
 	}
 	
 	/**
