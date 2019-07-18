@@ -14,7 +14,7 @@ import xyz.elidom.util.FormatUtil;
  * 
  * @author shortstop
  */
-@Component
+@Component("anythingsGwModuleProperties")
 @EnableConfigurationProperties
 @PropertySource("classpath:/properties/anythings-gw.properties")
 public class ModuleProperties implements IModuleProperties {
@@ -66,6 +66,13 @@ public class ModuleProperties implements IModuleProperties {
 	 */
 	@Value("${anythings.gw.scanEntityPackage}")
 	private String scanEntityPackage;
+	
+	/**
+	 * 모듈에서 사용할 rabbitmq 큐 명칭 
+	 */
+	@Value("${anythings.gw.rabbitQueue:not_use}")
+	private String rabbitQueue;
+
 
 	/**
 	 * Project Name
@@ -109,6 +116,10 @@ public class ModuleProperties implements IModuleProperties {
 
 	public String getProjectName() {
 		return this.projectName;
+	}
+
+	public String getRabbitQueue() {
+		return this.rabbitQueue;
 	}
 
 	@Override
