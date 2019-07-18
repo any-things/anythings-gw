@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import xyz.anythings.gw.config.ModuleProperties;
 import xyz.anythings.gw.model.MessageObject;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.event.EventPublisher;
@@ -51,7 +52,8 @@ public class MwReceiver extends MwCommon  {
 	 * Event Publisher
 	 */
 	@Autowired
-	protected EventPublisher eventPublisher;		
+	protected EventPublisher eventPublisher;	
+	
 	/**
 	 * 도메인 맵 : Site Code - Domain
 	 */
@@ -70,7 +72,7 @@ public class MwReceiver extends MwCommon  {
 	}
 
 	@Transactional
-	@EventListener(condition = "#event.queueName == 'anythings_gw_server'")
+	@EventListener(condition = "#event.queueName == @anythingsGwModuleProperties.getRabbitQueue()")
 	public void messageReceiveEvent(SystemMessageReceiveEvent event) {
 		// 1. 이벤트를 MessageObject로 파싱
 		MessageObject msgObj = MwMessageUtil.toMessageObject(event);
