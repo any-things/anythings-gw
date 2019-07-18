@@ -27,7 +27,7 @@ import xyz.anythings.gw.service.model.MpiOffReq;
 import xyz.anythings.gw.service.model.MpiTest;
 import xyz.anythings.gw.service.model.MpiTest.MpiAction;
 import xyz.anythings.gw.service.model.MpiTest.MpiTarget;
-import xyz.anythings.gw.service.util.MpsServiceUtil;
+import xyz.anythings.gw.service.util.MpiServiceUtil;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -329,7 +329,7 @@ public class MpiTestController {
 			job.setPickedQty(0);
 		}
 		
-		return MpsServiceUtil.buildMpiOnList(false, LogisGwConstants.JOB_TYPE_DAS, jobList, false);
+		return MpiServiceUtil.buildMpiOnList(false, LogisGwConstants.JOB_TYPE_DAS, jobList, false);
 	}
 	
 	/**

@@ -6,12 +6,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.entity.Gateway;
+import xyz.anythings.base.entity.MPI;
 import xyz.anythings.base.entity.Region;
-import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.entity.MPI;
 import xyz.anythings.gw.model.GatewayInitResGwConfig;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.GatewayInitResponse;
+import xyz.anythings.gw.service.util.MpiServiceUtil;
 import xyz.anythings.gw.service.util.MpiSetting;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.orm.OrmConstants;
@@ -45,7 +46,7 @@ public class GwBootService extends AbstractQueryService {
 		gwInitRes.setGwConf(this.newGatewayInitConfig(gateway));
 		
 		// 3. Gateway 소속 MPI List를 설정
-		List<GatewayInitResIndList> indList = gateway.mpiListForGwInit();
+		List<GatewayInitResIndList> indList = MpiServiceUtil.mpiListForGwInit(gateway);
 		gwInitRes.setIndList(indList);
 		
 		// 4. Gateway가 관리하는 인디케이터 리스트 및 각각의 Indicator 별 설정 정보 가져오기.
@@ -86,7 +87,7 @@ public class GwBootService extends AbstractQueryService {
 		gwInitRes.setGwConf(this.newGatewayInitConfig(gateway));
 		
 		// 3. Gateway 소속 MPI List를 설정
-		List<GatewayInitResIndList> indList = gateway.mpiListForGwInit();
+		List<GatewayInitResIndList> indList = MpiServiceUtil.mpiListForGwInit(gateway);
 		gwInitRes.setIndList(indList);
 		
 		// 4. Gateway가 관리하는 인디케이터 리스트 및 각각의 Indicator 별 설정 정보 가져오기.

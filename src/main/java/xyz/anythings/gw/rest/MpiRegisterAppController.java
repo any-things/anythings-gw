@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.Location;
+import xyz.anythings.base.entity.MPI;
 import xyz.anythings.gw.LogisGwConfigConstants;
-import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.entity.MPI;
 import xyz.anythings.gw.model.IndicatorAlternation;
 import xyz.anythings.gw.service.MwSender;
 import xyz.anythings.sys.AnyConstants;

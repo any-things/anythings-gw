@@ -3,8 +3,8 @@ package xyz.anythings.gw.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.gw.entity.Deployment;
-import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;

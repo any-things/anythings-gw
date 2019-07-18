@@ -10,9 +10,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.entity.Gateway;
+import xyz.anythings.base.entity.MPI;
 import xyz.anythings.gw.LogisGwConstants;
-import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.entity.MPI;
 import xyz.anythings.gw.model.GatewayDepRequest;
 import xyz.anythings.gw.model.GatewayInitResponse;
 import xyz.anythings.gw.model.IndicatorDepRequest;

@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import xyz.anythings.base.LogisBaseConstants;
+import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.JobProcess;
 import xyz.anythings.base.entity.Location;
+import xyz.anythings.base.entity.MPI;
 import xyz.anythings.gw.LogisGwConstants;
-import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.entity.MPI;
+import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.MpiSendService;
 import xyz.anythings.gw.service.model.MpiCommonReq;
@@ -24,11 +26,11 @@ import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
 
 /**
- * MPS Service Utilities
+ * MPI Service Utilities
  * 
  * @author shortstop
  */
-public class MpsServiceUtil {
+public class MpiServiceUtil {
 	
 	/**
 	 * 호기내 로케이션들 중에 거래처 매핑된 
@@ -185,7 +187,7 @@ public class MpsServiceUtil {
 		}
 		
 		List<JobProcess> jobList = ValueUtil.toList(job);
-		MpsServiceUtil.mpiOnByJobList(needUpdateJobStatus, job.getJobType(), jobList);
+		MpiServiceUtil.mpiOnByJobList(needUpdateJobStatus, job.getJobType(), jobList);
 		return true;
 	}
 	
@@ -204,7 +206,7 @@ public class MpsServiceUtil {
 		}
 		
 		List<JobProcess> jobList = ValueUtil.toList(job);
-		MpsServiceUtil.mpiOnByJobList(needUpdateJobStatus, job.getJobType(), jobList, showPickingQty);
+		MpiServiceUtil.mpiOnByJobList(needUpdateJobStatus, job.getJobType(), jobList, showPickingQty);
 		return true;
 	}
 	
@@ -418,4 +420,63 @@ public class MpsServiceUtil {
 		}
 	}
 
+	/**
+	 * 게이트웨이 리부팅시에 게이트웨이에 내려주기 위한 게이트웨이 소속 표시기 정보 리스트
+	 * 
+	 * @param gateway
+	 * @return
+	 */
+	public static List<GatewayInitResIndList> mpiListForGwInit(Gateway gateway) {
+		StringJoiner sql = new StringJoiner(SysConstants.LINE_SEPARATOR);
+		sql.add("select distinct id, channel, pan, biz_type, nvl(view_type, '0') as view_type from (")
+		   .add("	select x.mpi_cd as id, x.channel_no as channel, x.pan_no as pan, biz_type, ")
+		   .add("		   (select value from tb_company_setting where domain_id = :domainId and name = ('com.mps.' || lower(biz_type) || '.mpi.view-type')) as view_type")
+		   .add("	from (")
+		   .add("   	select")
+		   .add("   		nvl(decode(reg.job_type, 'DPS2', 'DAS2', reg.job_type), 'DAS') as biz_type, loc.loc_cd, loc.mpi_cd, loc.channel_no, loc.pan_no")
+		   .add("   	from tb_location loc")
+		   .add("   		 left outer join tb_region reg on loc.region_cd = reg.region_cd")
+		   .add("   	where loc.domain_id = :domainId AND reg.domain_id = :domainId AND gw_zone_cd = :gwCd")
+		   .add("	) x, (")
+		   .add("   	select mpi_cd from tb_mpi where domain_id = :domainId and gw_cd = :gwCd")
+		   .add("	) y")
+		   .add("	where x.mpi_cd = y.mpi_cd")
+		   .add("	order by x.loc_cd")
+		   .add(")");
+		
+		Map<String, Object> params = ValueUtil.newMap("domainId,gwCd,gwPath", gateway.getDomainId(), gateway.getGwCd(), gateway.getGwNm());
+		return BeanUtil.get(IQueryManager.class).selectListBySql(sql.toString(), params, GatewayInitResIndList.class, 0, 0);
+	}
+	
+	/**
+	 * Gateway에 소속된 표시기 정보 리스트
+	 * 
+	 * @param domainId
+	 * @param gwPath
+	 * @return
+	 */
+	public static List<GatewayInitResIndList> mpiList(Long domainId, String gwPath) {
+		StringJoiner sql = new StringJoiner(SysConstants.LINE_SEPARATOR);
+		sql.add("select distinct id, channel, pan, biz_type, nvl(view_type, '0') as view_type from (")
+		   .add("	select x.mpi_cd as id, x.channel_no as channel, x.pan_no as pan, biz_type, (select value from tb_company_setting where domain_id = :domainId and name = ('com.mps.' || lower(biz_type) || '.mpi.view-type')) as view_type")
+		   .add("	from (")
+		   .add("   	select nvl(decode(reg.job_type, 'DPS2', 'DAS2', reg.job_type), 'DAS') as biz_type, loc.loc_cd, loc.mpi_cd, loc.channel_no, loc.pan_no")
+		   .add("   	from tb_location loc")
+		   .add("   		 left outer join tb_region reg on loc.region_cd = reg.region_cd")
+		   .add("   	where loc.domain_id = :domainId AND reg.domain_id = :domainId AND loc.active_flag = 1")
+		   .add("   		and gw_zone_cd = (")
+		   .add("      			select gw_zone_cd from tb_gateway where domain_id = :domainId and gw_nm = :gwPath")
+		   .add("   		)")
+		   .add("	) x, (")
+		   .add("   	select mpi_cd from tb_mpi where domain_id = :domainId and gw_cd = (")
+		   .add("      		select gw_cd from tb_gateway where domain_id = :domainId and gw_nm = :gwPath")
+		   .add("   	)")
+		   .add("	) y")
+		   .add("	where x.mpi_cd = y.mpi_cd")
+		   .add("	order by x.loc_cd")
+		   .add(")");
+		
+		Map<String, Object> params = ValueUtil.newMap("domainId,gwPath", domainId, gwPath);
+		return BeanUtil.get(IQueryManager.class).selectListBySql(sql.toString(), params, GatewayInitResIndList.class, 0, 0);
+	}
 }
