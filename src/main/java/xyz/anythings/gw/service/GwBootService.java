@@ -13,7 +13,7 @@ import xyz.anythings.gw.model.GatewayInitResGwConfig;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.GatewayInitResponse;
 import xyz.anythings.gw.service.util.MpiServiceUtil;
-import xyz.anythings.gw.service.util.MpiSetting;
+import xyz.anythings.gw.service.util.IndicatorSetting;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.orm.OrmConstants;
 import xyz.elidom.sys.entity.Domain;
@@ -50,21 +50,21 @@ public class GwBootService extends AbstractQueryService {
 		gwInitRes.setIndList(indList);
 		
 		// 4. Gateway가 관리하는 인디케이터 리스트 및 각각의 Indicator 별 설정 정보 가져오기.
-		gwInitRes.setIndConf(MpiSetting.getGatewayBootConfig(domainId, jobType));
+		gwInitRes.setIndConf(IndicatorSetting.getGatewayBootConfig(domainId, jobType));
 		
 		// 5. Gateway 최신버전 정보 설정.
-		String latestGatewayVer = MpiSetting.getGatewayLatestReleaseVersion(domainId);
+		String latestGatewayVer = IndicatorSetting.getGatewayLatestReleaseVersion(domainId);
 		gwInitRes.setGwVersion(latestGatewayVer);
 		
 		// 6. Indicator 최신버전 정보 설정.
-		String latestMpiVer = MpiSetting.getMpiLatestReleaseVersion(domainId);
+		String latestMpiVer = IndicatorSetting.getMpiLatestReleaseVersion(domainId);
 		gwInitRes.setIndVersion(latestMpiVer);
 
 		// 7. 현재 시간 설정 - 밀리세컨드 제외
 		gwInitRes.setSvrTime((long)(new Date().getTime() / 1000));
 		
 		// 8. 상태 보고 주기 설정.
-		gwInitRes.setHealthPeriod(MpiSetting.getMpiHealthPeriod(domainId));
+		gwInitRes.setHealthPeriod(IndicatorSetting.getMpiHealthPeriod(domainId));
 		
 		// 9. 게이트웨이 초기화 응답 전송 
 		this.mpiSendService.respondGatewayInit(domainId, gwNm, gwInitRes);
@@ -106,21 +106,21 @@ public class GwBootService extends AbstractQueryService {
 			jobType = MpsConstants.JOB_TYPE_RTN;
 		}*/
 		
-		gwInitRes.setIndConf(MpiSetting.getGatewayBootConfig(domainId, jobType));
+		gwInitRes.setIndConf(IndicatorSetting.getGatewayBootConfig(domainId, jobType));
 		
 		// 5. Gateway 최신버전 정보 설정.
-		String latestGatewayVer = MpiSetting.getGatewayLatestReleaseVersion(domainId);
+		String latestGatewayVer = IndicatorSetting.getGatewayLatestReleaseVersion(domainId);
 		gwInitRes.setGwVersion(latestGatewayVer);
 		
 		// 6. Indicator 최신버전 정보 설정.
-		String latestMpiVer = MpiSetting.getMpiLatestReleaseVersion(domainId);
+		String latestMpiVer = IndicatorSetting.getMpiLatestReleaseVersion(domainId);
 		gwInitRes.setIndVersion(latestMpiVer);
 
 		// 7. 현재 시간 설정 - 밀리세컨드 제외
 		gwInitRes.setSvrTime((long)(new Date().getTime() / 1000));
 		
 		// 8. 상태 보고 주기 설정.
-		gwInitRes.setHealthPeriod(MpiSetting.getMpiHealthPeriod(domainId));
+		gwInitRes.setHealthPeriod(IndicatorSetting.getMpiHealthPeriod(domainId));
 		
 		// 9. 게이트웨이 초기화 응답 전송 
 		this.mpiSendService.respondGatewayInit(domainId, gwNm, gwInitRes);

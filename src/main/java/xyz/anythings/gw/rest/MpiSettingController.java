@@ -1,6 +1,5 @@
 package xyz.anythings.gw.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +13,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.sys.entity.CompanySetting;
-import xyz.anythings.sys.rest.CompanySettingController;
+import xyz.anythings.sys.entity.ScopeSetting;
+import xyz.anythings.sys.rest.ScopeSettingController;
 import xyz.anythings.sys.util.AnyOrmUtil;
-import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.entity.Domain;
-import xyz.elidom.sys.entity.Setting;
-import xyz.elidom.sys.rest.SettingController;
+import xyz.elidom.sys.system.service.AbstractRestService;
 import xyz.elidom.util.ValueUtil;
 
 /**
- * MPI 세팅을 위한 컨트롤러
+ * Indicator 세팅을 위한 컨트롤러
  * 
  * @author shortstop
  */
@@ -37,7 +34,7 @@ import xyz.elidom.util.ValueUtil;
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/rest/mpi_setting")
 @ServiceDesc(description="MPI Setting API")
-public class MpiSettingController {
+public class MpiSettingController extends AbstractRestService {
 	
 	/**
 	 * 쿼리 매니저
@@ -45,84 +42,52 @@ public class MpiSettingController {
 	@Autowired
 	private IQueryManager queryManager;
 	/**
-	 * 설정 컨트롤러 
+	 * 범위 설정 컨트롤러
 	 */
 	@Autowired
-	private SettingController settingCtrl;
+	private ScopeSettingController scopeSettingCtrl;
+	
 	/**
-	 * 고객사 별 설정 컨트롤러
+	 * 범위 설정 유형 - MPI
 	 */
-	@Autowired
-	private CompanySettingController companySettingCtrl;
-
+	private static final String MPI_SCOPE_TYPE = "Indicator";
+	
+	@Override
+	protected Class<?> entityClass() {
+		return ScopeSetting.class;
+	}
+	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search mpi settings by company code")
-	public List<Setting> searchMpiSettings(@RequestParam(name = "com_cd", required = false) String comCd) {
-		// 1. 고객사 값 체크
-		Long domainId = Domain.currentDomainId();
-		comCd = ValueUtil.isEmpty(comCd) ? CompanySetting.DEFAULT_COMPANY_CODE : comCd;
+	public List<ScopeSetting> searchMpiSettings(@RequestParam(name = "job_type", required = false) String jobType) {
 		
-		// 2. Setting에서 mps.mpi로 시작하는 모든 설정을 조회 
-		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
-		condition.addFilter(new Filter("name", "like", "mps.mpi"));
-		List<Setting> settings = this.queryManager.selectList(Setting.class, condition);
-		
-		// 3. CompanySetting에서 comCd로 조회, comCd가 없다면 디폴트 컴퍼니값으로 조회
-		condition = AnyOrmUtil.newConditionForExecution(domainId);
-		condition.addFilter(new Filter("comCd", comCd));	
-		List<CompanySetting> comSettings = this.queryManager.selectList(CompanySetting.class, condition);
-		
-		if(settings == null) {
-			settings = new ArrayList<Setting>();
-		}
-		
-		// 4. settings 정보가 없다면 CompanySetting 정보를 리턴 
-		if(ValueUtil.isNotEmpty(comSettings)) {
-			for(CompanySetting comSetting : comSettings) {
-				settings.add(ValueUtil.populate(comSetting, new Setting()));
-			}
-		}
-		
-		// 5. 리턴
-		return settings;
+		// ScopeSetting에서 ScopeType이 Indicator인 모든 설정을 조회
+		Query condition = AnyOrmUtil.newConditionForExecution(Domain.currentDomainId());
+		condition.addFilter("scopeType", MPI_SCOPE_TYPE);
+		jobType = ValueUtil.isEmpty(jobType) ? ScopeSetting.DEFAULT_SCOPE_NAME : jobType;
+		condition.addFilter("scopeName", jobType);
+		return this.queryManager.selectList(ScopeSetting.class, condition);
 	}
 	
 	@RequestMapping(value = "/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Update at one time")
-	public List<Setting> multipleUpdate(@RequestParam(name = "com_cd", required = false) String comCd, @RequestBody List<Setting> list) {
-		// 고객사 코드 체크 
-		comCd = ValueUtil.isEmpty(comCd) ? CompanySetting.DEFAULT_COMPANY_CODE : comCd;
-		List<Setting> settings = new ArrayList<Setting>();
-		List<CompanySetting> comSettings = new ArrayList<CompanySetting>();
+	@ApiDesc(description = "Update multiple")
+	public List<ScopeSetting> multipleUpdate(@RequestBody List<ScopeSetting> list) {
 		
-		for(Setting setting : list) {
-			String name = setting.getName();
-			
-			// mps.mpi로 시작되면 설정값 
-			if(name.startsWith("mps.mpi")) {
-				settings.add(setting);
-				
-			// com.mpi로 시작되면 고객사 설정값
-			} else {
-				CompanySetting comSetting = new CompanySetting();
-				comSetting.setComCd(comCd);
-				comSettings.add(ValueUtil.populate(setting, comSetting));
-			}
+		if(ValueUtil.isEmpty(list)) {
+			return null;
 		}
 		
-		if(ValueUtil.isNotEmpty(settings)) {
-			this.queryManager.upsertBatch(settings);
+		for(ScopeSetting setting : list) {
+			setting.setDomainId(Domain.currentDomainId());
+			setting.setScopeType(MPI_SCOPE_TYPE);
+			setting.setScopeName(ScopeSetting.DEFAULT_SCOPE_NAME);			
 		}
 		
-		if(ValueUtil.isNotEmpty(comSettings)) {
-			this.queryManager.upsertBatch(comSettings);
-		}
+		this.cudMultipleData(ScopeSetting.class, list);
 		
 		// Cache Clear
-		this.settingCtrl.clearCache();
-		this.companySettingCtrl.clearCache();
-		
-		return this.searchMpiSettings(comCd);
+		this.scopeSettingCtrl.clearCache();
+		return this.searchMpiSettings(null);
 	}
 
 }

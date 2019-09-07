@@ -6,17 +6,17 @@ import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.model.MpiOnPickReq;
 import xyz.anythings.sys.AnyConstants;
-import xyz.anythings.sys.entity.CompanySetting;
+import xyz.anythings.sys.entity.ScopeSetting;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.util.SettingUtil;
 import xyz.elidom.util.ValueUtil;
 
 /**
- * 표시기 하드웨어 설정 
+ * Indicator 하드웨어 설정 
  * 
  * @author shortstop
  */
-public class MpiSetting {
+public class IndicatorSetting {
 	/**
 	 * Lock
 	 */
@@ -29,7 +29,7 @@ public class MpiSetting {
 	/**
 	 * 표시기 점등을 위한 세그먼트 기본 값
 	 */
-	public static final String[] DEFAULT_SEGMENT_ROLES_ON = {  MpiSetting.MPI_SEGMENT_ROLE_PCS  };
+	public static final String[] DEFAULT_SEGMENT_ROLES_ON = {  IndicatorSetting.MPI_SEGMENT_ROLE_PCS  };
 	
 	/**
 	 * 표시기 수량 표시 단위 - 박스 & 낱개
@@ -181,24 +181,25 @@ public class MpiSetting {
 	}
 	
 	/**
-	 * 점등 세그먼트 역할
-	 * 
+	 * 표시기 점등을 위한 세그먼트 역할
+	 *
 	 * @param domainId
 	 * @return
 	 */
-	public static String[] getMpiSegmentRolesOn(Long domainId) {
-		String segmentRolesOn = SettingUtil.getValue(domainId, LogisGwConfigConstants.MPI_SEGMENT_ROLE_ON);
-		return ValueUtil.isEmpty(segmentRolesOn) ? DEFAULT_SEGMENT_ROLES_ON : segmentRolesOn.split(SysConstants.COMMA);
+	public static String[] getMpiSegmentRolesOn(Long domainId, String jobType) {
+		ScopeSetting setting = ScopeSetting.findSetting(domainId, "Indicator", jobType, LogisGwConfigConstants.COM_MPI_SEGMENT_ROLE_ON);
+		return (setting == null) ? null : setting.getValue().split(SysConstants.COMMA);
 	}
 	
 	/**
 	 * 세그먼트 사용 개수
 	 * 
 	 * @param domainId
+	 * @param jobType
 	 * @return
 	 */
-	public static int getMpiSegmentCount(Long domainId) {
-		return getMpiSegmentRolesOn(domainId).length;
+	public static int getMpiSegmentCount(Long domainId, String jobType) {
+		return getMpiSegmentRolesOn(domainId, jobType).length;
 	}
 	
 	/**
@@ -342,18 +343,6 @@ public class MpiSetting {
 	}
 	
 	/**
-	 * 표시기 점등을 위한 세그먼트 역할
-	 *
-	 * @param domainId
-	 * @param comCd
-	 * @return
-	 */
-	public static String[] getMpiSegmentRolesOn(Long domainId, String comCd) {
-		CompanySetting setting = CompanySetting.findSetting(domainId, comCd, LogisGwConfigConstants.COM_MPI_SEGMENT_ROLE_ON);
-		return (setting == null) ? MpiSetting.getMpiSegmentRolesOn(domainId) : setting.getValue().split(SysConstants.COMMA);
-	}
-	
-	/**
 	 * mpiOnReq 정보로 부터 mpiOnInfo에 relaySeq, boxQty, eaQty 등을 설정한다.
 	 *
 	 * @param domainId
@@ -380,31 +369,31 @@ public class MpiSetting {
 	}
 
 	/**
-	 * 고객사 코드(comCd)에 따른 표시기 점등 옵션으로 표시기 점등 정보 mpiOnInfo에 relaySeq, boxQty, eaQty 등을 설정한다.
+	 * 작업 유형 (jobType) 따른 표시기 점등 옵션으로 표시기 점등 정보 mpiOnInfo에 relaySeq, boxQty, eaQty 등을 설정한다.
 	 *
 	 * @param mpiOnInfo
 	 * @param domainId
-	 * @param comCd
+	 * @param jobType
 	 * @param processSeq
 	 * @param boxInQty
 	 * @param pickQty
 	 */
-	public static void setMpiOnQty(IndicatorOnInformation mpiOnInfo, Long domainId, String comCd, Integer processSeq, Integer boxInQty, Integer pickQty) {
-		String[] onSegments = MpiSetting.getMpiSegmentRolesOn(domainId, comCd);
+	public static void setMpiOnQty(IndicatorOnInformation mpiOnInfo, Long domainId, String jobType, Integer processSeq, Integer boxInQty, Integer pickQty) {
+		String[] onSegments = IndicatorSetting.getMpiSegmentRolesOn(domainId, jobType);
 		mpiOnInfo.setSegRole(onSegments);
 		
 		for(String segment : onSegments) {
 			// 세그먼트가 릴레이 번호라면
-			if(ValueUtil.isEqualIgnoreCase(segment, MpiSetting.MPI_SEGMENT_ROLE_RELAY_SEQ)) {
+			if(ValueUtil.isEqualIgnoreCase(segment, IndicatorSetting.MPI_SEGMENT_ROLE_RELAY_SEQ)) {
 				mpiOnInfo.setOrgRelay(fitRelaySeq(onSegments.length, processSeq));
 
 			// 세그먼트가 박스 수량이라면
-			} else if(ValueUtil.isEqualIgnoreCase(segment, MpiSetting.MPI_SEGMENT_ROLE_BOX)) {
+			} else if(ValueUtil.isEqualIgnoreCase(segment, IndicatorSetting.MPI_SEGMENT_ROLE_BOX)) {
 				mpiOnInfo.setOrgBoxQty(0);
 				mpiOnInfo.setOrgBoxinQty(boxInQty);
 
 			// 세그먼트가 낱개 수량이라면
-			} else if(ValueUtil.isEqualIgnoreCase(segment, MpiSetting.MPI_SEGMENT_ROLE_PCS)) {
+			} else if(ValueUtil.isEqualIgnoreCase(segment, IndicatorSetting.MPI_SEGMENT_ROLE_PCS)) {
 				mpiOnInfo.setOrgEaQty(pickQty);
 			}
 		}
@@ -432,16 +421,14 @@ public class MpiSetting {
 	}
 	
 	/**
-	 * TODO 이 부분을 모듈화해야 함 -> 각 모듈에서 Override할 수 있도록
 	 * 작업 유형별 표시기 표현 형식 - 0 : 기본, 1 : 박스 / 낱개, 2 : 누적수량 / 낱개
 	 * 
 	 * @param domainId
-	 * @param comCd
 	 * @param jobType
 	 * @return
 	 */
-	public static String getMpiViewType(Long domainId, String comCd, String jobType) {
-		CompanySetting setting = CompanySetting.findSetting(domainId, comCd, "com.mps." + jobType.toLowerCase() + ".mpi.view-type");
+	public static String getMpiViewType(Long domainId, String jobType) {
+		ScopeSetting setting = ScopeSetting.findSetting(domainId, "Indicator", jobType, "com.mps." + jobType.toLowerCase() + ".mpi.view-type");
 		return (setting == null || ValueUtil.isEmpty(setting.getValue())) ? "0" : setting.getValue();
 	}
 	
@@ -454,9 +441,9 @@ public class MpiSetting {
 	 */
 	public static GatewayInitResIndConfig getGatewayBootConfig(Long domainId, String jobType) {
 		GatewayInitResIndConfig config = new GatewayInitResIndConfig();
-		config.setAlignment(MpiSetting.getMpiNumberAlignment(domainId));
-		config.setSegRole(MpiSetting.getMpiSegmentRolesOn(domainId));
-		config.setBtnMode(MpiSetting.getMpiButtonOnMode(domainId));
+		config.setAlignment(IndicatorSetting.getMpiNumberAlignment(domainId));
+		config.setSegRole(IndicatorSetting.getMpiSegmentRolesOn(domainId, jobType));
+		config.setBtnMode(IndicatorSetting.getMpiButtonOnMode(domainId));
 		config.setBtnIntvl(getMpiButtonBlinkInterval(domainId));
 		config.setBfOnMsg(getMpiShowCharactersBeforeOn(domainId));
 		config.setBfOnMsgT(getMpiShowCharactersDelayBeforeOn(domainId));
@@ -467,7 +454,7 @@ public class MpiSetting {
 		config.setLedBarMode(getMpiLedBarOnMode(domainId));
 		config.setLedBarIntvl(getMpiLedBarBlinkInterval(domainId));
 		config.setLedBarBrtns(getMpiLedBarBrightness(domainId));
-		config.setViewType(MpiSetting.getMpiViewType(domainId, null, jobType));
+		config.setViewType(IndicatorSetting.getMpiViewType(domainId, jobType));
 		return config;
 	}
 }

@@ -24,7 +24,7 @@ import xyz.anythings.gw.model.LedOnRequest;
 import xyz.anythings.gw.model.MiddlewareConnInfoModRequest;
 import xyz.anythings.gw.model.TimesyncResponse;
 import xyz.anythings.gw.service.model.MpiOffReq;
-import xyz.anythings.gw.service.util.MpiSetting;
+import xyz.anythings.gw.service.util.IndicatorSetting;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.rabbitmq.message.MessageProperties;
@@ -95,7 +95,7 @@ public class MpiSendService extends AbstractQueryService {
 			mpiOnForPickList.forEach((gwPath, mpiOnList) -> {
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 				for(IndicatorOnInformation indOnInfo : mpiOnList) {
-					indOnInfo.setBtnMode(MpiSetting.MPI_BUTTON_MODE_STOP);
+					indOnInfo.setBtnMode(IndicatorSetting.MPI_BUTTON_MODE_STOP);
 				}
 				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, LogisGwConstants.MPI_ACTION_TYPE_INSPECT, mpiOnList));
 			});
@@ -464,7 +464,7 @@ public class MpiSendService extends AbstractQueryService {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(mpiId);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { MpiSetting.MPI_SEGMENT_ROLE_RELAY_SEQ, MpiSetting.MPI_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { IndicatorSetting.MPI_SEGMENT_ROLE_RELAY_SEQ, IndicatorSetting.MPI_SEGMENT_ROLE_PCS });
 		indOnInfo.setOrgAccmQty(accumQty);
 		indOnInfo.setOrgEaQty(pickedQty);
 		indOnList.add(indOnInfo);
@@ -570,7 +570,7 @@ public class MpiSendService extends AbstractQueryService {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(mpiCd);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { MpiSetting.MPI_SEGMENT_ROLE_STR, MpiSetting.MPI_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { IndicatorSetting.MPI_SEGMENT_ROLE_STR, IndicatorSetting.MPI_SEGMENT_ROLE_PCS });
 		indOnInfo.setViewStr(leftStr);
 		indOnInfo.setOrgEaQty(rightQty);
 		indOnList.add(indOnInfo);

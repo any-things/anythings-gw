@@ -235,7 +235,7 @@ public class MwMessageUtil {
 		mpiOnInfo.setBizId(mpiOnPick.getJobProcessId());
 		mpiOnInfo.setColor(mpiOnPick.getMpiColor());
 		// mpiOnPick 정보로 mpiOnInfo에 orgRelay, orgBoxQty, orgEaQty 값 설정
-		MpiSetting.setMpiOnQty(domainId, jobType, mpiOnPick, mpiOnInfo);
+		IndicatorSetting.setMpiOnQty(domainId, jobType, mpiOnPick, mpiOnInfo);
 		return mpiOnInfo;
 	}
 	
