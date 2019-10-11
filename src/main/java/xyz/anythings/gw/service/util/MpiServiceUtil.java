@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import xyz.anythings.base.LogisBaseConstants;
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobProcess;
@@ -114,7 +114,7 @@ public class MpiServiceUtil {
 		// 1. DAS, RTN에 대해서 로케이션의 jobStatus가 END, ENDED 상태인 모든 로케이션을 조회
 		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId(), 0, 0, "domain_id", "loc_cd", "mpi_cd", "job_status", "job_process_id");
 		condition.addFilter("mpiCd", SysConstants.IN, gateway.mpiCdList());
-		condition.addFilter("jobStatus", SysConstants.IN, LogisBaseConstants.LOCATION_JOB_STATUS_END_LIST);
+		condition.addFilter("jobStatus", SysConstants.IN, LogisConstants.LOCATION_JOB_STATUS_END_LIST);
 		condition.addOrder("locCd", true);
 		List<Location> locations = BeanUtil.get(IQueryManager.class).selectList(Location.class, condition);
 		
@@ -135,7 +135,7 @@ public class MpiServiceUtil {
 		// 1. DAS, RTN에 대해서 로케이션의 jobStatus가 END, ENDED 상태인 모든 로케이션을 조회
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId, 0, 0,  "domain_id", "loc_cd", "mpi_cd", "job_status", "job_process_id");
 		condition.addFilter("regionCd", regionCd);
-		condition.addFilter("jobStatus", SysConstants.IN, LogisBaseConstants.LOCATION_JOB_STATUS_END_LIST);
+		condition.addFilter("jobStatus", SysConstants.IN, LogisConstants.LOCATION_JOB_STATUS_END_LIST);
 		condition.addOrder("locCd", true);
 		List<Location> locations = BeanUtil.get(IQueryManager.class).selectList(Location.class, condition);
 		
@@ -158,11 +158,11 @@ public class MpiServiceUtil {
 				String jobStatus = loc.getJobStatus();
 				
 				if(ValueUtil.isNotEmpty(jobStatus)) {
-					if(ValueUtil.isEqual(LogisBaseConstants.LOCATION_JOB_STATUS_END, jobStatus)) {
+					if(ValueUtil.isEqual(LogisConstants.LOCATION_JOB_STATUS_END, jobStatus)) {
 						String bizId = ValueUtil.isEmpty(loc.getJobProcessId()) ? loc.getMpiCd() : loc.getJobProcessId();
 						mpiSendService.requestMpiEndDisplay(loc.getDomainId(), jobType, loc.getMpiCd(), bizId, false);
 						
-					} else if(ValueUtil.isEqual(LogisBaseConstants.LOCATION_JOB_STATUS_ENDED, jobStatus)) {
+					} else if(ValueUtil.isEqual(LogisConstants.LOCATION_JOB_STATUS_ENDED, jobStatus)) {
 						String bizId = ValueUtil.isEmpty(loc.getJobProcessId()) ? loc.getMpiCd() : loc.getJobProcessId();
 						mpiSendService.requestMpiEndDisplay(loc.getDomainId(), jobType, loc.getMpiCd(), bizId, true);
 					}

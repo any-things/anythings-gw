@@ -1,6 +1,6 @@
 package xyz.anythings.gw.service.util;
 
-import xyz.anythings.base.LogisBaseConstants;
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.gw.LogisGwConfigConstants;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
@@ -24,7 +24,7 @@ public class IndicatorSetting {
 	/**
 	 * 기본 색상 로테이션 순서
 	 */
-	public static String DEFAULT_ROTATION_SEQ = LogisBaseConstants.COLOR_RED + SysConstants.COMMA + LogisBaseConstants.COLOR_BLUE + SysConstants.COMMA + LogisBaseConstants.COLOR_GREEN + SysConstants.COMMA + LogisBaseConstants.COLOR_YELLOW;
+	public static String DEFAULT_ROTATION_SEQ = LogisConstants.COLOR_RED + SysConstants.COMMA + LogisConstants.COLOR_BLUE + SysConstants.COMMA + LogisConstants.COLOR_GREEN + SysConstants.COMMA + LogisConstants.COLOR_YELLOW;
 
 	/**
 	 * 표시기 점등을 위한 세그먼트 기본 값
@@ -152,7 +152,7 @@ public class IndicatorSetting {
 		if(DEFAULT_ROTATION_SEQ == null) {
 			synchronized(LOCK) {
 				if(DEFAULT_ROTATION_SEQ == null) {
-					DEFAULT_ROTATION_SEQ = LogisBaseConstants.COLOR_RED + SysConstants.COMMA + LogisBaseConstants.COLOR_BLUE + SysConstants.COMMA + LogisBaseConstants.COLOR_GREEN + SysConstants.COMMA + LogisBaseConstants.COLOR_YELLOW;
+					DEFAULT_ROTATION_SEQ = LogisConstants.COLOR_RED + SysConstants.COMMA + LogisConstants.COLOR_BLUE + SysConstants.COMMA + LogisConstants.COLOR_GREEN + SysConstants.COMMA + LogisConstants.COLOR_YELLOW;
 				}
 			}
 		}

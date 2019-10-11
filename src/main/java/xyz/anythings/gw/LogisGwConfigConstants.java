@@ -1,13 +1,13 @@
 package xyz.anythings.gw;
 
-import xyz.anythings.base.LogisBaseConfigConstants;
+import xyz.anythings.base.LogisConfigConstants;
 
 /**
  * 물류 게이트웨이 모듈 설정 키 관련 상수 정의
  *
  * @author shortstop
  */
-public class LogisGwConfigConstants extends LogisBaseConfigConstants {
+public class LogisGwConfigConstants extends LogisConfigConstants {
 	
 	/**
 	 * 메시징 미들웨어와 통신할 큐 이름
