@@ -6,13 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import javax.tools.DocumentationTool.Location;
+
 import xyz.anythings.base.LogisConstants;
+import xyz.anythings.base.entity.Cell;
 import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.JobProcess;
-import xyz.anythings.base.entity.Location;
 import xyz.anythings.base.entity.MPI;
-import xyz.anythings.gw.LogisGwConstants;
+import xyz.anythings.base.entity.WorkCell;
+import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.MpiSendService;
@@ -60,7 +64,7 @@ public class MpiServiceUtil {
 					
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestMpisOn(domainId, jobType, LogisGwConstants.MPI_ACTION_TYPE_NOBOX, indOnList);
+				sendSvc.requestMpisOn(domainId, jobType, MwConstants.MPI_ACTION_TYPE_NOBOX, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -75,7 +79,7 @@ public class MpiServiceUtil {
 	 * @param jobType
 	 * @param jobList
 	 */
-	public static void restoreMpiDisplayJobPicked(String jobType, List<JobProcess> jobList) {
+	public static void restoreMpiDisplayJobPicked(String jobType, List<JobInstance> jobList) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
 			MpiSendService sendSvc = BeanUtil.get(MpiSendService.class);
@@ -84,7 +88,7 @@ public class MpiServiceUtil {
 			Map<String, List<IndicatorOnInformation>> indOnList = new HashMap<String, List<IndicatorOnInformation>>();
 			Long domainId = null;
 			
-			for (JobProcess job : jobList) {
+			for (JobInstance job : jobList) {
 				if(domainId == null) domainId = job.getDomainId();
 				String gwPath = job.getGwPath();
 				List<IndicatorOnInformation> mpiOnList = indOnList.containsKey(gwPath) ? indOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
@@ -98,7 +102,7 @@ public class MpiServiceUtil {
 			
 			// 표시기 점등 요청
 			if(ValueUtil.isNotEmpty(indOnList)) {
-				sendSvc.requestMpisOn(domainId, jobType, LogisGwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
+				sendSvc.requestMpisOn(domainId, jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
 			}
 		}
 	}
@@ -133,9 +137,9 @@ public class MpiServiceUtil {
 	 */
 	public static List<Location> restoreMpiDisplayBoxingEnd(Long domainId, String jobType, String regionCd, String equipZoneCd) {
 		// 1. DAS, RTN에 대해서 로케이션의 jobStatus가 END, ENDED 상태인 모든 로케이션을 조회
-		Query condition = AnyOrmUtil.newConditionForExecution(domainId, 0, 0,  "domain_id", "loc_cd", "mpi_cd", "job_status", "job_process_id");
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId, 0, 0,  "domain_id", "cell_cd", "ind_cd", "status", "job_instance_id");
 		condition.addFilter("regionCd", regionCd);
-		condition.addFilter("jobStatus", SysConstants.IN, LogisConstants.LOCATION_JOB_STATUS_END_LIST);
+		condition.addFilter("jobStatus", SysConstants.IN, LogisConstants.CELL_JOB_STATUS_END_LIST);
 		condition.addOrder("locCd", true);
 		List<Location> locations = BeanUtil.get(IQueryManager.class).selectList(Location.class, condition);
 		
@@ -147,30 +151,30 @@ public class MpiServiceUtil {
 	 * 로케이션 별로 상태별로 END (ReadOnly = false), END (ReadOnly = true)를 표시
 	 * 
 	 * @param jobType
-	 * @param locations
+	 * @param workCells
 	 * @return
 	 */
-	public static List<Location> restoreMpiDisplayBoxingEnd(String jobType, List<Location> locations) {
-		if(ValueUtil.isNotEmpty(locations)) {
+	public static List<WorkCell> restoreMpiDisplayBoxingEnd(String jobType, List<WorkCell> workCells) {
+		if(ValueUtil.isNotEmpty(workCells)) {
 			MpiSendService mpiSendService = BeanUtil.get(MpiSendService.class);
 
-			for(Location loc : locations) {
-				String jobStatus = loc.getJobStatus();
+			for(WorkCell cell : workCells) {
+				String jobStatus = cell.getStatus();
 				
 				if(ValueUtil.isNotEmpty(jobStatus)) {
-					if(ValueUtil.isEqual(LogisConstants.LOCATION_JOB_STATUS_END, jobStatus)) {
-						String bizId = ValueUtil.isEmpty(loc.getJobProcessId()) ? loc.getMpiCd() : loc.getJobProcessId();
-						mpiSendService.requestMpiEndDisplay(loc.getDomainId(), jobType, loc.getMpiCd(), bizId, false);
+					if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_END, jobStatus)) {
+						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
+						mpiSendService.requestMpiEndDisplay(cell.getDomainId(), jobType, cell.getIndCd(), bizId, false);
 						
-					} else if(ValueUtil.isEqual(LogisConstants.LOCATION_JOB_STATUS_ENDED, jobStatus)) {
-						String bizId = ValueUtil.isEmpty(loc.getJobProcessId()) ? loc.getMpiCd() : loc.getJobProcessId();
-						mpiSendService.requestMpiEndDisplay(loc.getDomainId(), jobType, loc.getMpiCd(), bizId, true);
+					} else if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_ENDED, jobStatus)) {
+						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
+						mpiSendService.requestMpiEndDisplay(cell.getDomainId(), jobType, cell.getIndCd(), bizId, true);
 					}
 				}			
 			}
 		}
 		
-		return locations;
+		return workCells;
 	}
 	
 	/**
@@ -228,7 +232,7 @@ public class MpiServiceUtil {
 			if(ValueUtil.isNotEmpty(mpiOnList)) {
 				JobProcess firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, LogisGwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
+				BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return mpiOnList.size();
 			}
@@ -256,7 +260,7 @@ public class MpiServiceUtil {
 			if(ValueUtil.isNotEmpty(mpiOnList)) {
 				JobProcess firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, LogisGwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
+				BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return mpiOnList.size();
 			}
@@ -292,7 +296,7 @@ public class MpiServiceUtil {
 				if(ValueUtil.isNotEmpty(mpiOnList)) {
 					JobProcess firstJob = pickingJobs.get(0);
 					// 3. 표시기 점등 요청
-					BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, LogisGwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
+					BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return mpiOnList.size();
 				}
@@ -329,7 +333,7 @@ public class MpiServiceUtil {
 				if(ValueUtil.isNotEmpty(mpiOnList)) {
 					JobProcess firstJob = pickingJobs.get(0);
 					// 3. 표시기 점등 요청
-					BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, LogisGwConstants.MPI_ACTION_TYPE_DISPLAY, mpiOnList);
+					BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, mpiOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return mpiOnList.size();
 				}
@@ -353,7 +357,7 @@ public class MpiServiceUtil {
 			// 2. 검수 색깔은 빨간색으로 고정
 			for(JobProcess job : jobList) {
 				if(domainId == null) domainId = job.getDomainId();
-				job.setMpiColor(LogisGwConstants.COLOR_RED);
+				job.setMpiColor(MwConstants.COLOR_RED);
 			}
 			
 			// 3. 점등 요청을 위한 데이터 모델 생성. 
@@ -380,20 +384,20 @@ public class MpiServiceUtil {
 	 * @return
 	 */
 	public static Map<String, List<IndicatorOnInformation>> buildMpiOnList(
-			boolean needUpdateJobStatus, String jobType, List<JobProcess> jobList, boolean showPickingQty) {
+			boolean needUpdateJobStatus, String jobType, List<JobInstance> jobList, boolean showPickingQty) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
 			List<MpiOnPickReq> mpiListToLightOn = new ArrayList<MpiOnPickReq>(jobList.size());
 			String pickStartedAt = needUpdateJobStatus ? DateUtil.currentTimeStr() : null;
 			
 			// 점등 요청을 위한 데이터 모델 생성.
-			for(JobProcess job : jobList) {
+			for(JobInstance job : jobList) {
 				// 상태가 처리 예정인 작업만 표시기 점등 
 				if(needUpdateJobStatus && job.isTodoJob()) {
 					// 1. 분류 대상 피킹 시간 업데이트
 					job.setPickStartedAt(pickStartedAt);
 					// 2. 상태 코드 설정
-					job.setStatus(JobProcess.JOB_STATUS_PICKING);
+					job.setStatus(JobInstance.JOB_STATUS_PICKING);
 				}
 				
 				// 3. 점등 요청 모델 생성 및 복사  

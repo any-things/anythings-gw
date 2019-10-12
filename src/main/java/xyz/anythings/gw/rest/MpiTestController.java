@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.base.entity.JobProcess;
-import xyz.anythings.base.entity.Location;
-import xyz.anythings.gw.LogisGwConstants;
+import xyz.anythings.base.entity.Cell;
+import xyz.anythings.base.entity.JobInstance;
+import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.Action;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.MpiSendService;
@@ -34,14 +35,15 @@ import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
+import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.FormatUtil;
 import xyz.elidom.util.ValueUtil;
 
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/mpi_test")
-@ServiceDesc(description = "MPI Test Service API")
+@RequestMapping("/rest/indicator_test")
+@ServiceDesc(description = "Indicator Test Service API")
 public class MpiTestController {
 	
 	/**
@@ -53,10 +55,10 @@ public class MpiTestController {
 	 * 표시기 요청 관련 서비스
 	 */
 	@Autowired
-	private MpiSendService mpiSendService;
+	private MpiSendService indSendService;
 
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "MPI Unit Test")
+	@ApiDesc(description = "Indicator Unit Test")
 	public Map<String, Object> unitTest(@RequestBody MpiTest mpiTest) {
 		String action = mpiTest.getAction().getAction();
 		String sendMsg = null;
@@ -94,7 +96,8 @@ public class MpiTestController {
 		if(ValueUtil.isNotEmpty(indOnList)) {
 			return this.indicatorOnByInfo(Domain.currentDomainId(), mpiTest.getAction().getActionType(), mpiTest.getJobType(), indOnList);
 		} else {
-			return "표시기 점등할 정보가 없습니다.";
+			// 점등할 정보가 없습니다.
+			return ThrowUtil.notFoundRecordMsg("terms.button.on");
 		}
 	}
 	
@@ -111,9 +114,10 @@ public class MpiTestController {
 		if(ValueUtil.isNotEmpty(indOffList)) {
 			msg = FormatUtil.toUnderScoreJsonString(indOffList);
 			boolean forceFlag = (mpiTest.getAction().getForceFlag() == null) ? false : mpiTest.getAction().getForceFlag().booleanValue();
-			this.mpiSendService.requestOffByMpiList(Domain.currentDomainId(), indOffList, forceFlag);
+			this.indSendService.requestOffByMpiList(Domain.currentDomainId(), indOffList, forceFlag);
 		} else {
-			msg = "표시기 소등할 정보가 없습니다.";
+			// 소등할 정보가 없습니다
+			msg = ThrowUtil.notFoundRecordMsg("terms.button.off");
 		}
 		
 		return msg;
@@ -132,9 +136,10 @@ public class MpiTestController {
 		
 		if(ValueUtil.isNotEmpty(ledOnList)) {
 			msg = FormatUtil.toUnderScoreJsonString(ledOnList);
-			this.mpiSendService.requestLedListOn(Domain.currentDomainId(), ledOnList, 10);
+			this.indSendService.requestLedListOn(Domain.currentDomainId(), ledOnList, 10);
 		} else {
-			msg = "LED 점등할 정보가 없습니다.";
+			// 점등할 정보가 없습니다
+			msg = ThrowUtil.notFoundRecordMsg("terms.button.on");
 		}
 		
 		return msg;
@@ -153,9 +158,10 @@ public class MpiTestController {
 		
 		if(ValueUtil.isNotEmpty(ledOffList)) {
 			msg = FormatUtil.toUnderScoreJsonString(ledOffList);
-			this.mpiSendService.requestLedListOff(Domain.currentDomainId(), ledOffList);
+			this.indSendService.requestLedListOff(Domain.currentDomainId(), ledOffList);
 		} else {
-			msg = "LED 소등할 정보가 없습니다.";
+			// 소등할 정보가 없습니다
+			msg = ThrowUtil.notFoundRecordMsg("terms.button.off");
 		}
 		
 		return msg;
@@ -170,8 +176,8 @@ public class MpiTestController {
 	 * @return
 	 */
 	private String indicatorOnByInfo(Long domainId, String actionType, String jobType, Map<String, List<IndicatorOnInformation>> indOnInfo) {
-		if(ValueUtil.isEqualIgnoreCase(actionType, LogisGwConstants.MPI_ACTION_TYPE_PICK)) {
-			this.mpiSendService.requestMpisOn(domainId, jobType, actionType, indOnInfo);
+		if(ValueUtil.isEqualIgnoreCase(actionType, MwConstants.MPI_ACTION_TYPE_PICK)) {
+			this.indSendService.requestMpisOn(domainId, jobType, actionType, indOnInfo);
 			return FormatUtil.toUnderScoreJsonString(indOnInfo);
 		} else {
 			if(this.indicatorOn(domainId, actionType, jobType, indOnInfo)) {
@@ -202,44 +208,44 @@ public class MpiTestController {
 				String mpiCd = info.getId();
 				
 				switch(actionType) {
-					case "mpi_cd" : {
+					case "ind_cd" : {
 					}
 					
-					case "loc_cd" : {
+					case "cell_cd" : {
 					}
 					
-					case LogisGwConstants.MPI_ACTION_TYPE_STR_SHOW : {
-						this.mpiSendService.requestShowString(domainId, jobType, gwPath, mpiCd, mpiCd, info.getViewStr());
+					case MwConstants.MPI_ACTION_TYPE_STR_SHOW : {
+						this.indSendService.requestShowString(domainId, jobType, gwPath, mpiCd, mpiCd, info.getViewStr());
 						count++;
 						break;
 					}
 					
-					case LogisGwConstants.MPI_BIZ_FLAG_FULL : {
-						this.mpiSendService.requestFullbox(domainId, jobType, mpiCd, mpiCd, info.getColor());
+					case MwConstants.MPI_BIZ_FLAG_FULL : {
+						this.indSendService.requestFullbox(domainId, jobType, mpiCd, mpiCd, info.getColor());
 						count++;
 						break;
 					}
 					
-					case LogisGwConstants.MPI_BIZ_FLAG_END : {
-						this.mpiSendService.requestMpiEndDisplay(domainId, jobType, mpiCd, mpiCd, false);
+					case MwConstants.MPI_BIZ_FLAG_END : {
+						this.indSendService.requestMpiEndDisplay(domainId, jobType, mpiCd, mpiCd, false);
 						count++;
 						break;
 					}
 					
-					case LogisGwConstants.MPI_ACTION_TYPE_NOBOX : {
-						this.mpiSendService.requestMpiNoBoxDisplay(domainId, jobType, mpiCd);
+					case MwConstants.MPI_ACTION_TYPE_NOBOX : {
+						this.indSendService.requestMpiNoBoxDisplay(domainId, jobType, mpiCd);
 						count++;
 						break;
 					}
 					
-					case LogisGwConstants.MPI_ACTION_TYPE_ERRBOX : {
-						this.mpiSendService.requestMpiErrBoxDisplay(domainId, jobType, mpiCd);
+					case MwConstants.MPI_ACTION_TYPE_ERRBOX : {
+						this.indSendService.requestMpiErrBoxDisplay(domainId, jobType, mpiCd);
 						count++;
 						break;
 					}
 					
-					case LogisGwConstants.MPI_ACTION_TYPE_DISPLAY : {
-						this.mpiSendService.requestDisplayBothDirectionQty(domainId, jobType, mpiCd, mpiCd, info.getOrgRelay(), info.getOrgEaQty());
+					case MwConstants.MPI_ACTION_TYPE_DISPLAY : {
+						this.indSendService.requestDisplayBothDirectionQty(domainId, jobType, mpiCd, mpiCd, info.getOrgRelay(), info.getOrgEaQty());
 						count++;
 						break;
 					}
@@ -260,39 +266,39 @@ public class MpiTestController {
 		MpiAction action = mpiTest.getAction();
 		
 		switch(action.getActionType()) {
-			case LogisGwConstants.MPI_ACTION_TYPE_PICK : {
+			case MwConstants.MPI_ACTION_TYPE_PICK : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case LogisGwConstants.MPI_BIZ_FLAG_FULL : {
+			case MwConstants.MPI_BIZ_FLAG_FULL : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case LogisGwConstants.MPI_BIZ_FLAG_END : {
+			case MwConstants.MPI_BIZ_FLAG_END : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case LogisGwConstants.MPI_ACTION_TYPE_NOBOX : {
+			case MwConstants.MPI_ACTION_TYPE_NOBOX : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case LogisGwConstants.MPI_ACTION_TYPE_ERRBOX : {
+			case MwConstants.MPI_ACTION_TYPE_ERRBOX : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case LogisGwConstants.MPI_ACTION_TYPE_DISPLAY : {
+			case MwConstants.MPI_ACTION_TYPE_DISPLAY : {
 				return this.createIndOnDisplayInfoList(mpiTest);
 			}
 			
-			case LogisGwConstants.MPI_ACTION_TYPE_STR_SHOW : {
+			case MwConstants.MPI_ACTION_TYPE_STR_SHOW : {
 				return this.createIndOnShowStrInfoList(mpiTest);
 			}
 			
-			case "mpi_cd" : {
+			case "ind_cd" : {
 				return this.createIndOnShowStrInfoList(mpiTest);
 			}
 			
-			case "loc_cd" : {
+			case "cell_cd" : {
 				return this.createIndOnShowStrInfoList(mpiTest);
 			}
 		}
@@ -317,19 +323,19 @@ public class MpiTestController {
 		Map<String, Object> params = ValueUtil.newMap(target.getTargetType(), target.getTargetIdList());
 		params.put("domainId", Domain.currentDomainId());
 		params.put("activeFlag", true);
-		List<JobProcess> jobList = this.queryManager.selectListBySql(this.getMpiOnQuery(), params, JobProcess.class, 0, 0);
+		List<JobInstance> jobList = this.queryManager.selectListBySql(this.getIndOnQuery(), params, JobInstance.class, 0, 0);
 		
-		for(JobProcess job : jobList) {
+		for(JobInstance job : jobList) {
 			job.setId(UUID.randomUUID().toString());
 			job.setComCd(mpiTest.getComCd());
-			job.setMpiColor(btnColor);
+			job.setColorCd(btnColor);
 			job.setBoxInQty(1);
-			job.setProcessSeq(firstQty);
+			job.setInputSeq(firstQty);
 			job.setPickQty(secondQty);
 			job.setPickedQty(0);
 		}
 		
-		return MpiServiceUtil.buildMpiOnList(false, LogisGwConstants.JOB_TYPE_DAS, jobList, false);
+		return MpiServiceUtil.buildMpiOnList(false, MwConstants.JOB_TYPE_DAS, jobList, false);
 	}
 	
 	/**
@@ -348,13 +354,14 @@ public class MpiTestController {
 			for(IndicatorOnInformation indOnInfo : indOnInfoList) {
 				String viewStr = null;
 				
-				if(ValueUtil.isEqualIgnoreCase(action.getActionType(), "mpi_cd")) {
+				if(ValueUtil.isEqualIgnoreCase(action.getActionType(), "ind_cd")) {
 					viewStr = indOnInfo.getId();
 							
-				} else if(ValueUtil.isEqualIgnoreCase(action.getActionType(), "loc_cd")) {
-					Location loc = Location.findByMpiCd(Domain.currentDomainId(), indOnInfo.getId(), false, false);
-					if(loc != null) {
-						String[] locCdArr = loc.getLocCd().split(AnyConstants.DASH);
+				} else if(ValueUtil.isEqualIgnoreCase(action.getActionType(), "cell_cd")) {
+					Cell cell = LogisEntityUtil.findEntityByCode(Domain.currentDomainId(), true, Cell.class, "indCd", indOnInfo.getId());
+					
+					if(cell != null) {
+						String[] locCdArr = cell.getCellCd().split(AnyConstants.DASH);
 						String firstData = locCdArr[0];
 						String secondData = locCdArr[1];
 						firstData = firstData.length() > 3 ? firstData.substring(firstData.length() - 3, firstData.length()) : firstData;
@@ -412,88 +419,89 @@ public class MpiTestController {
 		Map<String, Object> params = ValueUtil.newMap(target.getTargetType(), target.getTargetIdList());
 		params.put("domainId", Domain.currentDomainId());
 		params.put("activeFlag", true);
-		return this.queryManager.selectListBySql(this.getMpiOffQuery(), params, MpiOffReq.class, 0, 0);
+		return this.queryManager.selectListBySql(this.getIndOffQuery(), params, MpiOffReq.class, 0, 0);
 	}
 	
 	/**
-	 * MPI 리스트 조회를 위한 쿼리
+	 * 표시기 리스트 조회를 위한 쿼리
 	 * 
 	 * @return
 	 */
-	private String getMpiOnQuery() {
+	private String getIndOnQuery() {
 		StringJoiner sql = new StringJoiner(SysConstants.LINE_SEPARATOR);
 		return 
 		sql.add("SELECT")
-		   .add("	GATE.domain_id, GATE.gw_nm as gw_path, MPI.mpi_cd, LOC.loc_cd as loc_cd")
+		   .add("	GATE.domain_id, GATE.gw_nm as gw_path, CELL.ind_cd, LOC.cell_cd")
 		   .add("FROM")
-		   .add("	TB_LOCATION LOC")
-		   .add("	INNER JOIN TB_MPI MPI ON LOC.DOMAIN_ID = MPI.DOMAIN_ID AND LOC.MPI_CD = MPI.MPI_CD")
-		   .add("	INNER JOIN TB_GATEWAY GATE ON MPI.DOMAIN_ID = GATE.DOMAIN_ID AND MPI.GW_CD = GATE.GW_CD")
+		   .add("	CELLS CELL")
+		   .add("	INNER JOIN INDICATORS IND ON CELL.DOMAIN_ID = IND.DOMAIN_ID AND CELL.IND_CD = IND.IND_CD")
+		   .add("	INNER JOIN GATEWAYS GATE ON CELL.DOMAIN_ID = GATE.DOMAIN_ID AND CELL.GW_CD = GATE.GW_CD")
 		   .add("WHERE")
-		   .add("	LOC.domain_id = :domainId")
-		   .add("	AND LOC.active_flag = :activeFlag")
-		   .add("	#if($region)")
-		   .add("	AND LOC.region_cd in (:region)")
+		   .add("	LOC.DOMAIN_ID = :domainId")
+		   .add("	AND CELL.ACTIVE_FLAG = :activeFlag")
+		   .add("	#if($rack)")
+		   .add("	AND CELL.EQUIP_CD in (:rack)")
 		   .add("	#end")
 		   .add("	#if($gateway)")
 		   .add("	AND GATE.GW_CD in (:gateway)")
 		   .add("	#end")
 		   .add("	#if($equip_zone)")
-		   .add("	AND LOC.EQUIP_ZONE_CD in (:equip_zone)")
+		   .add("	AND CELL.EQUIP_ZONE in (:equip_zone)")
 		   .add("	#end")
 		   .add("	#if($work_zone)")
-		   .add("	AND LOC.ZONE_CD in (:work_zone)")
+		   .add("	AND CELL.STATION_CD in (:work_zone)")
 		   .add("	#end")
-		   .add("	#if($location)")
-		   .add("	AND LOC.LOC_CD in (:location)")
+		   .add("	#if($cell)")
+		   .add("	AND CELL.CELL_CD in (:cell)")
 		   .add("	#end")
 		   .add("	#if($indicator)")
-		   .add("	AND MPI.MPI_CD in (:indicator)")
+		   .add("	AND CELL.IND_CD in (:indicator)")
 		   .add("	#end")		   
 		   .add("GROUP BY")
-		   .add("	GATE.domain_id, GATE.gw_nm, MPI.mpi_cd, LOC.loc_cd")
+		   .add("	GATE.DOMAIN_ID, GATE.GW_NM, CELL.IND_CD, CELL.CELL_CD")
 		   .add("ORDER BY")
-		   .add("	GATE.gw_nm, LOC.loc_cd").toString();
+		   .add("	GATE.GW_NM, CELL.CELL_CD").toString();
 	}
 	
 	/**
-	 * MPI Off를 위한 리스트 조회를 위한 쿼리
+	 * 표시기 소등을 위한 리스트 조회를 위한 쿼리
 	 * 
 	 * @return
 	 */
-	private String getMpiOffQuery() {
+	private String getIndOffQuery() {
 		StringJoiner sql = new StringJoiner(SysConstants.LINE_SEPARATOR);
 		return 
 		sql.add("SELECT")
-		   .add("	GATE.gw_nm as gw_path, MPI.mpi_cd, LOC.loc_cd")
+		   .add("	GATE.gw_nm as gw_path, IND.ind_cd, CELL.cell_cd")
 		   .add("FROM")
-		   .add("	TB_LOCATION LOC")
-		   .add("	INNER JOIN TB_MPI MPI ON LOC.DOMAIN_ID = MPI.DOMAIN_ID AND LOC.MPI_CD = MPI.MPI_CD")
-		   .add("	INNER JOIN TB_GATEWAY GATE ON MPI.DOMAIN_ID = GATE.DOMAIN_ID AND MPI.GW_CD = GATE.GW_CD")
+		   .add("	CELLS CELL")
+		   .add("	INNER JOIN INDICATORS IND ON CELL.DOMAIN_ID = IND.DOMAIN_ID AND CELL.IND_CD = IND.IND_CD")
+		   .add("	INNER JOIN GATEWAYS GATE ON IND.DOMAIN_ID = GATE.DOMAIN_ID AND IND.GW_CD = GATE.GW_CD")
 		   .add("WHERE")
-		   .add("	LOC.domain_id = :domainId")
-		   .add("	AND LOC.active_flag = :activeFlag")
-		   .add("	#if($region)")
-		   .add("	AND LOC.region_cd in (:region)")
+		   .add("	CELL.DOMAIN_ID = :domainId")
+		   .add("	AND CELL.ACTIVE_FLAG = :activeFlag")
+		   .add("	#if($rack)")
+		   .add("	AND CELL.EQUIP_CD in (:rack)")
 		   .add("	#end")
 		   .add("	#if($gateway)")
 		   .add("	AND GATE.GW_CD in (:gateway)")
 		   .add("	#end")
 		   .add("	#if($equip_zone)")
-		   .add("	AND LOC.EQUIP_ZONE_CD in (:equip_zone)")
+		   .add("	AND CELL.EQUIP_ZONE in (:equip_zone)")
 		   .add("	#end")
 		   .add("	#if($work_zone)")
-		   .add("	AND LOC.ZONE_CD in (:work_zone)")
+		   .add("	AND CELL.STATION_CD in (:work_zone)")
 		   .add("	#end")
 		   .add("	#if($location)")
-		   .add("	AND LOC.LOC_CD in (:location)")
+		   .add("	AND CELL.CELL_CD in (:location)")
 		   .add("	#end")
 		   .add("	#if($indicator)")
-		   .add("	AND MPI.MPI_CD in (:indicator)")
+		   .add("	AND IND.IND_CD in (:indicator)")
 		   .add("	#end")		   
 		   .add("GROUP BY")
-		   .add("	GATE.gw_nm, MPI.mpi_cd, LOC.loc_cd")
+		   .add("	GATE.GW_NM, IND.IND_CD, CELL.CELL_CD")
 		   .add("ORDER BY")
-		   .add("	GATE.gw_nm, LOC.loc_cd").toString();
+		   .add("	GATE.GW_NM, CELL.CELL_CD").toString();
 	}
+
 }

@@ -8,7 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import xyz.anythings.gw.config.ModuleProperties;
+import xyz.anythings.comm.rabbitmq.event.MwErrorEvent;
 import xyz.anythings.gw.model.MessageObject;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.event.EventPublisher;
@@ -108,7 +108,7 @@ public class MwReceiver extends MwCommon  {
 			}
 		} catch (Exception e) {
 			// 7. 예외 처리
-			ErrorEvent errorEvent = new ErrorEvent(siteDomain.getId(), true, true, e, null, null, event.toString());
+			MwErrorEvent errorEvent = new ErrorEvent(siteDomain.getId(), true, true, e, null, null, event.toString());
 			this.eventPublisher.publishEvent(errorEvent);
 			
 		} finally {

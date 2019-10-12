@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.MPI;
-import xyz.anythings.gw.LogisGwConstants;
+import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.GatewayDepRequest;
 import xyz.anythings.gw.model.GatewayInitResponse;
 import xyz.anythings.gw.model.IndicatorDepRequest;
@@ -60,7 +60,7 @@ public class MpiSendService extends AbstractQueryService {
 		if (ValueUtil.isNotEmpty(stockMpiOnList)) {
 			stockMpiOnList.forEach((gwPath, stockOnList) -> {
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
-				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(LogisGwConstants.JOB_TYPE_DPS, LogisGwConstants.MPI_ACTION_TYPE_STOCK, stockOnList));
+				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(MwConstants.JOB_TYPE_DPS, MwConstants.MPI_ACTION_TYPE_STOCK, stockOnList));
 			});
 		}
 	}
@@ -97,7 +97,7 @@ public class MpiSendService extends AbstractQueryService {
 				for(IndicatorOnInformation indOnInfo : mpiOnList) {
 					indOnInfo.setBtnMode(IndicatorSetting.MPI_BUTTON_MODE_STOP);
 				}
-				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, LogisGwConstants.MPI_ACTION_TYPE_INSPECT, mpiOnList));
+				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_INSPECT, mpiOnList));
 			});
 		}
 	}
@@ -114,7 +114,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param eaQty
 	 */
 	public void requestPickMpiOn(Long domainId, String jobType, String mpiCd, String bizId, String color, Integer boxQty, Integer eaQty) {
-		this.requestCommonMpiOn(domainId, jobType, mpiCd, bizId, LogisGwConstants.MPI_ACTION_TYPE_PICK, color, boxQty, eaQty);
+		this.requestCommonMpiOn(domainId, jobType, mpiCd, bizId, MwConstants.MPI_ACTION_TYPE_PICK, color, boxQty, eaQty);
 	}
 	
 	/**
@@ -129,7 +129,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param eaQty
 	 */
 	public void requestInspectMpiOn(Long domainId, String jobType, String mpiCd, String bizId, String color, Integer boxQty, Integer eaQty) {
-		this.requestCommonMpiOn(domainId, jobType, mpiCd, bizId, LogisGwConstants.MPI_ACTION_TYPE_INSPECT, color, boxQty, eaQty);
+		this.requestCommonMpiOn(domainId, jobType, mpiCd, bizId, MwConstants.MPI_ACTION_TYPE_INSPECT, color, boxQty, eaQty);
 	}
 	
 	/**
@@ -332,7 +332,7 @@ public class MpiSendService extends AbstractQueryService {
 		indOnInfo.setId(mpiId);
 		indOnInfo.setBizId(bizId);
 		indOnInfo.setEndFullBox(!finalEnd);
-		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, LogisGwConstants.MPI_BIZ_FLAG_END, ValueUtil.toList(indOnInfo));
+		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.MPI_BIZ_FLAG_END, ValueUtil.toList(indOnInfo));
 		indOnReq.setReadOnly(finalEnd);
 		this.mwMsgSender.send(domainId, property, indOnReq);		
 	}
@@ -345,7 +345,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param mpiId
 	 */
 	public void requestMpiNoBoxDisplay(Long domainId, String jobType, String mpiId) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, mpiId, LogisGwConstants.MPI_ACTION_TYPE_NOBOX, false, null, null, null);
+		this.requestMpiDisplay(domainId, jobType, mpiId, mpiId, MwConstants.MPI_ACTION_TYPE_NOBOX, false, null, null, null);
 	}
 	
 	/**
@@ -356,7 +356,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param mpiId
 	 */
 	public void requestMpiErrBoxDisplay(Long domainId, String jobType, String mpiId) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, mpiId, LogisGwConstants.MPI_ACTION_TYPE_ERRBOX, false, null, null, null);
+		this.requestMpiDisplay(domainId, jobType, mpiId, mpiId, MwConstants.MPI_ACTION_TYPE_ERRBOX, false, null, null, null);
 	}
 	
 	/**
@@ -369,7 +369,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param pickEaQty
 	 */
 	public void requestMpiDisplayOnly(Long domainId, String jobType, String mpiId, String bizId, Integer pickEaQty) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, bizId, LogisGwConstants.MPI_ACTION_TYPE_DISPLAY, true, null, null, pickEaQty);
+		this.requestMpiDisplay(domainId, jobType, mpiId, bizId, MwConstants.MPI_ACTION_TYPE_DISPLAY, true, null, null, pickEaQty);
 	}
 	
 	/**
@@ -384,7 +384,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param thirdSegQty
 	 */
 	public void requestMpiSegmentDisplay(Long domainId, String jobType, String mpiId, String bizId, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, bizId, LogisGwConstants.MPI_ACTION_TYPE_DISPLAY, false, firstSegQty, secondSegQty, thirdSegQty);
+		this.requestMpiDisplay(domainId, jobType, mpiId, bizId, MwConstants.MPI_ACTION_TYPE_DISPLAY, false, firstSegQty, secondSegQty, thirdSegQty);
 	}
 	
 	/**
@@ -468,7 +468,7 @@ public class MpiSendService extends AbstractQueryService {
 		indOnInfo.setOrgAccmQty(accumQty);
 		indOnInfo.setOrgEaQty(pickedQty);
 		indOnList.add(indOnInfo);
-		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, LogisGwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
+		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
 		indOnReq.setReadOnly(true);
 		this.mwMsgSender.send(domainId, property, indOnReq);
 	}
@@ -498,7 +498,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param color
 	 */
 	public void requestFullbox(Long domainId, String jobType, String mpiId, String bizId, String color) {
-		this.requestCommonMpiOn(domainId, jobType, mpiId, bizId, LogisGwConstants.MPI_BIZ_FLAG_FULL, color, 0, 0);
+		this.requestCommonMpiOn(domainId, jobType, mpiId, bizId, MwConstants.MPI_BIZ_FLAG_FULL, color, 0, 0);
 	}
 	
 	/**
@@ -536,7 +536,7 @@ public class MpiSendService extends AbstractQueryService {
 		indOnInfo.setBizId(bizId);
 		indOnInfo.setViewStr(displayStr);
 		indOnList.add(indOnInfo);
-		this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, LogisGwConstants.MPI_ACTION_TYPE_STR_SHOW, indOnList));
+		this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_STR_SHOW, indOnList));
 	}
 
 	/**
@@ -574,7 +574,7 @@ public class MpiSendService extends AbstractQueryService {
 		indOnInfo.setViewStr(leftStr);
 		indOnInfo.setOrgEaQty(rightQty);
 		indOnList.add(indOnInfo);
-		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, LogisGwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
+		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
 		indOnReq.setReadOnly(true);
 		this.mwMsgSender.send(domainId, property, indOnReq);
 	}
@@ -592,13 +592,13 @@ public class MpiSendService extends AbstractQueryService {
 	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String mpiCd, String bizId, Integer leftQty, Integer rightQty) {
 		StringBuffer showStr = new StringBuffer();
 		if(leftQty != null) {
-			showStr.append(LogisGwConstants.MPI_LEFT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(leftQty), 2));
+			showStr.append(MwConstants.MPI_LEFT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(leftQty), 2));
 		} else {
 			showStr.append("   ");
 		}
 		
 		if(rightQty != null) {
-			showStr.append(LogisGwConstants.MPI_RIGHT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(rightQty), 2));
+			showStr.append(MwConstants.MPI_RIGHT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(rightQty), 2));
 		} else {
 			showStr.append("   ");
 		}
@@ -820,7 +820,7 @@ public class MpiSendService extends AbstractQueryService {
 	 */
 	public List<String> searchGwByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
 		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, regionCd, equipZoneCd, LogisGwConstants.checkSideCdForQuery(domainId, sideCd));
+			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, regionCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
 		String sql = this.getSearchMpiQuery(false);
 		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
 	}
@@ -836,7 +836,7 @@ public class MpiSendService extends AbstractQueryService {
 	 */
 	public List<MpiOffReq> searchMpiByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
 		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, regionCd, equipZoneCd, LogisGwConstants.checkSideCdForQuery(domainId, sideCd));
+			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, regionCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
 		String sql = this.getSearchMpiQuery(true);		
 		return queryManager.selectListBySql(sql, params, MpiOffReq.class, 0, 0);
 	}	

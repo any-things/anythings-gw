@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import xyz.anythings.gw.LogisGwConfigConstants;
+import xyz.anythings.gw.MwConfigConstants;
 import xyz.anythings.gw.model.MessageObject;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.AnyConstants;
@@ -36,7 +36,7 @@ public class MwCommon {
 	 * @return
 	 */
 	protected boolean isMessageLoggingEnabled(Long domainId) {
-		return 	ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisGwConfigConstants.MW_RECEIVE_LOGGING_ENABLED, AnyConstants.FALSE_STRING));
+		return 	ValueUtil.toBoolean(SettingUtil.getValue(domainId, MwConfigConstants.MW_RECEIVE_LOGGING_ENABLED, AnyConstants.FALSE_STRING));
 	}
 	
 	/**

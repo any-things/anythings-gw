@@ -3,11 +3,11 @@ package xyz.anythings.gw;
 import xyz.anythings.base.LogisConstants;
 
 /**
- * 물류 게이트웨이 모듈 상수 정의 
+ * 미들웨어 모듈 상수 정의 
  * 
  * @author shortstop
  */
-public class LogisGwConstants extends LogisConstants {		
+public class MwConstants extends LogisConstants {		
 	
 	/**
 	 * Indicator의 버튼에 대한 작업 수행 - 확정 처리

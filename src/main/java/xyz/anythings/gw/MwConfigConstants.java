@@ -3,11 +3,11 @@ package xyz.anythings.gw;
 import xyz.anythings.base.LogisConfigConstants;
 
 /**
- * 물류 게이트웨이 모듈 설정 키 관련 상수 정의
+ * 미들웨어 모듈 설정 키 관련 상수 정의
  *
  * @author shortstop
  */
-public class LogisGwConfigConstants extends LogisConfigConstants {
+public class MwConfigConstants extends LogisConfigConstants {
 	
 	/**
 	 * 메시징 미들웨어와 통신할 큐 이름
@@ -16,7 +16,11 @@ public class LogisGwConfigConstants extends LogisConfigConstants {
 	/**
 	 * 미들웨어 메시지 로깅 활성화 여부
 	 */
-	public static final String MW_RECEIVE_LOGGING_ENABLED = "mw.receive.logging.enabled";
+	public static final String MW_LOG_RCV_MSG_ENABLED = "mw.log.receive.msg.enabled";
+	/**
+	 * 미들웨어 설비 이벤트 로깅할 지 여부
+	 */
+	public static final String MW_LOG_EQUIP_STATUS_ENABLED = "mw.log.equip.status.enabled";
 
 	/**********************************************************************
 	 * 								1. 전체 설정 
