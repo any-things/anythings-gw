@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.entity.Gateway;
-import xyz.anythings.base.entity.MPI;
+import xyz.anythings.base.entity.Indicator;
 import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.GatewayDepRequest;
 import xyz.anythings.gw.model.GatewayInitResponse;
@@ -38,7 +38,7 @@ import xyz.elidom.sys.util.ValueUtil;
  * @author shortstop
  */
 @Component
-public class MpiSendService extends AbstractQueryService {
+public class IndSendService extends AbstractQueryService {
 
 	/**
 	 * 미들웨어로 메시지를 전송하기 위한 유틸리티
@@ -54,13 +54,13 @@ public class MpiSendService extends AbstractQueryService {
 	 * 여러 표시기 한꺼번에 재고 실사용 점등 요청
 	 * 
 	 * @param domainId
-	 * @param stockMpiOnList
+	 * @param stockIndOnList
 	 */
-	public void requestStockMpiOn(Long domainId, Map<String, List<IndicatorOnInformation>> stockMpiOnList) {
-		if (ValueUtil.isNotEmpty(stockMpiOnList)) {
-			stockMpiOnList.forEach((gwPath, stockOnList) -> {
+	public void requestStockIndOn(Long domainId, Map<String, List<IndicatorOnInformation>> stockIndOnList) {
+		if (ValueUtil.isNotEmpty(stockIndOnList)) {
+			stockIndOnList.forEach((gwPath, stockOnList) -> {
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
-				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(MwConstants.JOB_TYPE_DPS, MwConstants.MPI_ACTION_TYPE_STOCK, stockOnList));
+				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(MwConstants.JOB_TYPE_DPS, MwConstants.IND_ACTION_TYPE_STOCK, stockOnList));
 			});
 		}
 	}
@@ -71,13 +71,13 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param domainId
 	 * @param jobType
 	 * @param actionType
-	 * @param mpiOnForPickList - key : gwPath, value : mpiOnInfo 
+	 * @param indOnForPickList - key : gwPath, value : indOnInfo 
 	 */
-	public void requestMpisOn(Long domainId, String jobType, String actionType, Map<String, List<IndicatorOnInformation>> mpiOnForPickList) {
-		if (ValueUtil.isNotEmpty(mpiOnForPickList)) {
-			mpiOnForPickList.forEach((gwPath, mpiOnList) -> {
+	public void requestIndsOn(Long domainId, String jobType, String actionType, Map<String, List<IndicatorOnInformation>> indOnForPickList) {
+		if (ValueUtil.isNotEmpty(indOnForPickList)) {
+			indOnForPickList.forEach((gwPath, indOnList) -> {
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
-				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, actionType, mpiOnList));
+				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, actionType, indOnList));
 			});
 		}
 	}
@@ -87,17 +87,16 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param actionType
-	 * @param mpiOnForPickList - key : gwPath, value : mpiOnInfo 
+	 * @param indOnForPickList - key : gwPath, value : indOnInfo 
 	 */
-	public void requestMpisInspectOn(Long domainId, String jobType, Map<String, List<IndicatorOnInformation>> mpiOnForPickList) {
-		if (ValueUtil.isNotEmpty(mpiOnForPickList)) {
-			mpiOnForPickList.forEach((gwPath, mpiOnList) -> {
+	public void requestIndsInspectOn(Long domainId, String jobType, Map<String, List<IndicatorOnInformation>> indOnForPickList) {
+		if (ValueUtil.isNotEmpty(indOnForPickList)) {
+			indOnForPickList.forEach((gwPath, indOnList) -> {
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
-				for(IndicatorOnInformation indOnInfo : mpiOnList) {
-					indOnInfo.setBtnMode(IndicatorSetting.MPI_BUTTON_MODE_STOP);
+				for(IndicatorOnInformation indOnInfo : indOnList) {
+					indOnInfo.setBtnMode(IndicatorSetting.IND_BUTTON_MODE_STOP);
 				}
-				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_INSPECT, mpiOnList));
+				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.IND_ACTION_TYPE_INSPECT, indOnList));
 			});
 		}
 	}
@@ -107,14 +106,14 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestPickMpiOn(Long domainId, String jobType, String mpiCd, String bizId, String color, Integer boxQty, Integer eaQty) {
-		this.requestCommonMpiOn(domainId, jobType, mpiCd, bizId, MwConstants.MPI_ACTION_TYPE_PICK, color, boxQty, eaQty);
+	public void requestPickIndOn(Long domainId, String jobType, String indCd, String bizId, String color, Integer boxQty, Integer eaQty) {
+		this.requestCommonIndOn(domainId, jobType, indCd, bizId, MwConstants.IND_ACTION_TYPE_PICK, color, boxQty, eaQty);
 	}
 	
 	/**
@@ -122,14 +121,14 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestInspectMpiOn(Long domainId, String jobType, String mpiCd, String bizId, String color, Integer boxQty, Integer eaQty) {
-		this.requestCommonMpiOn(domainId, jobType, mpiCd, bizId, MwConstants.MPI_ACTION_TYPE_INSPECT, color, boxQty, eaQty);
+	public void requestInspectIndOn(Long domainId, String jobType, String indCd, String bizId, String color, Integer boxQty, Integer eaQty) {
+		this.requestCommonIndOn(domainId, jobType, indCd, bizId, MwConstants.IND_ACTION_TYPE_INSPECT, color, boxQty, eaQty);
 	}
 	
 	/**
@@ -137,16 +136,16 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param actionType
 	 * @param color
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestCommonMpiOn(Long domainId, String jobType, String mpiCd, String bizId, String actionType, String color, Integer boxQty, Integer eaQty) {
-		String gwPath = MPI.findGatewayPath(domainId, mpiCd);
-		requestCommonMpiOn(domainId, jobType, mpiCd, gwPath, bizId, actionType, color, boxQty, eaQty);
+	public void requestCommonIndOn(Long domainId, String jobType, String indCd, String bizId, String actionType, String color, Integer boxQty, Integer eaQty) {
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		requestCommonIndOn(domainId, jobType, indCd, gwPath, bizId, actionType, color, boxQty, eaQty);
 	}
 	
 	/**
@@ -154,7 +153,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param gwPath
 	 * @param bizId
 	 * @param actionType
@@ -162,11 +161,11 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestCommonMpiOn(Long domainId, String jobType, String mpiCd, String gwPath, String bizId, String actionType, String color, Integer boxQty, Integer eaQty) {
+	public void requestCommonIndOn(Long domainId, String jobType, String indCd, String gwPath, String bizId, String actionType, String color, Integer boxQty, Integer eaQty) {
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(mpiCd);
+		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
 		indOnInfo.setColor(color);
 		indOnInfo.setOrgBoxQty(boxQty);
@@ -182,25 +181,25 @@ public class MpiSendService extends AbstractQueryService {
 	 * 표시기 하나에 대한 소등 요청 
 	 * 
 	 * @param domainId
-	 * @param mpiCd
+	 * @param indCd
 	 * @param forceOff
 	 */
-	public void requestMpiOff(Long domainId, String mpiCd, boolean forceOff) {
-		String gwPath = MPI.findGatewayPath(domainId, mpiCd);
-		IndicatorOffRequest mpiOff = new IndicatorOffRequest();
-		mpiOff.setIndOff(ValueUtil.newStringList(mpiCd));
-		mpiOff.setForceFlag(forceOff);
-		this.mwMsgSender.sendRequest(domainId, gwPath, mpiOff);
+	public void requestIndOff(Long domainId, String indCd, boolean forceOff) {
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		IndicatorOffRequest indOff = new IndicatorOffRequest();
+		indOff.setIndOff(ValueUtil.newStringList(indCd));
+		indOff.setForceFlag(forceOff);
+		this.mwMsgSender.sendRequest(domainId, gwPath, indOff);
 	}
 	
 	/**
 	 * 표시기 하나에 대한 소등 요청 
 	 * 
 	 * @param domainId
-	 * @param mpiCd
+	 * @param indCd
 	 */
-	public void requestMpiOff(Long domainId, String mpiCd) {
-		this.requestMpiOff(domainId, mpiCd, false);
+	public void requestIndOff(Long domainId, String indCd) {
+		this.requestIndOff(domainId, indCd, false);
 	}
 	
 	/**
@@ -210,10 +209,10 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param gwPathList
 	 * @param forceOff
 	 */
-	public void requestMpiOff(Long domainId, List<String> gwPathList, boolean forceOff) {
+	public void requestIndOff(Long domainId, List<String> gwPathList, boolean forceOff) {
 		if(ValueUtil.isNotEmpty(gwPathList)) {
 			for(String gwPath : gwPathList) {
-				this.requestMpiOff(domainId, gwPath, Gateway.mpiCdList(domainId, gwPath), forceOff);
+				this.requestIndOff(domainId, gwPath, Gateway.indCdList(domainId, gwPath), forceOff);
 			}
 		}
 	}
@@ -223,17 +222,17 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param gwPath
-	 * @param mpiCdList
+	 * @param indCdList
 	 * @param forceOff 강제 소등 여부
 	 */
-	public void requestMpiOff(Long domainId, String gwPath, List<String> mpiCdList, boolean forceOff) {
-		if (ValueUtil.isNotEmpty(mpiCdList)) {
-			IndicatorOffRequest mpiOff = new IndicatorOffRequest();
-			mpiOff.setIndOff(mpiCdList);
-			mpiOff.setForceFlag(forceOff);
+	public void requestIndOff(Long domainId, String gwPath, List<String> indCdList, boolean forceOff) {
+		if (ValueUtil.isNotEmpty(indCdList)) {
+			IndicatorOffRequest indOff = new IndicatorOffRequest();
+			indOff.setIndOff(indCdList);
+			indOff.setForceFlag(forceOff);
 			// 현재는 forceOff와 endOff가 동일값을 가짐
-			mpiOff.setEndOffFlag(forceOff);
-			this.mwMsgSender.sendRequest(domainId, gwPath, mpiOff);
+			indOff.setEndOffFlag(forceOff);
+			this.mwMsgSender.sendRequest(domainId, gwPath, indOff);
 		}
 	}
 	
@@ -241,74 +240,74 @@ public class MpiSendService extends AbstractQueryService {
 	 * 호기별 표시기 Off 요청 전송 
 	 * 
 	 * @param domainId
-	 * @param regionCd 호기 코드
+	 * @param rackCd 호기 코드
 	 * @param forceOff 강제 소등 여부
 	 */
-	public void requestMpiOffByRegion(Long domainId, String regionCd, boolean forceOff) {
+	public void requestIndOffByRack(Long domainId, String rackCd, boolean forceOff) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<IndOffReq> mpiList = this.searchMpiByWorkZone(domainId, regionCd, null);
+		List<IndOffReq> indList = this.searchIndByStation(domainId, rackCd, null);
 		// 2. 표시기별 소등 요청
-		this.requestOffByMpiList(domainId, mpiList, forceOff);
+		this.requestOffByIndList(domainId, indList, forceOff);
 	}
 	
 	/**
 	 * 호기 및 장비 작업 존 별 표시기 Off 요청 전송 
 	 * 
 	 * @param domainId
-	 * @param regionCd
+	 * @param rackCd
 	 * @param equipZoneCd
 	 * @param sideCd
 	 */
-	public void requestMpiOffByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
+	public void requestIndOffByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<IndOffReq> mpiList = this.searchMpiByEquipZone(domainId, regionCd, equipZoneCd, sideCd);
+		List<IndOffReq> indList = this.searchIndByEquipZone(domainId, rackCd, equipZoneCd, sideCd);
 		// 2. 표시기별 소등 요청
-		this.requestOffByMpiList(domainId, mpiList, false);
+		this.requestOffByIndList(domainId, indList, false);
 	}
 	
 	/**
-	 * 호기 및 작업 존 별 표시기 Off 요청 전송 
+	 * 호기 및 작업 스테이션 별 표시기 Off 요청 전송 
 	 * 
 	 * @param domainId
-	 * @param regionCd
+	 * @param rackCd
 	 * @param zoneCd
 	 */
-	public void requestMpiOffByWorkZone(Long domainId, String regionCd, String zoneCd) {
+	public void requestIndOffByStation(Long domainId, String rackCd, String zoneCd) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<IndOffReq> mpiList = this.searchMpiByWorkZone(domainId, regionCd, zoneCd);
+		List<IndOffReq> indList = this.searchIndByStation(domainId, rackCd, zoneCd);
 		// 2. 표시기별 소등 요청
-		this.requestOffByMpiList(domainId, mpiList, false);
+		this.requestOffByIndList(domainId, indList, false);
 	}
 	
 	/**
-	 * MPI List로 표시기 Off
+	 * 표시기 리스트로 표시기 Off
 	 * 
 	 * @param domainId
-	 * @param mpiList
+	 * @param indList
 	 * @param forceOff 강제 소등 여부 
 	 */
-	public void requestOffByMpiList(Long domainId, List<IndOffReq> mpiList, boolean forceOff) {
+	public void requestOffByIndList(Long domainId, List<IndOffReq> indList, boolean forceOff) {
 		// 1. 게이트웨이 별로 표시기 리스트를 보내서 소등 요청을 한다.
-		Map<String, List<String>> mpisByGwPath = new HashMap<String, List<String>>();
+		Map<String, List<String>> indsByGwPath = new HashMap<String, List<String>>();
 		String prevGwPath = null;
 		
-		for(IndOffReq mpi : mpiList) {
-			String gwPath = mpi.getGwPath();
+		for(IndOffReq indOff : indList) {
+			String gwPath = indOff.getGwPath();
 			
 			if(ValueUtil.isNotEqual(gwPath, prevGwPath)) {
-				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getIndCd()));
+				indsByGwPath.put(gwPath, ValueUtil.newStringList(indOff.getIndCd()));
 				prevGwPath = gwPath;
 			} else {
-				mpisByGwPath.get(gwPath).add(mpi.getIndCd());
+				indsByGwPath.get(gwPath).add(indOff.getIndCd());
 			}
 		}
 		
-		// 2. 게이트웨이 별로 MPI 코드 리스트로 소등 요청 
-		Iterator<String> gwIter = mpisByGwPath.keySet().iterator();
+		// 2. 게이트웨이 별로 표시기 코드 리스트로 소등 요청 
+		Iterator<String> gwIter = indsByGwPath.keySet().iterator();
 		while(gwIter.hasNext()) {
 			String gwPath = gwIter.next();
-			List<String> gwMpiList = mpisByGwPath.get(gwPath);
-			this.requestMpiOff(domainId, gwPath, gwMpiList, forceOff);
+			List<String> gwIndList = indsByGwPath.get(gwPath);
+			this.requestIndOff(domainId, gwPath, gwIndList, forceOff);
 		}
 	}
 	
@@ -321,18 +320,18 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param finalEnd 최종 완료 (End End 표시 후 Fullbox까지 마쳤는지) 여부
 	 */
-	public void requestMpiEndDisplay(Long domainId, String jobType, String mpiId, String bizId, boolean finalEnd) {
-		String gwPath = MPI.findGatewayPath(domainId, mpiId);
+	public void requestIndEndDisplay(Long domainId, String jobType, String indCd, String bizId, boolean finalEnd) {
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(mpiId);
+		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
 		indOnInfo.setEndFullBox(!finalEnd);
-		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.MPI_BIZ_FLAG_END, ValueUtil.toList(indOnInfo));
+		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.IND_BIZ_FLAG_END, ValueUtil.toList(indOnInfo));
 		indOnReq.setReadOnly(finalEnd);
 		this.mwMsgSender.send(domainId, property, indOnReq);		
 	}
@@ -342,10 +341,10 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 */
-	public void requestMpiNoBoxDisplay(Long domainId, String jobType, String mpiId) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, mpiId, MwConstants.MPI_ACTION_TYPE_NOBOX, false, null, null, null);
+	public void requestIndNoBoxDisplay(Long domainId, String jobType, String indCd) {
+		this.requestIndDisplay(domainId, jobType, indCd, indCd, MwConstants.IND_ACTION_TYPE_NOBOX, false, null, null, null);
 	}
 	
 	/**
@@ -353,10 +352,10 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 */
-	public void requestMpiErrBoxDisplay(Long domainId, String jobType, String mpiId) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, mpiId, MwConstants.MPI_ACTION_TYPE_ERRBOX, false, null, null, null);
+	public void requestIndErrBoxDisplay(Long domainId, String jobType, String indCd) {
+		this.requestIndDisplay(domainId, jobType, indCd, indCd, MwConstants.IND_ACTION_TYPE_ERRBOX, false, null, null, null);
 	}
 	
 	/**
@@ -364,12 +363,12 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param pickEaQty
 	 */
-	public void requestMpiDisplayOnly(Long domainId, String jobType, String mpiId, String bizId, Integer pickEaQty) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, bizId, MwConstants.MPI_ACTION_TYPE_DISPLAY, true, null, null, pickEaQty);
+	public void requestIndDisplayOnly(Long domainId, String jobType, String indCd, String bizId, Integer pickEaQty) {
+		this.requestIndDisplay(domainId, jobType, indCd, bizId, MwConstants.IND_ACTION_TYPE_DISPLAY, true, null, null, pickEaQty);
 	}
 	
 	/**
@@ -377,14 +376,14 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param firstSegQty
 	 * @param secondSegQty
 	 * @param thirdSegQty
 	 */
-	public void requestMpiSegmentDisplay(Long domainId, String jobType, String mpiId, String bizId, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
-		this.requestMpiDisplay(domainId, jobType, mpiId, bizId, MwConstants.MPI_ACTION_TYPE_DISPLAY, false, firstSegQty, secondSegQty, thirdSegQty);
+	public void requestIndSegmentDisplay(Long domainId, String jobType, String indCd, String bizId, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
+		this.requestIndDisplay(domainId, jobType, indCd, bizId, MwConstants.IND_ACTION_TYPE_DISPLAY, false, firstSegQty, secondSegQty, thirdSegQty);
 	}
 	
 	/**
@@ -392,7 +391,7 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param displayActionType
 	 * @param readOnly
@@ -400,12 +399,12 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param secondSegQty
 	 * @param thirdSegQty
 	 */
-	public void requestMpiDisplay(Long domainId, String jobType, String mpiId, String bizId, String displayActionType, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
-		String gwPath = MPI.findGatewayPath(domainId, mpiId);
+	public void requestIndDisplay(Long domainId, String jobType, String indCd, String bizId, String displayActionType, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(mpiId);
+		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
 		indOnInfo.setOrgRelay(firstSegQty);
 		indOnInfo.setOrgBoxQty(secondSegQty);
@@ -421,21 +420,21 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param displayActionType
-	 * @param readOnly
 	 * @param segRole
+	 * @param readOnly
 	 * @param firstSegQty
 	 * @param secondSegQty
 	 * @param thirdSegQty
 	 */
-	public void requestMpiDisplay(Long domainId, String jobType, String mpiId, String bizId, String displayActionType, String[] segRole, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
-		String gwPath = MPI.findGatewayPath(domainId, mpiId);
+	public void requestIndDisplay(Long domainId, String jobType, String indCd, String bizId, String displayActionType, String[] segRole, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(mpiId);
+		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
 		indOnInfo.setSegRole(segRole);
 		indOnInfo.setOrgRelay(firstSegQty);
@@ -453,22 +452,22 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param domainId
 	 * @param gwPath
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param accumQty
 	 * @param pickedQty
 	 */
-	public void requestMpiDisplayAccumQty(Long domainId, String gwPath, String jobType, String mpiId, String bizId, Integer accumQty, Integer pickedQty) {
+	public void requestIndDisplayAccumQty(Long domainId, String gwPath, String jobType, String indCd, String bizId, Integer accumQty, Integer pickedQty) {
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(mpiId);
+		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { IndicatorSetting.MPI_SEGMENT_ROLE_RELAY_SEQ, IndicatorSetting.MPI_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { IndicatorSetting.IND_SEGMENT_ROLE_RELAY_SEQ, IndicatorSetting.IND_SEGMENT_ROLE_PCS });
 		indOnInfo.setOrgAccmQty(accumQty);
 		indOnInfo.setOrgEaQty(pickedQty);
 		indOnList.add(indOnInfo);
-		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
+		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
 		indOnReq.setReadOnly(true);
 		this.mwMsgSender.send(domainId, property, indOnReq);
 	}
@@ -478,14 +477,14 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param accumQty
 	 * @param pickedQty
 	 */
-	public void requestMpiDisplayAccumQty(Long domainId, String jobType, String mpiId, String bizId, Integer accumQty, Integer pickedQty) {
-		String gwPath = MPI.findGatewayPath(domainId, mpiId);
-		this.requestMpiDisplayAccumQty(domainId, gwPath, jobType, mpiId, bizId, accumQty, pickedQty);
+	public void requestIndDisplayAccumQty(Long domainId, String jobType, String indCd, String bizId, Integer accumQty, Integer pickedQty) {
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		this.requestIndDisplayAccumQty(domainId, gwPath, jobType, indCd, bizId, accumQty, pickedQty);
 	}
 	
 	/**
@@ -493,12 +492,12 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiId
+	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 */
-	public void requestFullbox(Long domainId, String jobType, String mpiId, String bizId, String color) {
-		this.requestCommonMpiOn(domainId, jobType, mpiId, bizId, MwConstants.MPI_BIZ_FLAG_FULL, color, 0, 0);
+	public void requestFullbox(Long domainId, String jobType, String indCd, String bizId, String color) {
+		this.requestCommonIndOn(domainId, jobType, indCd, bizId, MwConstants.IND_BIZ_FLAG_FULL, color, 0, 0);
 	}
 	
 	/**
@@ -506,12 +505,12 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param displayStr
 	 */
-	public void requestShowString(Long domainId, String jobType, String mpiCd, String bizId, String displayStr) {
-		this.requestShowString(domainId, jobType, null, mpiCd, bizId, displayStr);
+	public void requestShowString(Long domainId, String jobType, String indCd, String bizId, String displayStr) {
+		this.requestShowString(domainId, jobType, null, indCd, bizId, displayStr);
 	}
 
 	/**
@@ -520,23 +519,23 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param domainId
 	 * @param jobType
 	 * @param gwPath
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param displayStr
 	 */
-	public void requestShowString(Long domainId, String jobType, String gwPath, String mpiCd, String bizId, String displayStr) {
+	public void requestShowString(Long domainId, String jobType, String gwPath, String indCd, String bizId, String displayStr) {
 		if(ValueUtil.isEmpty(gwPath)) {
-			gwPath = MPI.findGatewayPath(domainId, mpiCd);
+			gwPath = Indicator.findGatewayPath(domainId, indCd);
 		}
 		
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(mpiCd);
+		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
 		indOnInfo.setViewStr(displayStr);
 		indOnList.add(indOnInfo);
-		this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_STR_SHOW, indOnList));
+		this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.IND_ACTION_TYPE_STR_SHOW, indOnList));
 	}
 
 	/**
@@ -544,13 +543,13 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param leftSideFlag 왼쪽 로케이션 표시용인지 여부
 	 * @param rightQty
 	 */
-	public void requestDisplayDirectionAndQty(Long domainId, String jobType, String mpiCd, String bizId, boolean leftSideFlag, Integer rightQty) {		
-		requestDisplayLeftStringRightQty(domainId, jobType, mpiCd, bizId, leftSideFlag ? " L " : " R ", rightQty);
+	public void requestDisplayDirectionAndQty(Long domainId, String jobType, String indCd, String bizId, boolean leftSideFlag, Integer rightQty) {		
+		requestDisplayLeftStringRightQty(domainId, jobType, indCd, bizId, leftSideFlag ? " L " : " R ", rightQty);
 	}
 	
 	/**
@@ -558,23 +557,23 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param leftStr
 	 * @param rightQty
 	 */
-	public void requestDisplayLeftStringRightQty(Long domainId, String jobType, String mpiCd, String bizId, String leftStr, Integer rightQty) {		
-		String gwPath = MPI.findGatewayPath(domainId, mpiCd);
+	public void requestDisplayLeftStringRightQty(Long domainId, String jobType, String indCd, String bizId, String leftStr, Integer rightQty) {		
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(mpiCd);
+		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { IndicatorSetting.MPI_SEGMENT_ROLE_STR, IndicatorSetting.MPI_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { IndicatorSetting.IND_SEGMENT_ROLE_STR, IndicatorSetting.IND_SEGMENT_ROLE_PCS });
 		indOnInfo.setViewStr(leftStr);
 		indOnInfo.setOrgEaQty(rightQty);
 		indOnList.add(indOnInfo);
-		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
+		IndicatorOnRequest indOnReq = new IndicatorOnRequest(jobType, MwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
 		indOnReq.setReadOnly(true);
 		this.mwMsgSender.send(domainId, property, indOnReq);
 	}
@@ -584,26 +583,27 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param leftQty
 	 * @param rightQty
 	 */
-	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String mpiCd, String bizId, Integer leftQty, Integer rightQty) {
+	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String indCd, String bizId, Integer leftQty, Integer rightQty) {
 		StringBuffer showStr = new StringBuffer();
+		
 		if(leftQty != null) {
-			showStr.append(MwConstants.MPI_LEFT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(leftQty), 2));
+			showStr.append(MwConstants.IND_LEFT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(leftQty), 2));
 		} else {
 			showStr.append("   ");
 		}
 		
 		if(rightQty != null) {
-			showStr.append(MwConstants.MPI_RIGHT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(rightQty), 2));
+			showStr.append(MwConstants.IND_RIGHT_SEGMENT).append(StringUtils.leftPad(ValueUtil.toString(rightQty), 2));
 		} else {
 			showStr.append("   ");
 		}
 		
-		this.requestShowString(domainId, jobType, mpiCd, bizId, showStr.toString());
+		this.requestShowString(domainId, jobType, indCd, bizId, showStr.toString());
 	}
 
 	/**********************************************************************
@@ -679,18 +679,18 @@ public class MpiSendService extends AbstractQueryService {
 	 * 
 	 * @param domainId
 	 * @param gwChannel 게이트웨이 구분 채널
-	 * @param mpiVersion 표시기 펌웨어 버전 
-	 * @param mpiFwDownloadUrl 표시기 펌웨어 다운로드 URL
+	 * @param indVersion 표시기 펌웨어 버전 
+	 * @param indFwDownloadUrl 표시기 펌웨어 다운로드 URL
 	 * @param filename 파일명
 	 * @param forceFlag 강제 업데이트 여부
 	 */
-	public void deployMpiFirmware(Long domainId, String gwChannel, String mpiVersion, String mpiFwDownloadUrl, String filename, Boolean forceFlag) {
-		IndicatorDepRequest mpiDeploy = new IndicatorDepRequest();
-		mpiDeploy.setVersion(mpiVersion);
-		mpiDeploy.setIndUrl(mpiFwDownloadUrl);
-		mpiDeploy.setFilename(filename);
-		mpiDeploy.setForceFlag(forceFlag);
-		this.mwMsgSender.sendRequest(domainId, gwChannel, mpiDeploy);
+	public void deployIndFirmware(Long domainId, String gwChannel, String indVersion, String indFwDownloadUrl, String filename, Boolean forceFlag) {
+		IndicatorDepRequest indDeploy = new IndicatorDepRequest();
+		indDeploy.setVersion(indVersion);
+		indDeploy.setIndUrl(indFwDownloadUrl);
+		indDeploy.setFilename(filename);
+		indDeploy.setForceFlag(forceFlag);
+		this.mwMsgSender.sendRequest(domainId, gwChannel, indDeploy);
 	}
 	
 	/**********************************************************************
@@ -701,14 +701,14 @@ public class MpiSendService extends AbstractQueryService {
 	 * 표시기 LED 점등 
 	 * 
 	 * @param domainId
-	 * @param mpiCd
+	 * @param indCd
 	 * @param ledBarBrightness
 	 */
-	public void requestLedOn(Long domainId, String mpiCd, Integer ledBarBrightness) {
+	public void requestLedOn(Long domainId, String indCd, Integer ledBarBrightness) {
 		LedOnRequest ledOnReq = new LedOnRequest();
-		ledOnReq.setId(mpiCd);
+		ledOnReq.setId(indCd);
 		ledOnReq.setLedBarBrtns(ledBarBrightness);
-		String gwPath = MPI.findGatewayPath(domainId, mpiCd);
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		this.mwMsgSender.send(domainId, property, ledOnReq);
 	}
@@ -717,12 +717,12 @@ public class MpiSendService extends AbstractQueryService {
 	 * 표시기 LED 소등 
 	 * 
 	 * @param domainId
-	 * @param mpiCd
+	 * @param indCd
 	 */
-	public void requestLedOff(Long domainId, String mpiCd) {
+	public void requestLedOff(Long domainId, String indCd) {
 		LedOffRequest ledOffReq = new LedOffRequest();
-		ledOffReq.setId(mpiCd);
-		String gwPath = MPI.findGatewayPath(domainId, mpiCd);
+		ledOffReq.setId(indCd);
+		String gwPath = Indicator.findGatewayPath(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		this.mwMsgSender.send(domainId, property, ledOffReq);		
 	}
@@ -731,36 +731,36 @@ public class MpiSendService extends AbstractQueryService {
 	 * 표시기 LED 리스트 점등 
 	 * 
 	 * @param domainId
-	 * @param mpiList
-	 * @param ledBarBrightness
+	 * @param indList
+	 * @param ledBrightness
 	 */
-	public void requestLedListOn(Long domainId, List<IndOffReq> mpiList, Integer ledBarBrightness) {
+	public void requestLedListOn(Long domainId, List<IndOffReq> indList, Integer ledBrightness) {
 		// 1. 게이트웨이 별로 표시기 리스트를 보내서 점등 요청을 한다.
-		Map<String, List<String>> mpisByGwPath = new HashMap<String, List<String>>();
+		Map<String, List<String>> indsByGwPath = new HashMap<String, List<String>>();
 		String prevGwPath = null;
 		
-		for(IndOffReq mpi : mpiList) {
-			String gwPath = mpi.getGwPath();
+		for(IndOffReq indOff : indList) {
+			String gwPath = indOff.getGwPath();
 			
 			if(ValueUtil.isNotEqual(gwPath, prevGwPath)) {
-				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getIndCd()));
+				indsByGwPath.put(gwPath, ValueUtil.newStringList(indOff.getIndCd()));
 				prevGwPath = gwPath;
 			} else {
-				mpisByGwPath.get(gwPath).add(mpi.getIndCd());
+				indsByGwPath.get(gwPath).add(indOff.getIndCd());
 			}
 		}
 		
-		// 2. 게이트웨이 별로 MPI 코드 리스트로 소등 요청
-		Iterator<String> gwPathIter = mpisByGwPath.keySet().iterator();
+		// 2. 게이트웨이 별로 표시기 코드 리스트로 소등 요청
+		Iterator<String> gwPathIter = indsByGwPath.keySet().iterator();
 		while(gwPathIter.hasNext()) {
 			String gwPath = gwPathIter.next();
-			List<String> mpiCdList = mpisByGwPath.get(gwPath);
+			List<String> indCdList = indsByGwPath.get(gwPath);
 			
 			// TODO 아래 부분을 한번에 보내도록 수정
-			for(String mpiCd : mpiCdList) {
+			for(String indCd : indCdList) {
 				LedOnRequest ledOnReq = new LedOnRequest();
-				ledOnReq.setId(mpiCd);
-				ledOnReq.setLedBarBrtns(ledBarBrightness);
+				ledOnReq.setId(indCd);
+				ledOnReq.setLedBarBrtns(ledBrightness);
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 				this.mwMsgSender.send(domainId, property, ledOnReq);			
 			}			
@@ -771,34 +771,34 @@ public class MpiSendService extends AbstractQueryService {
 	 * 표시기 LED 리스트 소등 
 	 * 
 	 * @param domainId
-	 * @param mpiList
+	 * @param indList
 	 */
-	public void requestLedListOff(Long domainId, List<IndOffReq> mpiList) {
+	public void requestLedListOff(Long domainId, List<IndOffReq> indList) {
 		// 1. 게이트웨이 별로 표시기 리스트를 보내서 점등 요청을 한다.
-		Map<String, List<String>> mpisByGwPath = new HashMap<String, List<String>>();
+		Map<String, List<String>> indsByGwPath = new HashMap<String, List<String>>();
 		String prevGwPath = null;
 		
-		for(IndOffReq mpi : mpiList) {
-			String gwPath = mpi.getGwPath();
+		for(IndOffReq indOff : indList) {
+			String gwPath = indOff.getGwPath();
 			
 			if(ValueUtil.isNotEqual(gwPath, prevGwPath)) {
-				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getIndCd()));
+				indsByGwPath.put(gwPath, ValueUtil.newStringList(indOff.getIndCd()));
 				prevGwPath = gwPath;
 			} else {
-				mpisByGwPath.get(gwPath).add(mpi.getIndCd());
+				indsByGwPath.get(gwPath).add(indOff.getIndCd());
 			}
 		}
 		
-		// 2. 게이트웨이 별로 MPI 코드 리스트로 소등 요청
-		Iterator<String> gwPathIter = mpisByGwPath.keySet().iterator();
+		// 2. 게이트웨이 별로 표시기 코드 리스트로 소등 요청
+		Iterator<String> gwPathIter = indsByGwPath.keySet().iterator();
 		while(gwPathIter.hasNext()) {
 			String gwPath = gwPathIter.next();
-			List<String> mpiCdList = mpisByGwPath.get(gwPath);
+			List<String> indCdList = indsByGwPath.get(gwPath);
 			
 			// TODO 아래 부분을 한번에 보내도록 수정
-			for(String mpiCd : mpiCdList) {
+			for(String indCd : indCdList) {
 				LedOffRequest ledOnReq = new LedOffRequest();
-				ledOnReq.setId(mpiCd);
+				ledOnReq.setId(indCd);
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 				this.mwMsgSender.send(domainId, property, ledOnReq);			
 			}			
@@ -813,15 +813,15 @@ public class MpiSendService extends AbstractQueryService {
 	 * 호기 및 장비 작업 존 별 게이트웨이 Path 정보 조회
 	 * 
 	 * @param domainId
-	 * @param regionCd
+	 * @param rackCd
 	 * @param equipZoneCd
 	 * @param sideCd
 	 * @return
 	 */
-	public List<String> searchGwByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
+	public List<String> searchGwByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
 		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, regionCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
-		String sql = this.getSearchMpiQuery(false);
+			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
+		String sql = this.getSearchIndQuery(false);
 		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
 	}
 	
@@ -829,15 +829,15 @@ public class MpiSendService extends AbstractQueryService {
 	 * 호기 및 장비 존 코드 사이드 코드로 표시기 리스트를 조회  
 	 * 
 	 * @param domainId
-	 * @param regionCd
+	 * @param rackCd
 	 * @param equipZoneCd
 	 * @param sideCd
 	 * @return
 	 */
-	public List<IndOffReq> searchMpiByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
+	public List<IndOffReq> searchIndByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
 		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, regionCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
-		String sql = this.getSearchMpiQuery(true);		
+			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
+		String sql = this.getSearchIndQuery(true);		
 		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
 	}	
 	
@@ -845,14 +845,14 @@ public class MpiSendService extends AbstractQueryService {
 	 * 호기 및 호기 작업 존 별 게이트웨이 Path 리스트 조회 
 	 * 
 	 * @param domainId
-	 * @param regionCd
+	 * @param rackCd
 	 * @param zoneCd
 	 * @return
 	 */
-	public List<String> searchGwByWorkZone(Long domainId, String regionCd, String zoneCd) {
+	public List<String> searchGwByStation(Long domainId, String rackCd, String zoneCd) {
 		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,zoneCd", domainId, regionCd, zoneCd);
-		String sql = this.getSearchMpiQuery(false);
+			ValueUtil.newMap("domainId,regionCd,zoneCd", domainId, rackCd, zoneCd);
+		String sql = this.getSearchIndQuery(false);
 		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
 	}
 	
@@ -860,50 +860,51 @@ public class MpiSendService extends AbstractQueryService {
 	 * 호기 및 작업 존 코드로 표시기 리스트를 조회
 	 * 
 	 * @param domainId
-	 * @param regionCd
+	 * @param rackCd
 	 * @param zoneCd
 	 * @return
 	 */
-	public List<IndOffReq> searchMpiByWorkZone(Long domainId, String regionCd, String zoneCd) {
+	public List<IndOffReq> searchIndByStation(Long domainId, String rackCd, String zoneCd) {
 		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,zoneCd", domainId, regionCd, zoneCd);
-		String sql = this.getSearchMpiQuery(true);
+			ValueUtil.newMap("domainId,regionCd,zoneCd", domainId, rackCd, zoneCd);
+		String sql = this.getSearchIndQuery(true);
 		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
 	}
 	
 	/**
 	 * 표시기 혹은 게이트웨이 조회 쿼리 
 	 * 
-	 * @param isMpiQuery 표시기 조회 쿼리 인지 게이트웨이 조회 쿼리 인지...
+	 * @param isIndQuery 표시기 조회 쿼리 인지 게이트웨이 조회 쿼리 인지...
 	 * @return
 	 */
-	public String getSearchMpiQuery(boolean isMpiQuery) {
+	public String getSearchIndQuery(boolean isIndQuery) {
 		StringBuffer sql = new StringBuffer();
 		return 
 		sql.append(" SELECT")
-		   .append(isMpiQuery ? "	L.MPI_CD, G.GW_NM AS GW_PATH" : "	DISTINCT(G.GW_NM) AS GW_PATH") 
+		   .append(isIndQuery ? "	C.IND_CD, G.GW_NM AS GW_PATH" : "	DISTINCT(G.GW_NM) AS GW_PATH") 
 		   .append(" FROM ")
-		   .append("	TB_LOCATION L")
-		   .append("	INNER JOIN TB_MPI M ON L.DOMAIN_ID = M.DOMAIN_ID AND L.MPI_CD = M.MPI_CD")
-		   .append("	INNER JOIN TB_GATEWAY G ON M.DOMAIN_ID = G.DOMAIN_ID AND M.GW_CD = G.GW_CD")
+		   .append("	CELLS C")
+		   .append("	INNER JOIN INDICATORS I ON C.DOMAIN_ID = I.DOMAIN_ID AND C.IND_CD = I.IND_CD")
+		   .append("	INNER JOIN GATEWAYS G ON I.DOMAIN_ID = G.DOMAIN_ID AND I.GW_CD = G.GW_CD")
 		   .append(" WHERE")
-		   .append(" 	M.DOMAIN_ID = :domainId")
-		   .append("	AND L.active_flag = 1")
-		   .append("	#if($regionCd)")
-		   .append(" 	AND L.REGION_CD = :regionCd")
+		   .append(" 	I.DOMAIN_ID = :domainId")
+		   .append("	AND C.active_flag = 1")
+		   .append("	#if($rackCd)")
+		   .append(" 	AND C.RACK_CD = :rackCd")
 		   .append("	#end")
-		   .append(" 	#if($zoneCd)")
-		   .append(" 	AND L.ZONE_CD = :zoneCd")
+		   .append(" 	#if($stationCd)")
+		   .append(" 	AND C.STATION_CD = :stationCd")
 		   .append(" 	#end")
 		   .append(" 	#if($gwZoneCd)")
-		   .append(" 	AND L.GW_ZONE_CD = :gwZoneCd")
+		   .append(" 	AND C.GW_ZONE_CD = :gwZoneCd")
 		   .append(" 	#end")
 		   .append(" 	#if($equipZoneCd)")
-		   .append(" 	AND L.EQUIP_ZONE_CD = :equipZoneCd")
+		   .append(" 	AND C.EQUIP_ZONE_CD = :equipZoneCd")
 		   .append(" 	#end")
 		   .append(" 	#if($sideCd)")
-		   .append(" 	AND L.SIDE_CD = :sideCd")
+		   .append(" 	AND C.SIDE_CD = :sideCd")
 		   .append(" 	#end")
-		   .append(isMpiQuery ? " ORDER BY G.GW_NM ASC, L.LOC_SEQ ASC" : " ORDER BY G.GW_NM ASC").toString();
+		   .append(isIndQuery ? " ORDER BY G.GW_NM ASC, C.CELL_SEQ ASC" : " ORDER BY G.GW_NM ASC").toString();
 	}
+
 }

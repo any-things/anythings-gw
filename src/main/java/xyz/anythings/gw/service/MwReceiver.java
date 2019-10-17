@@ -12,7 +12,6 @@ import xyz.anythings.comm.rabbitmq.event.MwErrorEvent;
 import xyz.anythings.gw.model.MessageObject;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.event.EventPublisher;
-import xyz.anythings.sys.event.model.ErrorEvent;
 import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.rabbitmq.client.event.SystemMessageReceiveEvent;
 import xyz.elidom.sys.entity.Domain;
@@ -52,8 +51,7 @@ public class MwReceiver extends MwCommon  {
 	 * Event Publisher
 	 */
 	@Autowired
-	protected EventPublisher eventPublisher;	
-	
+	protected EventPublisher eventPublisher;
 	/**
 	 * 도메인 맵 : Site Code - Domain
 	 */
@@ -90,8 +88,8 @@ public class MwReceiver extends MwCommon  {
 
 		// 3. 사이트 도메인 조회를 못했다면 에러
 		if(siteDomain == null) {
-			ElidomRuntimeException ee = new ElidomRuntimeException("MW Site [" + event.getVhost() + "] 코드로 사이트 조회에 실패했습니다");
-			ErrorEvent errorEvent = new ErrorEvent(Domain.systemDomain().getId(), true, true, ee, null, null, event.toString());
+			ElidomRuntimeException ee = new ElidomRuntimeException("Failed to find site by virtual host code [" + event.getVhost() + "]!");
+			MwErrorEvent errorEvent = new MwErrorEvent(Domain.systemDomain().getId(), event, ee, true, true);
 			this.eventPublisher.publishEvent(errorEvent);
 			return;
 		}
@@ -108,7 +106,7 @@ public class MwReceiver extends MwCommon  {
 			}
 		} catch (Exception e) {
 			// 7. 예외 처리
-			MwErrorEvent errorEvent = new ErrorEvent(siteDomain.getId(), true, true, e, null, null, event.toString());
+			MwErrorEvent errorEvent = new MwErrorEvent(Domain.systemDomain().getId(), event, e, true, true);
 			this.eventPublisher.publishEvent(errorEvent);
 			
 		} finally {
@@ -136,12 +134,6 @@ public class MwReceiver extends MwCommon  {
 	private void handleReceivedMessage(Domain siteDomain, MessageObject msgObj) {
 		// 메시지 로깅
 		this.logInfoMessage(siteDomain.getId(), msgObj);
-		
-		//String msgId = msgObj.getProperties().getId();
-		//String sourceId = msgObj.getProperties().getSourceId();
-		//String action = msgObj.getBody().getAction();
-		
-		// TODO 이벤트 처리 - 받을 대상이 없는 경우 처리를 할 수 있는지 체크
 	}
 
 	/**

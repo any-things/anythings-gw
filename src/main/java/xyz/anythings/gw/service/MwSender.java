@@ -30,11 +30,14 @@ public class MwSender extends MwCommon {
 	 */
 	@Autowired
 	private DomainController domainCtrl;
-	
-	
+	/**
+	 * 모듈 프로퍼티
+	 */
 	@Autowired
 	private ModuleProperties modulePorperties;
-	
+	/**
+	 * 도메인
+	 */
 	private Domain domain; 
 	
 	/**

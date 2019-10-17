@@ -6,20 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import javax.tools.DocumentationTool.Location;
-
 import xyz.anythings.base.LogisConstants;
-import xyz.anythings.base.entity.Cell;
 import xyz.anythings.base.entity.Gateway;
+import xyz.anythings.base.entity.Indicator;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
-import xyz.anythings.base.entity.JobProcess;
-import xyz.anythings.base.entity.MPI;
 import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.MpiSendService;
+import xyz.anythings.gw.service.IndSendService;
 import xyz.anythings.gw.service.model.IndCommonReq;
 import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.sys.util.AnyOrmUtil;
@@ -31,42 +27,43 @@ import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
 
 /**
- * MPI Service Utilities
+ * 표시기 서비스 유틸리티
  * 
  * @author shortstop
  */
-public class MpiServiceUtil {
+public class IndServiceUtil {
 	
 	/**
 	 * 호기내 로케이션들 중에 거래처 매핑된 
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param mpiList
+	 * @param indList
 	 */
-	public static int mpiOnNoboxDisplay(Long domainId, String jobType, List<IndCommonReq> mpiList) {
+	public static int indOnNoboxDisplay(Long domainId, String jobType, List<IndCommonReq> indList) {
 		// 1. 빈 값 체크 
-		if(ValueUtil.isNotEmpty(mpiList)) {
-			MpiSendService sendSvc = BeanUtil.get(MpiSendService.class);
+		if(ValueUtil.isNotEmpty(indList)) {
+			IndSendService sendSvc = BeanUtil.get(IndSendService.class);
 			
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> indOnList = new HashMap<String, List<IndicatorOnInformation>>();
+			Map<String, List<IndicatorOnInformation>> indOnInfoList = new HashMap<String, List<IndicatorOnInformation>>();
 
-			for (IndCommonReq mpiOnPick : mpiList) {
-				String gwPath = mpiOnPick.getGwPath();
-				List<IndicatorOnInformation> mpiOnList = indOnList.containsKey(gwPath) ? indOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
-				IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-				mpiOnInfo.setId(mpiOnPick.getIndCd());
-				mpiOnInfo.setBizId(mpiOnPick.getIndCd());
-				mpiOnList.add(mpiOnInfo);
-				indOnList.put(gwPath, mpiOnList);
+			for (IndCommonReq indOnPick : indList) {
+				String gwPath = indOnPick.getGwPath();
+				List<IndicatorOnInformation> indOnList = 
+						indOnInfoList.containsKey(gwPath) ? indOnInfoList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+				IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+				indOnInfo.setId(indOnPick.getIndCd());
+				indOnInfo.setBizId(indOnPick.getIndCd());
+				indOnList.add(indOnInfo);
+				indOnInfoList.put(gwPath, indOnList);
 			}
 					
-			if(ValueUtil.isNotEmpty(indOnList)) {
+			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestMpisOn(domainId, jobType, MwConstants.MPI_ACTION_TYPE_NOBOX, indOnList);
+				sendSvc.requestIndsOn(domainId, jobType, MwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
 				// 4. 점등된 표시기 개수 리턴 
-				return indOnList.size();
+				return indOnInfoList.size();
 			}
 		}
 		
@@ -79,30 +76,34 @@ public class MpiServiceUtil {
 	 * @param jobType
 	 * @param jobList
 	 */
-	public static void restoreMpiDisplayJobPicked(String jobType, List<JobInstance> jobList) {
+	public static void restoreIndDisplayJobPicked(String jobType, List<JobInstance> jobList) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
-			MpiSendService sendSvc = BeanUtil.get(MpiSendService.class);
+			IndSendService sendSvc = BeanUtil.get(IndSendService.class);
 			
 			// 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> indOnList = new HashMap<String, List<IndicatorOnInformation>>();
+			Map<String, List<IndicatorOnInformation>> indOnInfoList = new HashMap<String, List<IndicatorOnInformation>>();
 			Long domainId = null;
 			
 			for (JobInstance job : jobList) {
-				if(domainId == null) domainId = job.getDomainId();
+				if(domainId == null) {
+					domainId = job.getDomainId();
+				}
+				
 				String gwPath = job.getGwPath();
-				List<IndicatorOnInformation> mpiOnList = indOnList.containsKey(gwPath) ? indOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
-				IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-				mpiOnInfo.setId(job.getIndCd());
-				mpiOnInfo.setBizId(job.getId());
-				mpiOnInfo.setOrgEaQty(job.getPickedQty());
-				mpiOnList.add(mpiOnInfo);
-				indOnList.put(gwPath, mpiOnList);
+				List<IndicatorOnInformation> indOnList = 
+						indOnInfoList.containsKey(gwPath) ? indOnInfoList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+				IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+				indOnInfo.setId(job.getIndCd());
+				indOnInfo.setBizId(job.getId());
+				indOnInfo.setOrgEaQty(job.getPickedQty());
+				indOnList.add(indOnInfo);
+				indOnInfoList.put(gwPath, indOnList);
 			}
 			
 			// 표시기 점등 요청
-			if(ValueUtil.isNotEmpty(indOnList)) {
-				sendSvc.requestMpisOn(domainId, jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, indOnList);
+			if(ValueUtil.isNotEmpty(indOnInfoList)) {
+				sendSvc.requestIndsOn(domainId, jobType, MwConstants.IND_ACTION_TYPE_DISPLAY, indOnInfoList);
 			}
 		}
 	}
@@ -114,16 +115,16 @@ public class MpiServiceUtil {
 	 * @param gateway
 	 * @return
 	 */
-	public static List<Location> restoreMpiDisplayBoxingEnd(JobBatch batch, Gateway gateway) {
+	public static List<WorkCell> restoreIndDisplayBoxingEnd(JobBatch batch, Gateway gateway) {
 		// 1. DAS, RTN에 대해서 로케이션의 jobStatus가 END, ENDED 상태인 모든 로케이션을 조회
-		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId(), 0, 0, "domain_id", "loc_cd", "mpi_cd", "job_status", "job_process_id");
-		condition.addFilter("mpiCd", SysConstants.IN, gateway.mpiCdList());
-		condition.addFilter("jobStatus", SysConstants.IN, LogisConstants.LOCATION_JOB_STATUS_END_LIST);
-		condition.addOrder("locCd", true);
-		List<Location> locations = BeanUtil.get(IQueryManager.class).selectList(Location.class, condition);
+		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId(), 0, 0, "domain_id", "cell_cd", "ind_cd", "status", "job_instance_id");
+		condition.addFilter("indCd", SysConstants.IN, gateway.indCdList());
+		condition.addFilter("status", SysConstants.IN, LogisConstants.CELL_JOB_STATUS_END_LIST);
+		condition.addOrder("cellCd", true);
+		List<WorkCell> workCells = BeanUtil.get(IQueryManager.class).selectList(WorkCell.class, condition);
 		
 		// 2. 로케이션 별로 상태별로 END (ReadOnly = false), END (ReadOnly = true)를 표시
-		return restoreMpiDisplayBoxingEnd(batch.getJobType(), locations);
+		return restoreIndDisplayBoxingEnd(batch.getJobType(), workCells);
 	}
 	
 	/**
@@ -131,20 +132,20 @@ public class MpiServiceUtil {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param regionCd
+	 * @param rackCd
 	 * @param equipZoneCd
 	 * @return
 	 */
-	public static List<Location> restoreMpiDisplayBoxingEnd(Long domainId, String jobType, String regionCd, String equipZoneCd) {
+	public static List<WorkCell> restoreIndDisplayBoxingEnd(Long domainId, String jobType, String rackCd, String equipZoneCd) {
 		// 1. DAS, RTN에 대해서 로케이션의 jobStatus가 END, ENDED 상태인 모든 로케이션을 조회
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId, 0, 0,  "domain_id", "cell_cd", "ind_cd", "status", "job_instance_id");
-		condition.addFilter("regionCd", regionCd);
-		condition.addFilter("jobStatus", SysConstants.IN, LogisConstants.CELL_JOB_STATUS_END_LIST);
-		condition.addOrder("locCd", true);
-		List<Location> locations = BeanUtil.get(IQueryManager.class).selectList(Location.class, condition);
+		condition.addFilter("rackCd", rackCd);
+		condition.addFilter("status", SysConstants.IN, LogisConstants.CELL_JOB_STATUS_END_LIST);
+		condition.addOrder("cellCd", true);
+		List<WorkCell> workCells = BeanUtil.get(IQueryManager.class).selectList(WorkCell.class, condition);
 		
 		// 2. 로케이션 별로 상태별로 END (ReadOnly = false), END (ReadOnly = true)를 표시
-		return restoreMpiDisplayBoxingEnd(jobType, locations);
+		return restoreIndDisplayBoxingEnd(jobType, workCells);
 	}
 	
 	/**
@@ -154,9 +155,9 @@ public class MpiServiceUtil {
 	 * @param workCells
 	 * @return
 	 */
-	public static List<WorkCell> restoreMpiDisplayBoxingEnd(String jobType, List<WorkCell> workCells) {
+	public static List<WorkCell> restoreIndDisplayBoxingEnd(String jobType, List<WorkCell> workCells) {
 		if(ValueUtil.isNotEmpty(workCells)) {
-			MpiSendService mpiSendService = BeanUtil.get(MpiSendService.class);
+			IndSendService indSendService = BeanUtil.get(IndSendService.class);
 
 			for(WorkCell cell : workCells) {
 				String jobStatus = cell.getStatus();
@@ -164,11 +165,11 @@ public class MpiServiceUtil {
 				if(ValueUtil.isNotEmpty(jobStatus)) {
 					if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_END, jobStatus)) {
 						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
-						mpiSendService.requestMpiEndDisplay(cell.getDomainId(), jobType, cell.getIndCd(), bizId, false);
+						indSendService.requestIndEndDisplay(cell.getDomainId(), jobType, cell.getIndCd(), bizId, false);
 						
 					} else if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_ENDED, jobStatus)) {
 						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
-						mpiSendService.requestMpiEndDisplay(cell.getDomainId(), jobType, cell.getIndCd(), bizId, true);
+						indSendService.requestIndEndDisplay(cell.getDomainId(), jobType, cell.getIndCd(), bizId, true);
 					}
 				}			
 			}
@@ -184,14 +185,14 @@ public class MpiServiceUtil {
 	 * @param job
 	 * @return
 	 */
-	public static boolean mpiOnByJob(boolean needUpdateJobStatus, JobProcess job) {
+	public static boolean indOnByJob(boolean needUpdateJobStatus, JobInstance job) {
 		if(ValueUtil.isEmpty(job.getGwPath())) {
-			String gwPath = MPI.findGatewayPath(job.getDomainId(), job.getIndCd());
+			String gwPath = Indicator.findGatewayPath(job.getDomainId(), job.getIndCd());
 			job.setGwPath(gwPath);
 		}
 		
-		List<JobProcess> jobList = ValueUtil.toList(job);
-		MpiServiceUtil.mpiOnByJobList(needUpdateJobStatus, job.getJobType(), jobList);
+		List<JobInstance> jobList = ValueUtil.toList(job);
+		IndServiceUtil.indOnByJobList(needUpdateJobStatus, job.getJobType(), jobList);
 		return true;
 	}
 	
@@ -203,14 +204,14 @@ public class MpiServiceUtil {
 	 * @param showPickingQty 작업의 피킹 수량을 표시기의 분류 수량으로 표시할 지 여부
 	 * @return
 	 */
-	public static boolean mpiOnByJob(boolean needUpdateJobStatus, JobProcess job, boolean showPickingQty) {
+	public static boolean indOnByJob(boolean needUpdateJobStatus, JobInstance job, boolean showPickingQty) {
 		if(ValueUtil.isEmpty(job.getGwPath())) {
-			String gwPath = MPI.findGatewayPath(job.getDomainId(), job.getIndCd());
+			String gwPath = Indicator.findGatewayPath(job.getDomainId(), job.getIndCd());
 			job.setGwPath(gwPath);
 		}
 		
-		List<JobProcess> jobList = ValueUtil.toList(job);
-		MpiServiceUtil.mpiOnByJobList(needUpdateJobStatus, job.getJobType(), jobList, showPickingQty);
+		List<JobInstance> jobList = ValueUtil.toList(job);
+		IndServiceUtil.indOnByJobList(needUpdateJobStatus, job.getJobType(), jobList, showPickingQty);
 		return true;
 	}
 	
@@ -222,19 +223,18 @@ public class MpiServiceUtil {
 	 * @param jobList 작업 데이터 리스트
 	 * @return 점등된 표시기 개수 리턴
 	 */
-	public static int mpiOnByJobList(boolean needUpdateJobStatus, String jobType, List<JobProcess> jobList) {
+	public static int indOnByJobList(boolean needUpdateJobStatus, String jobType, List<JobInstance> jobList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> mpiOnList = 
-					buildMpiOnList(needUpdateJobStatus, jobType, jobList, false);
+			Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, jobType, jobList, false);
 			
-			if(ValueUtil.isNotEmpty(mpiOnList)) {
-				JobProcess firstJob = jobList.get(0);
+			if(ValueUtil.isNotEmpty(indOnList)) {
+				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
+				BeanUtil.get(IndSendService.class).requestIndsOn(firstJob.getDomainId(), jobType, MwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
-				return mpiOnList.size();
+				return indOnList.size();
 			}
 		}
 		
@@ -250,19 +250,18 @@ public class MpiServiceUtil {
 	 * @param showPickingQty 작업의 피킹 수량을 표시기의 분류 수량으로 표시할 지 여부
 	 * @return 점등된 표시기 개수 리턴
 	 */
-	public static int mpiOnByJobList(boolean needUpdateJobStatus, String jobType, List<JobProcess> jobList, boolean showPickingQty) {
+	public static int indOnByJobList(boolean needUpdateJobStatus, String jobType, List<JobInstance> jobList, boolean showPickingQty) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> mpiOnList = 
-					buildMpiOnList(needUpdateJobStatus, jobType, jobList, true);
+			Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, jobType, jobList, true);
 			
-			if(ValueUtil.isNotEmpty(mpiOnList)) {
-				JobProcess firstJob = jobList.get(0);
+			if(ValueUtil.isNotEmpty(indOnList)) {
+				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
+				BeanUtil.get(IndSendService.class).requestIndsOn(firstJob.getDomainId(), jobType, MwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
-				return mpiOnList.size();
+				return indOnList.size();
 			}
 		}
 		
@@ -277,12 +276,12 @@ public class MpiServiceUtil {
 	 * @param jobList
 	 * @return
 	 */
-	public static int mpiOnByPickingJobList(boolean needUpdateJobStatus, boolean qytNoCheck, String jobType, List<JobProcess> jobList) {
+	public static int indOnByPickingJobList(boolean needUpdateJobStatus, boolean qytNoCheck, String jobType, List<JobInstance> jobList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
-			List<JobProcess> pickingJobs = new ArrayList<JobProcess>(jobList.size());
+			List<JobInstance> pickingJobs = new ArrayList<JobInstance>(jobList.size());
 			
-			for(JobProcess job : jobList) {
+			for(JobInstance job : jobList) {
 				// 피킹 예정 수량이 피킹 확정 수량보다 큰 것만 표시기 점등 
 				if(qytNoCheck || (job.getPickQty() > job.getPickedQty())) {
 					pickingJobs.add(job);
@@ -291,14 +290,14 @@ public class MpiServiceUtil {
 			
 			if(ValueUtil.isNotEmpty(pickingJobs)) {
 	 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-				Map<String, List<IndicatorOnInformation>> mpiOnList = 
-						buildMpiOnList(needUpdateJobStatus, jobType, jobList, false);
-				if(ValueUtil.isNotEmpty(mpiOnList)) {
-					JobProcess firstJob = pickingJobs.get(0);
+				Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, jobType, jobList, false);
+				
+				if(ValueUtil.isNotEmpty(indOnList)) {
+					JobInstance firstJob = pickingJobs.get(0);
 					// 3. 표시기 점등 요청
-					BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_PICK, mpiOnList);
+					BeanUtil.get(IndSendService.class).requestIndsOn(firstJob.getDomainId(), jobType, MwConstants.IND_ACTION_TYPE_PICK, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
-					return mpiOnList.size();
+					return indOnList.size();
 				}
 			}
 		}
@@ -314,12 +313,12 @@ public class MpiServiceUtil {
 	 * @param jobList
 	 * @return
 	 */
-	public static int mpiDisplayByPickingJobList(boolean needUpdateJobStatus, boolean qytNoCheck, String jobType, List<JobProcess> jobList) {
+	public static int indDisplayByPickingJobList(boolean needUpdateJobStatus, boolean qytNoCheck, String jobType, List<JobInstance> jobList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
-			List<JobProcess> pickingJobs = new ArrayList<JobProcess>(jobList.size());
+			List<JobInstance> pickingJobs = new ArrayList<JobInstance>(jobList.size());
 			
-			for(JobProcess job : jobList) {
+			for(JobInstance job : jobList) {
 				// 피킹 예정 수량이 피킹 확정 수량보다 큰 것만 표시기 점등 
 				if(qytNoCheck || (job.getPickQty() > job.getPickedQty())) {
 					pickingJobs.add(job);
@@ -328,20 +327,21 @@ public class MpiServiceUtil {
 			
 			if(ValueUtil.isNotEmpty(pickingJobs)) {
 	 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-				Map<String, List<IndicatorOnInformation>> mpiOnList = 
-						buildMpiOnList(needUpdateJobStatus, jobType, jobList, false);
-				if(ValueUtil.isNotEmpty(mpiOnList)) {
-					JobProcess firstJob = pickingJobs.get(0);
+				Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, jobType, jobList, false);
+				
+				if(ValueUtil.isNotEmpty(indOnList)) {
+					JobInstance firstJob = pickingJobs.get(0);
 					// 3. 표시기 점등 요청
-					BeanUtil.get(MpiSendService.class).requestMpisOn(firstJob.getDomainId(), jobType, MwConstants.MPI_ACTION_TYPE_DISPLAY, mpiOnList);
+					BeanUtil.get(IndSendService.class).requestIndsOn(firstJob.getDomainId(), jobType, MwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
-					return mpiOnList.size();
+					return indOnList.size();
 				}
 			}
 		}
 		
 		return 0;
 	}
+	
 	/**
 	 * 작업 리스트 정보로 표시기 점등 
 	 * 
@@ -349,25 +349,23 @@ public class MpiServiceUtil {
 	 * @param jobList 작업 데이터 리스트
 	 * @return 점등된 표시기 개수 리턴
 	 */
-	public static int mpiOnByInspectJobList(String jobType, List<JobProcess> jobList) {
+	public static int indOnByInspectJobList(String jobType, List<JobInstance> jobList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
-			Long domainId = null;
 			
 			// 2. 검수 색깔은 빨간색으로 고정
-			for(JobProcess job : jobList) {
-				if(domainId == null) domainId = job.getDomainId();
+			for(JobInstance job : jobList) {
 				job.setColorCd(MwConstants.COLOR_RED);
 			}
 			
 			// 3. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> mpiOnList = buildMpiOnList(false, jobType, jobList, false);
+			Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(false, jobType, jobList, false);
 			
-			if(ValueUtil.isNotEmpty(mpiOnList)) {
+			if(ValueUtil.isNotEmpty(indOnList)) {
 				// 4. 표시기 점등 요청
-				BeanUtil.get(MpiSendService.class).requestMpisInspectOn(domainId, jobType, mpiOnList);
+				BeanUtil.get(IndSendService.class).requestIndsInspectOn(jobList.get(0).getDomainId(), jobType, indOnList);
 				// 5. 점등된 표시기 개수 리턴 
-				return mpiOnList.size();
+				return indOnList.size();
 			}
 		}
 		
@@ -383,11 +381,11 @@ public class MpiServiceUtil {
 	 * @param showPickingQty JobProcess의 pickQty가 아니라 pickingQty를 표시기의 분류 수량으로 표시할 지 여부
 	 * @return
 	 */
-	public static Map<String, List<IndicatorOnInformation>> buildMpiOnList(
+	public static Map<String, List<IndicatorOnInformation>> buildIndOnList(
 			boolean needUpdateJobStatus, String jobType, List<JobInstance> jobList, boolean showPickingQty) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
-			List<IndOnPickReq> mpiListToLightOn = new ArrayList<IndOnPickReq>(jobList.size());
+			List<IndOnPickReq> indListToLightOn = new ArrayList<IndOnPickReq>(jobList.size());
 			String pickStartedAt = needUpdateJobStatus ? DateUtil.currentTimeStr() : null;
 			
 			// 점등 요청을 위한 데이터 모델 생성.
@@ -397,11 +395,11 @@ public class MpiServiceUtil {
 					// 1. 분류 대상 피킹 시간 업데이트
 					job.setPickStartedAt(pickStartedAt);
 					// 2. 상태 코드 설정
-					job.setStatus(JobInstance.JOB_STATUS_PICKING);
+					job.setStatus(LogisConstants.JOB_STATUS_PICKING);
 				}
 				
 				// 3. 점등 요청 모델 생성 및 복사  
-				IndOnPickReq lightOn = ValueUtil.populate(job, new IndOnPickReq(), "comCd", "processSeq", "mpiCd", "mpiColor", "pickQty", "boxInQty", "gwPath");
+				IndOnPickReq lightOn = ValueUtil.populate(job, new IndOnPickReq(), "comCd", "inputSeq", "indCd", "colorCd", "pickQty", "boxInQty", "gwPath");
 				// 4. 비지니스 ID 설정
 				lightOn.setJobInstanceId(job.getId());
 				// 5. pickingQty를 표시
@@ -409,15 +407,15 @@ public class MpiServiceUtil {
 					lightOn.setPickQty(job.getPickingQty());
 				}
 				// 6. 표시기 점등을 위한 리스트에 추가
-				mpiListToLightOn.add(lightOn);
+				indListToLightOn.add(lightOn);
 			}
 			
 			if(needUpdateJobStatus) {
-				BeanUtil.get(IQueryManager.class).updateBatch(jobList, "status", "mpiCd", "pickStartedAt");
+				BeanUtil.get(IQueryManager.class).updateBatch(jobList, "status", "indCd", "pickStartedAt");
 			}
 			
 			// 분류 대상 작업 데이터를 표시기 점등 요청을 위한 프로토콜 모델로 변환한다.
-			return mpiListToLightOn.isEmpty() ? null : MwMessageUtil.groupPickingByGwPath(jobList.get(0).getDomainId(), jobType, mpiListToLightOn);
+			return indListToLightOn.isEmpty() ? null : MwMessageUtil.groupPickingByGwPath(jobList.get(0).getDomainId(), jobType, indListToLightOn);
 			
 		} else {
 			return null;
@@ -430,7 +428,7 @@ public class MpiServiceUtil {
 	 * @param gateway
 	 * @return
 	 */
-	public static List<GatewayInitResIndList> mpiListForGwInit(Gateway gateway) {
+	public static List<GatewayInitResIndList> indListForGwInit(Gateway gateway) {
 		StringJoiner sql = new StringJoiner(SysConstants.LINE_SEPARATOR);
 		sql.add("select distinct id, channel, pan, biz_type, nvl(view_type, '0') as view_type from (")
 		   .add("	select x.mpi_cd as id, x.channel_no as channel, x.pan_no as pan, biz_type, ")
@@ -459,7 +457,7 @@ public class MpiServiceUtil {
 	 * @param gwPath
 	 * @return
 	 */
-	public static List<GatewayInitResIndList> mpiList(Long domainId, String gwPath) {
+	public static List<GatewayInitResIndList> indList(Long domainId, String gwPath) {
 		StringJoiner sql = new StringJoiner(SysConstants.LINE_SEPARATOR);
 		sql.add("select distinct id, channel, pan, biz_type, nvl(view_type, '0') as view_type from (")
 		   .add("	select x.mpi_cd as id, x.channel_no as channel, x.pan_no as pan, biz_type, (select value from tb_company_setting where domain_id = :domainId and name = ('com.mps.' || lower(biz_type) || '.mpi.view-type')) as view_type")
@@ -483,4 +481,5 @@ public class MpiServiceUtil {
 		Map<String, Object> params = ValueUtil.newMap("domainId,gwPath", domainId, gwPath);
 		return BeanUtil.get(IQueryManager.class).selectListBySql(sql.toString(), params, GatewayInitResIndList.class, 0, 0);
 	}
+
 }

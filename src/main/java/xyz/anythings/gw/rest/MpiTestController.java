@@ -23,12 +23,12 @@ import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.Action;
 import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.MpiSendService;
+import xyz.anythings.gw.service.IndSendService;
 import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.model.IndTest;
 import xyz.anythings.gw.service.model.IndTest.IndAction;
 import xyz.anythings.gw.service.model.IndTest.IndTarget;
-import xyz.anythings.gw.service.util.MpiServiceUtil;
+import xyz.anythings.gw.service.util.IndServiceUtil;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -55,7 +55,7 @@ public class MpiTestController {
 	 * 표시기 요청 관련 서비스
 	 */
 	@Autowired
-	private MpiSendService indSendService;
+	private IndSendService indSendService;
 
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicator Unit Test")
@@ -114,7 +114,7 @@ public class MpiTestController {
 		if(ValueUtil.isNotEmpty(indOffList)) {
 			msg = FormatUtil.toUnderScoreJsonString(indOffList);
 			boolean forceFlag = (mpiTest.getAction().getForceFlag() == null) ? false : mpiTest.getAction().getForceFlag().booleanValue();
-			this.indSendService.requestOffByMpiList(Domain.currentDomainId(), indOffList, forceFlag);
+			this.indSendService.requestOffByIndList(Domain.currentDomainId(), indOffList, forceFlag);
 		} else {
 			// 소등할 정보가 없습니다
 			msg = ThrowUtil.notFoundRecordMsg("terms.button.off");
@@ -176,8 +176,8 @@ public class MpiTestController {
 	 * @return
 	 */
 	private String indicatorOnByInfo(Long domainId, String actionType, String jobType, Map<String, List<IndicatorOnInformation>> indOnInfo) {
-		if(ValueUtil.isEqualIgnoreCase(actionType, MwConstants.MPI_ACTION_TYPE_PICK)) {
-			this.indSendService.requestMpisOn(domainId, jobType, actionType, indOnInfo);
+		if(ValueUtil.isEqualIgnoreCase(actionType, MwConstants.IND_ACTION_TYPE_PICK)) {
+			this.indSendService.requestIndsOn(domainId, jobType, actionType, indOnInfo);
 			return FormatUtil.toUnderScoreJsonString(indOnInfo);
 		} else {
 			if(this.indicatorOn(domainId, actionType, jobType, indOnInfo)) {
@@ -214,37 +214,37 @@ public class MpiTestController {
 					case "cell_cd" : {
 					}
 					
-					case MwConstants.MPI_ACTION_TYPE_STR_SHOW : {
+					case MwConstants.IND_ACTION_TYPE_STR_SHOW : {
 						this.indSendService.requestShowString(domainId, jobType, gwPath, mpiCd, mpiCd, info.getViewStr());
 						count++;
 						break;
 					}
 					
-					case MwConstants.MPI_BIZ_FLAG_FULL : {
+					case MwConstants.IND_BIZ_FLAG_FULL : {
 						this.indSendService.requestFullbox(domainId, jobType, mpiCd, mpiCd, info.getColor());
 						count++;
 						break;
 					}
 					
-					case MwConstants.MPI_BIZ_FLAG_END : {
-						this.indSendService.requestMpiEndDisplay(domainId, jobType, mpiCd, mpiCd, false);
+					case MwConstants.IND_BIZ_FLAG_END : {
+						this.indSendService.requestIndEndDisplay(domainId, jobType, mpiCd, mpiCd, false);
 						count++;
 						break;
 					}
 					
-					case MwConstants.MPI_ACTION_TYPE_NOBOX : {
-						this.indSendService.requestMpiNoBoxDisplay(domainId, jobType, mpiCd);
+					case MwConstants.IND_ACTION_TYPE_NOBOX : {
+						this.indSendService.requestIndNoBoxDisplay(domainId, jobType, mpiCd);
 						count++;
 						break;
 					}
 					
-					case MwConstants.MPI_ACTION_TYPE_ERRBOX : {
-						this.indSendService.requestMpiErrBoxDisplay(domainId, jobType, mpiCd);
+					case MwConstants.IND_ACTION_TYPE_ERRBOX : {
+						this.indSendService.requestIndErrBoxDisplay(domainId, jobType, mpiCd);
 						count++;
 						break;
 					}
 					
-					case MwConstants.MPI_ACTION_TYPE_DISPLAY : {
+					case MwConstants.IND_ACTION_TYPE_DISPLAY : {
 						this.indSendService.requestDisplayBothDirectionQty(domainId, jobType, mpiCd, mpiCd, info.getOrgRelay(), info.getOrgEaQty());
 						count++;
 						break;
@@ -266,31 +266,31 @@ public class MpiTestController {
 		IndAction action = mpiTest.getAction();
 		
 		switch(action.getActionType()) {
-			case MwConstants.MPI_ACTION_TYPE_PICK : {
+			case MwConstants.IND_ACTION_TYPE_PICK : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case MwConstants.MPI_BIZ_FLAG_FULL : {
+			case MwConstants.IND_BIZ_FLAG_FULL : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case MwConstants.MPI_BIZ_FLAG_END : {
+			case MwConstants.IND_BIZ_FLAG_END : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case MwConstants.MPI_ACTION_TYPE_NOBOX : {
+			case MwConstants.IND_ACTION_TYPE_NOBOX : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case MwConstants.MPI_ACTION_TYPE_ERRBOX : {
+			case MwConstants.IND_ACTION_TYPE_ERRBOX : {
 				return this.createIndOnMpiInfoList(mpiTest);
 			}
 			
-			case MwConstants.MPI_ACTION_TYPE_DISPLAY : {
+			case MwConstants.IND_ACTION_TYPE_DISPLAY : {
 				return this.createIndOnDisplayInfoList(mpiTest);
 			}
 			
-			case MwConstants.MPI_ACTION_TYPE_STR_SHOW : {
+			case MwConstants.IND_ACTION_TYPE_STR_SHOW : {
 				return this.createIndOnShowStrInfoList(mpiTest);
 			}
 			
@@ -335,7 +335,7 @@ public class MpiTestController {
 			job.setPickedQty(0);
 		}
 		
-		return MpiServiceUtil.buildMpiOnList(false, MwConstants.JOB_TYPE_DAS, jobList, false);
+		return IndServiceUtil.buildIndOnList(false, MwConstants.JOB_TYPE_DAS, jobList, false);
 	}
 	
 	/**

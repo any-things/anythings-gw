@@ -36,7 +36,7 @@ public class MwCommon {
 	 * @return
 	 */
 	protected boolean isMessageLoggingEnabled(Long domainId) {
-		return 	ValueUtil.toBoolean(SettingUtil.getValue(domainId, MwConfigConstants.MW_RECEIVE_LOGGING_ENABLED, AnyConstants.FALSE_STRING));
+		return 	ValueUtil.toBoolean(SettingUtil.getValue(domainId, MwConfigConstants.MW_LOG_RCV_MSG_ENABLED, AnyConstants.FALSE_STRING));
 	}
 	
 	/**
