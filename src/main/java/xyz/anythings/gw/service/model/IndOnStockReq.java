@@ -5,7 +5,7 @@ package xyz.anythings.gw.service.model;
  * 
  * @author shortstop
  */
-public class MpiOnStockReq {
+public class IndOnStockReq {
 
 	/**
 	 * stockId
@@ -14,11 +14,11 @@ public class MpiOnStockReq {
 	/**
 	 * MPI 코드
 	 */
-	private String mpiCd;
+	private String indCd;
 	/**
 	 * MPI 색상 
 	 */
-	private String mpiColor;
+	private String colorCd;
 	/**
 	 * 적치 수량
 	 */
@@ -40,20 +40,20 @@ public class MpiOnStockReq {
 		this.stockId = stockId;
 	}
 	
-	public String getMpiCd() {
-		return mpiCd;
+	public String getIndCd() {
+		return indCd;
 	}
 	
-	public void setMpiCd(String mpiCd) {
-		this.mpiCd = mpiCd;
+	public void setIndCd(String indCd) {
+		this.indCd = indCd;
 	}
 	
-	public String getMpiColor() {
-		return mpiColor;
+	public String getColorCd() {
+		return colorCd;
 	}
 	
-	public void setMpiColor(String mpiColor) {
-		this.mpiColor = mpiColor;
+	public void setColorCd(String colorCd) {
+		this.colorCd = colorCd;
 	}
 	
 	public Integer getLoadQty() {

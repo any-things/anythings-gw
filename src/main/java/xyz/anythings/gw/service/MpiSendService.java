@@ -23,7 +23,7 @@ import xyz.anythings.gw.model.LedOffRequest;
 import xyz.anythings.gw.model.LedOnRequest;
 import xyz.anythings.gw.model.MiddlewareConnInfoModRequest;
 import xyz.anythings.gw.model.TimesyncResponse;
-import xyz.anythings.gw.service.model.MpiOffReq;
+import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.util.IndicatorSetting;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.service.AbstractQueryService;
@@ -246,7 +246,7 @@ public class MpiSendService extends AbstractQueryService {
 	 */
 	public void requestMpiOffByRegion(Long domainId, String regionCd, boolean forceOff) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<MpiOffReq> mpiList = this.searchMpiByWorkZone(domainId, regionCd, null);
+		List<IndOffReq> mpiList = this.searchMpiByWorkZone(domainId, regionCd, null);
 		// 2. 표시기별 소등 요청
 		this.requestOffByMpiList(domainId, mpiList, forceOff);
 	}
@@ -261,7 +261,7 @@ public class MpiSendService extends AbstractQueryService {
 	 */
 	public void requestMpiOffByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<MpiOffReq> mpiList = this.searchMpiByEquipZone(domainId, regionCd, equipZoneCd, sideCd);
+		List<IndOffReq> mpiList = this.searchMpiByEquipZone(domainId, regionCd, equipZoneCd, sideCd);
 		// 2. 표시기별 소등 요청
 		this.requestOffByMpiList(domainId, mpiList, false);
 	}
@@ -275,7 +275,7 @@ public class MpiSendService extends AbstractQueryService {
 	 */
 	public void requestMpiOffByWorkZone(Long domainId, String regionCd, String zoneCd) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<MpiOffReq> mpiList = this.searchMpiByWorkZone(domainId, regionCd, zoneCd);
+		List<IndOffReq> mpiList = this.searchMpiByWorkZone(domainId, regionCd, zoneCd);
 		// 2. 표시기별 소등 요청
 		this.requestOffByMpiList(domainId, mpiList, false);
 	}
@@ -287,19 +287,19 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param mpiList
 	 * @param forceOff 강제 소등 여부 
 	 */
-	public void requestOffByMpiList(Long domainId, List<MpiOffReq> mpiList, boolean forceOff) {
+	public void requestOffByMpiList(Long domainId, List<IndOffReq> mpiList, boolean forceOff) {
 		// 1. 게이트웨이 별로 표시기 리스트를 보내서 소등 요청을 한다.
 		Map<String, List<String>> mpisByGwPath = new HashMap<String, List<String>>();
 		String prevGwPath = null;
 		
-		for(MpiOffReq mpi : mpiList) {
+		for(IndOffReq mpi : mpiList) {
 			String gwPath = mpi.getGwPath();
 			
 			if(ValueUtil.isNotEqual(gwPath, prevGwPath)) {
-				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getMpiCd()));
+				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getIndCd()));
 				prevGwPath = gwPath;
 			} else {
-				mpisByGwPath.get(gwPath).add(mpi.getMpiCd());
+				mpisByGwPath.get(gwPath).add(mpi.getIndCd());
 			}
 		}
 		
@@ -734,19 +734,19 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param mpiList
 	 * @param ledBarBrightness
 	 */
-	public void requestLedListOn(Long domainId, List<MpiOffReq> mpiList, Integer ledBarBrightness) {
+	public void requestLedListOn(Long domainId, List<IndOffReq> mpiList, Integer ledBarBrightness) {
 		// 1. 게이트웨이 별로 표시기 리스트를 보내서 점등 요청을 한다.
 		Map<String, List<String>> mpisByGwPath = new HashMap<String, List<String>>();
 		String prevGwPath = null;
 		
-		for(MpiOffReq mpi : mpiList) {
+		for(IndOffReq mpi : mpiList) {
 			String gwPath = mpi.getGwPath();
 			
 			if(ValueUtil.isNotEqual(gwPath, prevGwPath)) {
-				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getMpiCd()));
+				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getIndCd()));
 				prevGwPath = gwPath;
 			} else {
-				mpisByGwPath.get(gwPath).add(mpi.getMpiCd());
+				mpisByGwPath.get(gwPath).add(mpi.getIndCd());
 			}
 		}
 		
@@ -773,19 +773,19 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param domainId
 	 * @param mpiList
 	 */
-	public void requestLedListOff(Long domainId, List<MpiOffReq> mpiList) {
+	public void requestLedListOff(Long domainId, List<IndOffReq> mpiList) {
 		// 1. 게이트웨이 별로 표시기 리스트를 보내서 점등 요청을 한다.
 		Map<String, List<String>> mpisByGwPath = new HashMap<String, List<String>>();
 		String prevGwPath = null;
 		
-		for(MpiOffReq mpi : mpiList) {
+		for(IndOffReq mpi : mpiList) {
 			String gwPath = mpi.getGwPath();
 			
 			if(ValueUtil.isNotEqual(gwPath, prevGwPath)) {
-				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getMpiCd()));
+				mpisByGwPath.put(gwPath, ValueUtil.newStringList(mpi.getIndCd()));
 				prevGwPath = gwPath;
 			} else {
-				mpisByGwPath.get(gwPath).add(mpi.getMpiCd());
+				mpisByGwPath.get(gwPath).add(mpi.getIndCd());
 			}
 		}
 		
@@ -834,11 +834,11 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param sideCd
 	 * @return
 	 */
-	public List<MpiOffReq> searchMpiByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
+	public List<IndOffReq> searchMpiByEquipZone(Long domainId, String regionCd, String equipZoneCd, String sideCd) {
 		Map<String, Object> params = 
 			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, regionCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
 		String sql = this.getSearchMpiQuery(true);		
-		return queryManager.selectListBySql(sql, params, MpiOffReq.class, 0, 0);
+		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
 	}	
 	
 	/**
@@ -864,11 +864,11 @@ public class MpiSendService extends AbstractQueryService {
 	 * @param zoneCd
 	 * @return
 	 */
-	public List<MpiOffReq> searchMpiByWorkZone(Long domainId, String regionCd, String zoneCd) {
+	public List<IndOffReq> searchMpiByWorkZone(Long domainId, String regionCd, String zoneCd) {
 		Map<String, Object> params = 
 			ValueUtil.newMap("domainId,regionCd,zoneCd", domainId, regionCd, zoneCd);
 		String sql = this.getSearchMpiQuery(true);
-		return queryManager.selectListBySql(sql, params, MpiOffReq.class, 0, 0);
+		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
 	}
 	
 	/**

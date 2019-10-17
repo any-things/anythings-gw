@@ -9,29 +9,29 @@ import xyz.elidom.util.FormatUtil;
  * 
  * @author shortstop
  */
-public class MpiTest {
+public class IndTest {
 	/**
-	 * MPI 타겟 유형 - 호기 : region
+	 * 표시기 타겟 유형 - 호기 : rack
 	 */
-	public static final String TARGET_TYPE_REGION = "region";
+	public static final String TARGET_TYPE_RACK = "rack";
 	/**
-	 * MPI 타겟 유형 - 게이트웨이 : gateway
+	 * 표시기 타겟 유형 - 게이트웨이 : gateway
 	 */
 	public static final String TARGET_TYPE_GATEWAY = "gateway";
 	/**
-	 * MPI 타겟 유형 - 장비 존 : equip_zone
+	 * 표시기 타겟 유형 - 장비 존 : equip_zone
 	 */
 	public static final String TARGET_TYPE_EQUIP_ZONE = "equip_zone";
 	/**
-	 * MPI 타겟 유형 - 작업 존 : work_zone
+	 * 표시기 타겟 유형 - 작업 존 : station
 	 */
-	public static final String TARGET_TYPE_WORK_ZONE = "work_zone";
+	public static final String TARGET_TYPE_STATION = "station";
 	/**
-	 * MPI 타겟 유형 - 로케이션 : location
+	 * 표시기 타겟 유형 - 로케이션 : location
 	 */
-	public static final String TARGET_TYPE_LOCATION = "location";
+	public static final String TARGET_TYPE_CELL = "cell";
 	/**
-	 * MPI 타겟 유형 - 표시기 : indicator
+	 * 표시기 타겟 유형 - 표시기 : indicator
 	 */
 	public static final String TARGET_TYPE_INDICATOR = "indicator";
 	
@@ -46,13 +46,13 @@ public class MpiTest {
 	private String jobType;
 	
 	/**
-	 * MPI 점등 타겟
+	 * 표시기 점등 타겟
 	 */
-	private MpiTarget target;
+	private IndTarget target;
 	/**
-	 * MPI 액션
+	 * 표시기 액션
 	 */
-	private MpiAction action;
+	private IndAction action;
 	
 	public String getComCd() {
 		return comCd;
@@ -62,11 +62,11 @@ public class MpiTest {
 		this.comCd = comCd;
 	}
 
-	public MpiTarget getTarget() {
+	public IndTarget getTarget() {
 		return target;
 	}
 
-	public void setTarget(MpiTarget target) {
+	public void setTarget(IndTarget target) {
 		this.target = target;
 	}
 
@@ -78,20 +78,20 @@ public class MpiTest {
 		this.jobType = jobType;
 	}
 
-	public MpiAction getAction() {
+	public IndAction getAction() {
 		return action;
 	}
 
-	public void setAction(MpiAction action) {
+	public void setAction(IndAction action) {
 		this.action = action;
 	}
 
 	/**
-	 * MPI Target
+	 * 표시기 Target
 	 * 
 	 * @author shortstop
 	 */
-	public class MpiTarget {
+	public class IndTarget {
 		/**
 		 * MPI Target Type
 		 */
@@ -119,11 +119,11 @@ public class MpiTest {
 	}
 	
 	/**
-	 * MPI 점등/소등 액션
+	 * 표시기 점등/소등 액션
 	 * 
 	 * @author shortstop
 	 */
-	public class MpiAction {
+	public class IndAction {
 		/**
 		 * 점등 / 소등
 		 */

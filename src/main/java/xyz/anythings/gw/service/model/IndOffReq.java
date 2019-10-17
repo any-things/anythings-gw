@@ -5,31 +5,31 @@ package xyz.anythings.gw.service.model;
  * 
  * @author shortstop
  */
-public class MpiOffReq {
+public class IndOffReq {
 
 	/**
-	 * MPI 코드
+	 * Indicator 코드
 	 */
-	private String mpiCd;
+	private String indCd;
 	/**
 	 * gateway path
 	 */
 	private String gwPath;
 	
-	public MpiOffReq() {
+	public IndOffReq() {
 	}
 	
-	public MpiOffReq(String mpiCd, String gwPath) {
-		this.mpiCd = mpiCd;
+	public IndOffReq(String indCd, String gwPath) {
+		this.indCd = indCd;
 		this.gwPath = gwPath;
 	}
 
-	public String getMpiCd() {
-		return mpiCd;
+	public String getIndCd() {
+		return indCd;
 	}
 
-	public void setMpiCd(String mpiCd) {
-		this.mpiCd = mpiCd;
+	public void setIndCd(String indCd) {
+		this.indCd = indCd;
 	}
 
 	public String getGwPath() {

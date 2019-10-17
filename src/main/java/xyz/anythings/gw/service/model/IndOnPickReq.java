@@ -5,12 +5,12 @@ package xyz.anythings.gw.service.model;
  * 
  * @author shortstop
  */
-public class MpiOnPickReq {
+public class IndOnPickReq {
 
 	/**
-	 * JobProcessId
+	 * jobInstanceId
 	 */
-	private String jobProcessId;
+	private String jobInstanceId;
 	/**
 	 * 고객사 코드
 	 */
@@ -20,13 +20,13 @@ public class MpiOnPickReq {
 	 */
 	private Integer processSeq;
 	/**
-	 * MPI 코드
+	 * 표시기 코드
 	 */
-	private String mpiCd;
+	private String indCd;
 	/**
-	 * MPI 색상 
+	 * 표시기 색상 
 	 */
-	private String mpiColor;
+	private String colorCd;
 	/**
 	 * 피킹 수량  
 	 */
@@ -40,15 +40,15 @@ public class MpiOnPickReq {
 	 */
 	private String gwPath;
 	
-	public MpiOnPickReq() {
+	public IndOnPickReq() {
 	}
 	
-	public String getJobProcessId() {
-		return jobProcessId;
+	public String getJobInstanceId() {
+		return jobInstanceId;
 	}
 	
-	public void setJobProcessId(String jobProcessId) {
-		this.jobProcessId = jobProcessId;
+	public void setJobInstanceId(String jobInstanceId) {
+		this.jobInstanceId = jobInstanceId;
 	}
 	
 	public String getComCd() {
@@ -67,20 +67,20 @@ public class MpiOnPickReq {
 		this.processSeq = processSeq;
 	}
 
-	public String getMpiCd() {
-		return mpiCd;
+	public String getIndCd() {
+		return indCd;
 	}
 	
-	public void setMpiCd(String mpiCd) {
-		this.mpiCd = mpiCd;
+	public void setIndCd(String indCd) {
+		this.indCd = indCd;
 	}
 	
-	public String getMpiColor() {
-		return mpiColor;
+	public String getColorCd() {
+		return colorCd;
 	}
 	
-	public void setMpiColor(String mpiColor) {
-		this.mpiColor = mpiColor;
+	public void setColorCd(String colorCd) {
+		this.colorCd = colorCd;
 	}
 	
 	public Integer getPickQty() {

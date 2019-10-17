@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import xyz.anythings.gw.MwConfigConstants;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.model.MessageObject;
-import xyz.anythings.gw.service.model.MpiOnPickReq;
-import xyz.anythings.gw.service.model.MpiOnStockReq;
+import xyz.anythings.gw.service.model.IndOnPickReq;
+import xyz.anythings.gw.service.model.IndOnStockReq;
 import xyz.elidom.exception.server.ElidomServiceException;
 import xyz.elidom.rabbitmq.client.event.SystemMessageReceiveEvent;
 import xyz.elidom.rabbitmq.message.MessageProperties;
@@ -229,11 +229,11 @@ public class MwMessageUtil {
 	 * @param mpiOnPick
 	 * @return
 	 */
-	public static IndicatorOnInformation newMpiOnInfo(Long domainId, String jobType, MpiOnPickReq mpiOnPick) {
+	public static IndicatorOnInformation newMpiOnInfo(Long domainId, String jobType, IndOnPickReq mpiOnPick) {
 		IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-		mpiOnInfo.setId(mpiOnPick.getMpiCd());
-		mpiOnInfo.setBizId(mpiOnPick.getJobProcessId());
-		mpiOnInfo.setColor(mpiOnPick.getMpiColor());
+		mpiOnInfo.setId(mpiOnPick.getIndCd());
+		mpiOnInfo.setBizId(mpiOnPick.getJobInstanceId());
+		mpiOnInfo.setColor(mpiOnPick.getColorCd());
 		// mpiOnPick 정보로 mpiOnInfo에 orgRelay, orgBoxQty, orgEaQty 값 설정
 		IndicatorSetting.setMpiOnQty(domainId, jobType, mpiOnPick, mpiOnInfo);
 		return mpiOnInfo;
@@ -280,12 +280,12 @@ public class MwMessageUtil {
 	 * @return
 	 */
 	public static Map<String, List<IndicatorOnInformation>> 
-		groupPickingByGwPath(Long domainId, String jobType, List<MpiOnPickReq> mpiOnReqList) {
+		groupPickingByGwPath(Long domainId, String jobType, List<IndOnPickReq> mpiOnReqList) {
 		
 		Map<String, List<IndicatorOnInformation>> groupGwMpiOnList = 
 				new HashMap<String, List<IndicatorOnInformation>>();
 
-		for (MpiOnPickReq mpiOnPick : mpiOnReqList) {
+		for (IndOnPickReq mpiOnPick : mpiOnReqList) {
 			String gwPath = mpiOnPick.getGwPath();
 			
 			List<IndicatorOnInformation> mpiOnList = 
@@ -309,12 +309,12 @@ public class MwMessageUtil {
 	 * @return key : gatewayPath, value : IndicatorOnInformation List
 	 */
 	public static Map<String, List<IndicatorOnInformation>> groupStockByGatewayPath(
-			String bizId, String mpiColor, List<MpiOnStockReq> mpiOnStockReqList) {
+			String bizId, String mpiColor, List<IndOnStockReq> mpiOnStockReqList) {
 		
 		Map<String, List<IndicatorOnInformation>> gwMpiOnListGroup = 
 				new HashMap<String, List<IndicatorOnInformation>>();
 
-		for (MpiOnStockReq target : mpiOnStockReqList) {
+		for (IndOnStockReq target : mpiOnStockReqList) {
 			String gwPath = target.getGwPath();
 			
 			List<IndicatorOnInformation> mpiOnList = 
@@ -322,7 +322,7 @@ public class MwMessageUtil {
 							gwMpiOnListGroup.get(gwPath) : new ArrayList<IndicatorOnInformation>();
 
 			IndicatorOnInformation stockInfo = 
-					newMpiOnInfo(target.getMpiCd(), bizId, target.getMpiColor(), target.getAllocQty(), target.getLoadQty());
+					newMpiOnInfo(target.getIndCd(), bizId, target.getColorCd(), target.getAllocQty(), target.getLoadQty());
 
 			mpiOnList.add(stockInfo);
 			gwMpiOnListGroup.put(gwPath, mpiOnList);

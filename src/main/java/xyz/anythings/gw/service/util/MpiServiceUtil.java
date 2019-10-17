@@ -20,8 +20,8 @@ import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.MpiSendService;
-import xyz.anythings.gw.service.model.MpiCommonReq;
-import xyz.anythings.gw.service.model.MpiOnPickReq;
+import xyz.anythings.gw.service.model.IndCommonReq;
+import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
@@ -44,7 +44,7 @@ public class MpiServiceUtil {
 	 * @param jobType
 	 * @param mpiList
 	 */
-	public static int mpiOnNoboxDisplay(Long domainId, String jobType, List<MpiCommonReq> mpiList) {
+	public static int mpiOnNoboxDisplay(Long domainId, String jobType, List<IndCommonReq> mpiList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(mpiList)) {
 			MpiSendService sendSvc = BeanUtil.get(MpiSendService.class);
@@ -52,12 +52,12 @@ public class MpiServiceUtil {
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
 			Map<String, List<IndicatorOnInformation>> indOnList = new HashMap<String, List<IndicatorOnInformation>>();
 
-			for (MpiCommonReq mpiOnPick : mpiList) {
+			for (IndCommonReq mpiOnPick : mpiList) {
 				String gwPath = mpiOnPick.getGwPath();
 				List<IndicatorOnInformation> mpiOnList = indOnList.containsKey(gwPath) ? indOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
 				IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-				mpiOnInfo.setId(mpiOnPick.getMpiCd());
-				mpiOnInfo.setBizId(mpiOnPick.getMpiCd());
+				mpiOnInfo.setId(mpiOnPick.getIndCd());
+				mpiOnInfo.setBizId(mpiOnPick.getIndCd());
 				mpiOnList.add(mpiOnInfo);
 				indOnList.put(gwPath, mpiOnList);
 			}
@@ -93,7 +93,7 @@ public class MpiServiceUtil {
 				String gwPath = job.getGwPath();
 				List<IndicatorOnInformation> mpiOnList = indOnList.containsKey(gwPath) ? indOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
 				IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-				mpiOnInfo.setId(job.getMpiCd());
+				mpiOnInfo.setId(job.getIndCd());
 				mpiOnInfo.setBizId(job.getId());
 				mpiOnInfo.setOrgEaQty(job.getPickedQty());
 				mpiOnList.add(mpiOnInfo);
@@ -186,7 +186,7 @@ public class MpiServiceUtil {
 	 */
 	public static boolean mpiOnByJob(boolean needUpdateJobStatus, JobProcess job) {
 		if(ValueUtil.isEmpty(job.getGwPath())) {
-			String gwPath = MPI.findGatewayPath(job.getDomainId(), job.getMpiCd());
+			String gwPath = MPI.findGatewayPath(job.getDomainId(), job.getIndCd());
 			job.setGwPath(gwPath);
 		}
 		
@@ -205,7 +205,7 @@ public class MpiServiceUtil {
 	 */
 	public static boolean mpiOnByJob(boolean needUpdateJobStatus, JobProcess job, boolean showPickingQty) {
 		if(ValueUtil.isEmpty(job.getGwPath())) {
-			String gwPath = MPI.findGatewayPath(job.getDomainId(), job.getMpiCd());
+			String gwPath = MPI.findGatewayPath(job.getDomainId(), job.getIndCd());
 			job.setGwPath(gwPath);
 		}
 		
@@ -357,7 +357,7 @@ public class MpiServiceUtil {
 			// 2. 검수 색깔은 빨간색으로 고정
 			for(JobProcess job : jobList) {
 				if(domainId == null) domainId = job.getDomainId();
-				job.setMpiColor(MwConstants.COLOR_RED);
+				job.setColorCd(MwConstants.COLOR_RED);
 			}
 			
 			// 3. 점등 요청을 위한 데이터 모델 생성. 
@@ -387,7 +387,7 @@ public class MpiServiceUtil {
 			boolean needUpdateJobStatus, String jobType, List<JobInstance> jobList, boolean showPickingQty) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
-			List<MpiOnPickReq> mpiListToLightOn = new ArrayList<MpiOnPickReq>(jobList.size());
+			List<IndOnPickReq> mpiListToLightOn = new ArrayList<IndOnPickReq>(jobList.size());
 			String pickStartedAt = needUpdateJobStatus ? DateUtil.currentTimeStr() : null;
 			
 			// 점등 요청을 위한 데이터 모델 생성.
@@ -401,9 +401,9 @@ public class MpiServiceUtil {
 				}
 				
 				// 3. 점등 요청 모델 생성 및 복사  
-				MpiOnPickReq lightOn = ValueUtil.populate(job, new MpiOnPickReq(), "comCd", "processSeq", "mpiCd", "mpiColor", "pickQty", "boxInQty", "gwPath");
+				IndOnPickReq lightOn = ValueUtil.populate(job, new IndOnPickReq(), "comCd", "processSeq", "mpiCd", "mpiColor", "pickQty", "boxInQty", "gwPath");
 				// 4. 비지니스 ID 설정
-				lightOn.setJobProcessId(job.getId());
+				lightOn.setJobInstanceId(job.getId());
 				// 5. pickingQty를 표시
 				if(showPickingQty) {
 					lightOn.setPickQty(job.getPickingQty());

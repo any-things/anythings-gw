@@ -5,32 +5,32 @@ package xyz.anythings.gw.service.model;
  * 
  * @author shortstop
  */
-public class MpiCommonReq {
+public class IndCommonReq {
 
 	/**
 	 * 도메인 ID
 	 */
 	private Long domainId;
 	/**
-	 * MPI 코드
+	 * 표시기 코드
 	 */
-	private String mpiCd;
+	private String indCd;
 	/**
-	 * 로케이션 코드
+	 * 셀 코드
 	 */
-	private String locCd;
+	private String cellCd;
 	/**
 	 * gateway path
 	 */
 	private String gwPath;
 	
-	public MpiCommonReq() {
+	public IndCommonReq() {
 	}
 	
-	public MpiCommonReq(Long domainId, String mpiCd, String locCd, String gwPath) {
+	public IndCommonReq(Long domainId, String indCd, String cellCd, String gwPath) {
 		this.domainId = domainId;
-		this.mpiCd = mpiCd;
-		this.locCd = locCd;
+		this.indCd = indCd;
+		this.cellCd = cellCd;
 		this.gwPath = gwPath;
 	}
 
@@ -42,20 +42,20 @@ public class MpiCommonReq {
 		this.domainId = domainId;
 	}
 
-	public String getMpiCd() {
-		return mpiCd;
+	public String getIndCd() {
+		return indCd;
 	}
 
-	public void setMpiCd(String mpiCd) {
-		this.mpiCd = mpiCd;
+	public void setIndCd(String indCd) {
+		this.indCd = indCd;
 	}
 
-	public String getLocCd() {
-		return locCd;
+	public String getCellCd() {
+		return cellCd;
 	}
 
-	public void setLocCd(String locCd) {
-		this.locCd = locCd;
+	public void setCellCd(String cellCd) {
+		this.cellCd = cellCd;
 	}
 
 	public String getGwPath() {

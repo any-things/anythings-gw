@@ -1,11 +1,11 @@
-package xyz.anythings.gw.entity;
+package xyz.anythings.gw.service.model;
 
 /**
  * 표시기 설정 모델 
  * 
  * @author shortstop
  */
-public class MpiConfig {
+public class IndSetting {
 	
 	/**
 	 * 고객사 코드

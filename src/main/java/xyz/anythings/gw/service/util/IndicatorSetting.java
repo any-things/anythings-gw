@@ -4,7 +4,7 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.gw.MwConfigConstants;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.model.MpiOnPickReq;
+import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.entity.ScopeSetting;
 import xyz.elidom.sys.SysConstants;
@@ -157,7 +157,7 @@ public class IndicatorSetting {
 			}
 		}
 		
-		return SettingUtil.getValue(domainId, MwConfigConstants.MPI_COLOR_ROTATION_SEQ, DEFAULT_ROTATION_SEQ);
+		return SettingUtil.getValue(domainId, MwConfigConstants.IND_COLOR_ROTATION_SEQ, DEFAULT_ROTATION_SEQ);
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String getGatewayLatestReleaseVersion(Long domainId) {
-		return SettingUtil.getValue(domainId, MwConfigConstants.GATEWAY_LATEST_RELEASE_VERSION, "1.0.0");
+		return SettingUtil.getValue(domainId, MwConfigConstants.GW_LATEST_RELEASE_VERSION, "1.0.0");
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String getMpiLatestReleaseVersion(Long domainId) {
-		return SettingUtil.getValue(domainId, MwConfigConstants.MPI_LATEST_RELEASE_VERSION, "1.0.0");
+		return SettingUtil.getValue(domainId, MwConfigConstants.IND_LATEST_RELEASE_VERSION, "1.0.0");
 	}
 	
 	/**
@@ -187,7 +187,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String[] getMpiSegmentRolesOn(Long domainId, String jobType) {
-		ScopeSetting setting = ScopeSetting.findSetting(domainId, "Indicator", jobType, MwConfigConstants.COM_MPI_SEGMENT_ROLE_ON);
+		ScopeSetting setting = ScopeSetting.findSetting(domainId, "Indicator", jobType, MwConfigConstants.IND_SEGMENT_ROLE_ON);
 		return (setting == null) ? null : setting.getValue().split(SysConstants.COMMA);
 	}
 	
@@ -209,7 +209,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String getMpiNumberAlignment(Long domainId) {
-		return SettingUtil.getValue(domainId, MwConfigConstants.MPI_NUMBER_ALIGNMENT, MPI_NUMBER_ALIGNMENT_LEFT);
+		return SettingUtil.getValue(domainId, MwConfigConstants.IND_NUMBER_ALIGNMENT, MPI_NUMBER_ALIGNMENT_LEFT);
 	}
 	
 	/**
@@ -219,7 +219,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String getMpiButtonOnMode(Long domainId) {
-		return SettingUtil.getValue(domainId, MwConfigConstants.MPI_BUTTON_ON_MODE, MPI_BUTTON_MODE_BLINK);
+		return SettingUtil.getValue(domainId, MwConfigConstants.IND_BUTTON_ON_MODE, MPI_BUTTON_MODE_BLINK);
 	}
 	
 	/**
@@ -229,7 +229,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Integer getMpiButtonBlinkInterval(Long domainId) {
-		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.MPI_BUTTON_BLINK_INTERVAL, "300"));
+		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.IND_BUTTON_BLINK_INTERVAL, "300"));
 	}
 	
 	/**
@@ -239,7 +239,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String getMpiShowCharactersBeforeOn(Long domainId) {
-		return SettingUtil.getValue(domainId, MwConfigConstants.MPI_SHOW_CHARS_BEFORE_ON, null);
+		return SettingUtil.getValue(domainId, MwConfigConstants.IND_SHOW_CHARS_BEFORE_ON, null);
 	}
 	
 	/**
@@ -249,7 +249,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Integer getMpiShowCharactersDelayBeforeOn(Long domainId) {
-		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.MPI_SHOW_CHARS_DELAY_BEFORE_ON, "100"));
+		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.IND_SHOW_CHARS_DELAY_BEFORE_ON, "100"));
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Integer getMpiDelayBeforeOn(Long domainId) {
-		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.MPI_DELAY_BEFORE_ON, "1"));
+		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.IND_DELAY_BEFORE_ON, "1"));
 	}
 	
 	/**
@@ -269,7 +269,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Integer getMpiDelayCancelButtonOff(Long domainId) {
-		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.MPI_DELAY_CANCEL_BUTTON_OFF, "100"));
+		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, "100"));
 	}
 	
 	/**
@@ -279,7 +279,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Boolean isMpiFullboxButtonBlink(Long domainId) {
-		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, MwConfigConstants.MPI_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING));
+		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING));
 	}
 	
 	/**
@@ -289,7 +289,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Boolean isMpiSendOffAckAlreadyOff(Long domainId) {
-		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, MwConfigConstants.MPI_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING));
+		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, MwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING));
 	}
 	
 	/**
@@ -299,7 +299,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String getMpiLedBarOnMode(Long domainId) {
-		return SettingUtil.getValue(domainId, MwConfigConstants.MPI_LEDBAR_ON_MODE, MPI_BUTTON_MODE_STOP);
+		return SettingUtil.getValue(domainId, MwConfigConstants.IND_LED_ON_MODE, MPI_BUTTON_MODE_STOP);
 	}
 	
 	/**
@@ -309,7 +309,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Integer getMpiLedBarBlinkInterval(Long domainId) {
-		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.MPI_LEDBAR_BLINK_INTERVAL, "100"));
+		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.IND_LED_BLINK_INTERVAL, "100"));
 	}
 	
 	/**
@@ -319,7 +319,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Integer getMpiLedBarBrightness(Long domainId) {
-		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.MPI_LEDBAR_BRIGHTNESS, "1"));
+		return ValueUtil.toInteger(SettingUtil.getValue(domainId, MwConfigConstants.IND_LED_BRIGHTNESS, "1"));
 	}
 	
 	/**
@@ -329,7 +329,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static String getMpiDisplayViewType(Long domainId) {
-		return ValueUtil.toString(SettingUtil.getValue(domainId, MwConfigConstants.MPI_DISPLAY_MPI_VIEW_TYPE, "0"));
+		return ValueUtil.toString(SettingUtil.getValue(domainId, MwConfigConstants.IND_SHOW_VIEW_TYPE, "0"));
 	}
 	
 	/**
@@ -339,7 +339,7 @@ public class IndicatorSetting {
 	 * @return
 	 */
 	public static Integer getMpiHealthPeriod(Long domainId) {
-		return Integer.parseInt(SettingUtil.getValue(domainId, MwConfigConstants.MPI_HEALTH_PERIOD, "300"));
+		return Integer.parseInt(SettingUtil.getValue(domainId, MwConfigConstants.IND_HEALTH_PERIOD, "300"));
 	}
 	
 	/**
@@ -350,7 +350,7 @@ public class IndicatorSetting {
 	 * @param mpiOnReq
 	 * @param mpiOnInfo
 	 */
-	public static void setMpiOnQty(Long domainId, String jobType, MpiOnPickReq mpiOnReq, IndicatorOnInformation mpiOnInfo) {
+	public static void setMpiOnQty(Long domainId, String jobType, IndOnPickReq mpiOnReq, IndicatorOnInformation mpiOnInfo) {
 		setMpiOnQty(mpiOnInfo, domainId, mpiOnReq.getComCd(), mpiOnReq.getProcessSeq(), mpiOnReq.getBoxInQty(), mpiOnReq.getPickQty());
 	}
 

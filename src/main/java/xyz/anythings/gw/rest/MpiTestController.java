@@ -24,10 +24,10 @@ import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.Action;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.MpiSendService;
-import xyz.anythings.gw.service.model.MpiOffReq;
-import xyz.anythings.gw.service.model.MpiTest;
-import xyz.anythings.gw.service.model.MpiTest.MpiAction;
-import xyz.anythings.gw.service.model.MpiTest.MpiTarget;
+import xyz.anythings.gw.service.model.IndOffReq;
+import xyz.anythings.gw.service.model.IndTest;
+import xyz.anythings.gw.service.model.IndTest.IndAction;
+import xyz.anythings.gw.service.model.IndTest.IndTarget;
 import xyz.anythings.gw.service.util.MpiServiceUtil;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.orm.IQueryManager;
@@ -59,7 +59,7 @@ public class MpiTestController {
 
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicator Unit Test")
-	public Map<String, Object> unitTest(@RequestBody MpiTest mpiTest) {
+	public Map<String, Object> unitTest(@RequestBody IndTest mpiTest) {
 		String action = mpiTest.getAction().getAction();
 		String sendMsg = null;
 		boolean success = true;
@@ -90,7 +90,7 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private String testOn(MpiTest mpiTest) {
+	private String testOn(IndTest mpiTest) {
 		Map<String, List<IndicatorOnInformation>> indOnList = this.createIndOnInfoList(mpiTest);
 		
 		if(ValueUtil.isNotEmpty(indOnList)) {
@@ -107,8 +107,8 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private String testOff(MpiTest mpiTest) {
-		List<MpiOffReq> indOffList = this.createIndOffInfoList(mpiTest);
+	private String testOff(IndTest mpiTest) {
+		List<IndOffReq> indOffList = this.createIndOffInfoList(mpiTest);
 		String msg = null;
 		
 		if(ValueUtil.isNotEmpty(indOffList)) {
@@ -129,8 +129,8 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private String testLedOn(MpiTest mpiTest) {
-		List<MpiOffReq> ledOnList = this.createIndOffInfoList(mpiTest);
+	private String testLedOn(IndTest mpiTest) {
+		List<IndOffReq> ledOnList = this.createIndOffInfoList(mpiTest);
 		
 		String msg = null;
 		
@@ -151,8 +151,8 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private String testLedOff(MpiTest mpiTest) {
-		List<MpiOffReq> ledOffList = this.createIndOffInfoList(mpiTest);
+	private String testLedOff(IndTest mpiTest) {
+		List<IndOffReq> ledOffList = this.createIndOffInfoList(mpiTest);
 		
 		String msg = null;
 		
@@ -262,8 +262,8 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnInfoList(MpiTest mpiTest) {
-		MpiAction action = mpiTest.getAction();
+	private Map<String, List<IndicatorOnInformation>> createIndOnInfoList(IndTest mpiTest) {
+		IndAction action = mpiTest.getAction();
 		
 		switch(action.getActionType()) {
 			case MwConstants.MPI_ACTION_TYPE_PICK : {
@@ -312,9 +312,9 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnMpiInfoList(MpiTest mpiTest) {
-		MpiAction action = mpiTest.getAction();
-		MpiTarget target = mpiTest.getTarget();
+	private Map<String, List<IndicatorOnInformation>> createIndOnMpiInfoList(IndTest mpiTest) {
+		IndAction action = mpiTest.getAction();
+		IndTarget target = mpiTest.getTarget();
 		
 		String btnColor = action.getBtnColor();
 		Integer firstQty = ValueUtil.toInteger(action.getFirstQty());
@@ -344,10 +344,10 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnShowStrInfoList(MpiTest mpiTest) {
+	private Map<String, List<IndicatorOnInformation>> createIndOnShowStrInfoList(IndTest mpiTest) {
 		Map<String, List<IndicatorOnInformation>> mpiOnInfoMap = this.createIndOnMpiInfoList(mpiTest);
 		Iterator<List<IndicatorOnInformation>> valueIter = mpiOnInfoMap.values().iterator();
-		MpiAction action = mpiTest.getAction();
+		IndAction action = mpiTest.getAction();
 		
 		while(valueIter.hasNext()) {
 			List<IndicatorOnInformation> indOnInfoList = valueIter.next();
@@ -390,11 +390,11 @@ public class MpiTestController {
 	 * @param mpiTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnDisplayInfoList(MpiTest mpiTest) {
+	private Map<String, List<IndicatorOnInformation>> createIndOnDisplayInfoList(IndTest mpiTest) {
 		Map<String, List<IndicatorOnInformation>> mpiOnInfoMap = this.createIndOnMpiInfoList(mpiTest);
 		Iterator<List<IndicatorOnInformation>> valueIter = mpiOnInfoMap.values().iterator();
 		
-		MpiAction action = mpiTest.getAction();
+		IndAction action = mpiTest.getAction();
 		Integer firstQty = ValueUtil.toInteger(action.getFirstQty());
 		Integer secondQty = ValueUtil.toInteger(action.getSecondQty());
 		
@@ -414,12 +414,12 @@ public class MpiTestController {
 	 * 
 	 * @return
 	 */
-	private List<MpiOffReq> createIndOffInfoList(MpiTest mpiTest) {
-		MpiTarget target = mpiTest.getTarget();
+	private List<IndOffReq> createIndOffInfoList(IndTest mpiTest) {
+		IndTarget target = mpiTest.getTarget();
 		Map<String, Object> params = ValueUtil.newMap(target.getTargetType(), target.getTargetIdList());
 		params.put("domainId", Domain.currentDomainId());
 		params.put("activeFlag", true);
-		return this.queryManager.selectListBySql(this.getIndOffQuery(), params, MpiOffReq.class, 0, 0);
+		return this.queryManager.selectListBySql(this.getIndOffQuery(), params, IndOffReq.class, 0, 0);
 	}
 	
 	/**
