@@ -10,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.entity.Gateway;
-import xyz.anythings.base.entity.Indicator;
 import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.GatewayDepRequest;
 import xyz.anythings.gw.model.GatewayInitResponse;
@@ -24,6 +22,7 @@ import xyz.anythings.gw.model.LedOnRequest;
 import xyz.anythings.gw.model.MiddlewareConnInfoModRequest;
 import xyz.anythings.gw.model.TimesyncResponse;
 import xyz.anythings.gw.service.model.IndOffReq;
+import xyz.anythings.gw.service.util.GwQueryUtil;
 import xyz.anythings.gw.service.util.IndicatorSetting;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.service.AbstractQueryService;
@@ -45,7 +44,7 @@ public class IndSendService extends AbstractQueryService {
 	 */
 	@Autowired
 	private MwSender mwMsgSender;
-	
+		
 	/**********************************************************************
 	 * 							1. 표시기 On 요청
 	 **********************************************************************/	
@@ -144,7 +143,7 @@ public class IndSendService extends AbstractQueryService {
 	 * @param eaQty
 	 */
 	public void requestCommonIndOn(Long domainId, String jobType, String indCd, String bizId, String actionType, String color, Integer boxQty, Integer eaQty) {
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		requestCommonIndOn(domainId, jobType, indCd, gwPath, bizId, actionType, color, boxQty, eaQty);
 	}
 	
@@ -185,7 +184,7 @@ public class IndSendService extends AbstractQueryService {
 	 * @param forceOff
 	 */
 	public void requestIndOff(Long domainId, String indCd, boolean forceOff) {
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		IndicatorOffRequest indOff = new IndicatorOffRequest();
 		indOff.setIndOff(ValueUtil.newStringList(indCd));
 		indOff.setForceFlag(forceOff);
@@ -212,7 +211,8 @@ public class IndSendService extends AbstractQueryService {
 	public void requestIndOff(Long domainId, List<String> gwPathList, boolean forceOff) {
 		if(ValueUtil.isNotEmpty(gwPathList)) {
 			for(String gwPath : gwPathList) {
-				this.requestIndOff(domainId, gwPath, Gateway.indCdList(domainId, gwPath), forceOff);
+				List<String> indCdList = GwQueryUtil.searchIndCdList(domainId, gwPath);
+				this.requestIndOff(domainId, gwPath, indCdList, forceOff);
 			}
 		}
 	}
@@ -245,7 +245,7 @@ public class IndSendService extends AbstractQueryService {
 	 */
 	public void requestIndOffByRack(Long domainId, String rackCd, boolean forceOff) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<IndOffReq> indList = this.searchIndByStation(domainId, rackCd, null);
+		List<IndOffReq> indList = GwQueryUtil.searchIndByStation(domainId, rackCd, null);
 		// 2. 표시기별 소등 요청
 		this.requestOffByIndList(domainId, indList, forceOff);
 	}
@@ -260,7 +260,7 @@ public class IndSendService extends AbstractQueryService {
 	 */
 	public void requestIndOffByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<IndOffReq> indList = this.searchIndByEquipZone(domainId, rackCd, equipZoneCd, sideCd);
+		List<IndOffReq> indList = GwQueryUtil.searchIndByEquipZone(domainId, rackCd, equipZoneCd, sideCd);
 		// 2. 표시기별 소등 요청
 		this.requestOffByIndList(domainId, indList, false);
 	}
@@ -274,7 +274,7 @@ public class IndSendService extends AbstractQueryService {
 	 */
 	public void requestIndOffByStation(Long domainId, String rackCd, String zoneCd) {
 		// 1. 로케이션 정보로 부터 호기, 장비 존, 호기 사이드 코드로 표시기, 게이트웨이 정보를 추출한다. 
-		List<IndOffReq> indList = this.searchIndByStation(domainId, rackCd, zoneCd);
+		List<IndOffReq> indList = GwQueryUtil.searchIndByStation(domainId, rackCd, zoneCd);
 		// 2. 표시기별 소등 요청
 		this.requestOffByIndList(domainId, indList, false);
 	}
@@ -325,7 +325,7 @@ public class IndSendService extends AbstractQueryService {
 	 * @param finalEnd 최종 완료 (End End 표시 후 Fullbox까지 마쳤는지) 여부
 	 */
 	public void requestIndEndDisplay(Long domainId, String jobType, String indCd, String bizId, boolean finalEnd) {
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indCd);
@@ -400,7 +400,7 @@ public class IndSendService extends AbstractQueryService {
 	 * @param thirdSegQty
 	 */
 	public void requestIndDisplay(Long domainId, String jobType, String indCd, String bizId, String displayActionType, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
@@ -430,7 +430,7 @@ public class IndSendService extends AbstractQueryService {
 	 * @param thirdSegQty
 	 */
 	public void requestIndDisplay(Long domainId, String jobType, String indCd, String bizId, String displayActionType, String[] segRole, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty) {
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
@@ -483,7 +483,7 @@ public class IndSendService extends AbstractQueryService {
 	 * @param pickedQty
 	 */
 	public void requestIndDisplayAccumQty(Long domainId, String jobType, String indCd, String bizId, Integer accumQty, Integer pickedQty) {
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		this.requestIndDisplayAccumQty(domainId, gwPath, jobType, indCd, bizId, accumQty, pickedQty);
 	}
 	
@@ -525,7 +525,7 @@ public class IndSendService extends AbstractQueryService {
 	 */
 	public void requestShowString(Long domainId, String jobType, String gwPath, String indCd, String bizId, String displayStr) {
 		if(ValueUtil.isEmpty(gwPath)) {
-			gwPath = Indicator.findGatewayPath(domainId, indCd);
+			gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		}
 		
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
@@ -563,7 +563,7 @@ public class IndSendService extends AbstractQueryService {
 	 * @param rightQty
 	 */
 	public void requestDisplayLeftStringRightQty(Long domainId, String jobType, String indCd, String bizId, String leftStr, Integer rightQty) {		
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		List<IndicatorOnInformation> indOnList = new ArrayList<IndicatorOnInformation>(1);
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
@@ -708,7 +708,7 @@ public class IndSendService extends AbstractQueryService {
 		LedOnRequest ledOnReq = new LedOnRequest();
 		ledOnReq.setId(indCd);
 		ledOnReq.setLedBarBrtns(ledBarBrightness);
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		this.mwMsgSender.send(domainId, property, ledOnReq);
 	}
@@ -722,7 +722,7 @@ public class IndSendService extends AbstractQueryService {
 	public void requestLedOff(Long domainId, String indCd) {
 		LedOffRequest ledOffReq = new LedOffRequest();
 		ledOffReq.setId(indCd);
-		String gwPath = Indicator.findGatewayPath(domainId, indCd);
+		String gwPath = GwQueryUtil.findGatewayPathByIndCd(domainId, indCd);
 		MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 		this.mwMsgSender.send(domainId, property, ledOffReq);		
 	}
@@ -809,102 +809,66 @@ public class IndSendService extends AbstractQueryService {
 	 * 							9. 기타 / Private Methods 
 	 **********************************************************************/
 	
-	/**
-	 * 호기 및 장비 작업 존 별 게이트웨이 Path 정보 조회
-	 * 
-	 * @param domainId
-	 * @param rackCd
-	 * @param equipZoneCd
-	 * @param sideCd
-	 * @return
-	 */
-	public List<String> searchGwByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
-		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
-		String sql = this.getSearchIndQuery(false);
-		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
-	}
-	
-	/**
-	 * 호기 및 장비 존 코드 사이드 코드로 표시기 리스트를 조회  
-	 * 
-	 * @param domainId
-	 * @param rackCd
-	 * @param equipZoneCd
-	 * @param sideCd
-	 * @return
-	 */
-	public List<IndOffReq> searchIndByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
-		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,equipZoneCd,sideCd", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd));
-		String sql = this.getSearchIndQuery(true);		
-		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
-	}	
-	
-	/**
-	 * 호기 및 호기 작업 존 별 게이트웨이 Path 리스트 조회 
-	 * 
-	 * @param domainId
-	 * @param rackCd
-	 * @param zoneCd
-	 * @return
-	 */
-	public List<String> searchGwByStation(Long domainId, String rackCd, String zoneCd) {
-		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,zoneCd", domainId, rackCd, zoneCd);
-		String sql = this.getSearchIndQuery(false);
-		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
-	}
-	
-	/**
-	 * 호기 및 작업 존 코드로 표시기 리스트를 조회
-	 * 
-	 * @param domainId
-	 * @param rackCd
-	 * @param zoneCd
-	 * @return
-	 */
-	public List<IndOffReq> searchIndByStation(Long domainId, String rackCd, String zoneCd) {
-		Map<String, Object> params = 
-			ValueUtil.newMap("domainId,regionCd,zoneCd", domainId, rackCd, zoneCd);
-		String sql = this.getSearchIndQuery(true);
-		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
-	}
-	
-	/**
-	 * 표시기 혹은 게이트웨이 조회 쿼리 
-	 * 
-	 * @param isIndQuery 표시기 조회 쿼리 인지 게이트웨이 조회 쿼리 인지...
-	 * @return
-	 */
-	public String getSearchIndQuery(boolean isIndQuery) {
-		StringBuffer sql = new StringBuffer();
-		return 
-		sql.append(" SELECT")
-		   .append(isIndQuery ? "	C.IND_CD, G.GW_NM AS GW_PATH" : "	DISTINCT(G.GW_NM) AS GW_PATH") 
-		   .append(" FROM ")
-		   .append("	CELLS C")
-		   .append("	INNER JOIN INDICATORS I ON C.DOMAIN_ID = I.DOMAIN_ID AND C.IND_CD = I.IND_CD")
-		   .append("	INNER JOIN GATEWAYS G ON I.DOMAIN_ID = G.DOMAIN_ID AND I.GW_CD = G.GW_CD")
-		   .append(" WHERE")
-		   .append(" 	I.DOMAIN_ID = :domainId")
-		   .append("	AND C.active_flag = 1")
-		   .append("	#if($rackCd)")
-		   .append(" 	AND C.RACK_CD = :rackCd")
-		   .append("	#end")
-		   .append(" 	#if($stationCd)")
-		   .append(" 	AND C.STATION_CD = :stationCd")
-		   .append(" 	#end")
-		   .append(" 	#if($gwZoneCd)")
-		   .append(" 	AND C.GW_ZONE_CD = :gwZoneCd")
-		   .append(" 	#end")
-		   .append(" 	#if($equipZoneCd)")
-		   .append(" 	AND C.EQUIP_ZONE_CD = :equipZoneCd")
-		   .append(" 	#end")
-		   .append(" 	#if($sideCd)")
-		   .append(" 	AND C.SIDE_CD = :sideCd")
-		   .append(" 	#end")
-		   .append(isIndQuery ? " ORDER BY G.GW_NM ASC, C.CELL_SEQ ASC" : " ORDER BY G.GW_NM ASC").toString();
-	}
+//	/**
+//	 * 호기 및 장비 작업 존 별 게이트웨이 Path 정보 조회
+//	 * 
+//	 * @param domainId
+//	 * @param rackCd
+//	 * @param equipZoneCd
+//	 * @param sideCd
+//	 * @return
+//	 */
+//	public List<String> searchGwByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
+//		Map<String, Object> params = 
+//			ValueUtil.newMap("domainId,rackCd,equipZone,sideCd,activeFlag", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd), true);
+//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
+//		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
+//	}
+//	
+//	/**
+//	 * 호기 및 장비 존 코드 사이드 코드로 표시기 리스트를 조회  
+//	 * 
+//	 * @param domainId
+//	 * @param rackCd
+//	 * @param equipZoneCd
+//	 * @param sideCd
+//	 * @return
+//	 */
+//	public List<IndOffReq> searchIndByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
+//		Map<String, Object> params = 
+//			ValueUtil.newMap("domainId,rackCd,equipZone,sideCd,activeFlag,indQueryFlag", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd), true, true);
+//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
+//		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
+//	}	
+//	
+//	/**
+//	 * 호기 및 호기 작업 존 별 게이트웨이 Path 리스트 조회 
+//	 * 
+//	 * @param domainId
+//	 * @param rackCd
+//	 * @param stationCd
+//	 * @return
+//	 */
+//	public List<String> searchGwByStation(Long domainId, String rackCd, String stationCd) {
+//		Map<String, Object> params = 
+//			ValueUtil.newMap("domainId,rackCd,stationCd,activeFlag", domainId, rackCd, stationCd, true);
+//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
+//		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
+//	}
+//	
+//	/**
+//	 * 호기 및 작업 존 코드로 표시기 리스트를 조회
+//	 * 
+//	 * @param domainId
+//	 * @param rackCd
+//	 * @param zoneCd
+//	 * @return
+//	 */
+//	public List<IndOffReq> searchIndByStation(Long domainId, String rackCd, String stationCd) {
+//		Map<String, Object> params = 
+//			ValueUtil.newMap("domainId,rackCd,stationCd,activeFlag,indQueryFlag", domainId, rackCd, stationCd, true, true);
+//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
+//		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
+//	}
 
 }

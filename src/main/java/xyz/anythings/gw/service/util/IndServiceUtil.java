@@ -8,7 +8,6 @@ import java.util.StringJoiner;
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.Gateway;
-import xyz.anythings.base.entity.Indicator;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.WorkCell;
@@ -118,7 +117,7 @@ public class IndServiceUtil {
 	public static List<WorkCell> restoreIndDisplayBoxingEnd(JobBatch batch, Gateway gateway) {
 		// 1. DAS, RTN에 대해서 로케이션의 jobStatus가 END, ENDED 상태인 모든 로케이션을 조회
 		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId(), 0, 0, "domain_id", "cell_cd", "ind_cd", "status", "job_instance_id");
-		condition.addFilter("indCd", SysConstants.IN, gateway.indCdList());
+		condition.addFilter("indCd", SysConstants.IN, GwQueryUtil.searchIndCdList(gateway));
 		condition.addFilter("status", SysConstants.IN, LogisConstants.CELL_JOB_STATUS_END_LIST);
 		condition.addOrder("cellCd", true);
 		List<WorkCell> workCells = BeanUtil.get(IQueryManager.class).selectList(WorkCell.class, condition);
@@ -187,7 +186,7 @@ public class IndServiceUtil {
 	 */
 	public static boolean indOnByJob(boolean needUpdateJobStatus, JobInstance job) {
 		if(ValueUtil.isEmpty(job.getGwPath())) {
-			String gwPath = Indicator.findGatewayPath(job.getDomainId(), job.getIndCd());
+			String gwPath = GwQueryUtil.findGatewayPathByIndCd(job.getDomainId(), job.getIndCd());
 			job.setGwPath(gwPath);
 		}
 		
@@ -206,7 +205,7 @@ public class IndServiceUtil {
 	 */
 	public static boolean indOnByJob(boolean needUpdateJobStatus, JobInstance job, boolean showPickingQty) {
 		if(ValueUtil.isEmpty(job.getGwPath())) {
-			String gwPath = Indicator.findGatewayPath(job.getDomainId(), job.getIndCd());
+			String gwPath = GwQueryUtil.findGatewayPathByIndCd(job.getDomainId(), job.getIndCd());
 			job.setGwPath(gwPath);
 		}
 		
