@@ -32,9 +32,9 @@ import xyz.elidom.util.ValueUtil;
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/mpi_setting")
-@ServiceDesc(description="MPI Setting API")
-public class MpiSettingController extends AbstractRestService {
+@RequestMapping("/rest/ind_setting")
+@ServiceDesc(description="Indicator Setting API")
+public class IndicatorSettingController extends AbstractRestService {
 	
 	/**
 	 * 쿼리 매니저

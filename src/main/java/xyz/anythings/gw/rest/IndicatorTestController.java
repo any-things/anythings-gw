@@ -44,7 +44,7 @@ import xyz.elidom.util.ValueUtil;
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/rest/indicator_test")
 @ServiceDesc(description = "Indicator Test Service API")
-public class MpiTestController {
+public class IndicatorTestController {
 	
 	/**
 	 * 쿼리 매니저
