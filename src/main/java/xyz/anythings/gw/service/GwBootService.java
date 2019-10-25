@@ -6,16 +6,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.Indicator;
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
+import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.gw.event.GatewayRebootEvent;
 import xyz.anythings.gw.model.GatewayInitResGwConfig;
+import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.GatewayInitResponse;
-import xyz.anythings.gw.service.util.IndServiceUtil;
-import xyz.anythings.gw.service.util.IndicatorSetting;
+import xyz.anythings.gw.query.store.GwQueryStore;
+import xyz.anythings.gw.service.util.GwQueryUtil;
+import xyz.anythings.gw.service.util.RuntimeIndicatorSetting;
+import xyz.anythings.gw.service.util.StageIndicatorSetting;
+import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.orm.OrmConstants;
 import xyz.elidom.sys.entity.Domain;
@@ -30,10 +36,20 @@ import xyz.elidom.sys.util.ValueUtil;
 public class GwBootService extends AbstractQueryService {
 	
 	/**
+	 * Event Publisher
+	 */
+	@Autowired
+	protected EventPublisher eventPublisher;
+	/**
 	 * 표시기 점등 서비스
 	 */
 	@Autowired
 	private IndSendService indSendService;
+	/**
+	 * 게이트웨이 관련 쿼리 스토어
+	 */
+	@Autowired
+	private GwQueryStore gwQueryStore;
 	
 	/**
 	 * 배치 ID, 게이트웨이 정보로 게이트웨이 부트
@@ -59,6 +75,17 @@ public class GwBootService extends AbstractQueryService {
 		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchId);
 		this.respondGatewayBoot(batch, gateway);
 	}
+
+	/**
+	 * 작업 배치, 게이트웨이 정보로 게이트웨이 부트
+	 * 
+	 * @param batch
+	 * @param gwNm
+	 */
+	public void respondGatewayBoot(JobBatch batch, String gwNm) {
+		Gateway gateway = LogisEntityUtil.findEntityBy(batch.getDomainId(), true, Gateway.class, "gwNm", gwNm);
+		this.respondGatewayBoot(gateway, batch);
+	}
 	
 	/**
 	 * 작업 배치, 게이트웨이 정보로 게이트웨이 부트
@@ -67,38 +94,7 @@ public class GwBootService extends AbstractQueryService {
 	 * @param gateway
 	 */
 	public void respondGatewayBoot(JobBatch batch, Gateway gateway) {
-		// 1. 데이터 
-		Long domainId = batch.getDomainId();
-		String jobType = batch.getJobType();
-		String gwNm = gateway.getGwNm();
-		
-		// 2. Gateway 초기화 설정 정보 가져오기.
-		GatewayInitResponse gwInitRes = new GatewayInitResponse();
-		gwInitRes.setGwConf(this.newGatewayInitConfig(gateway));
-		
-		// 3. Gateway 소속 표시기 List를 설정
-		List<GatewayInitResIndList> indList = IndServiceUtil.indListForGwInit(gateway);
-		gwInitRes.setIndList(indList);
-		
-		// 4. Gateway가 관리하는 인디케이터 리스트 및 각각의 Indicator 별 설정 정보 가져오기.
-		gwInitRes.setIndConf(IndicatorSetting.getGatewayBootConfig(domainId, jobType));
-		
-		// 5. Gateway 최신버전 정보 설정.
-		String latestGatewayVer = IndicatorSetting.getGwLatestReleaseVersion(domainId);
-		gwInitRes.setGwVersion(latestGatewayVer);
-		
-		// 6. Indicator 최신버전 정보 설정.
-		String latestIndVer = IndicatorSetting.getIndLatestReleaseVersion(domainId);
-		gwInitRes.setIndVersion(latestIndVer);
-
-		// 7. 현재 시간 설정 - 밀리세컨드 제외
-		gwInitRes.setSvrTime((long)(new Date().getTime() / 1000));
-		
-		// 8. 상태 보고 주기 설정.
-		gwInitRes.setHealthPeriod(IndicatorSetting.getIndHealthPeriod(domainId));
-		
-		// 9. 게이트웨이 초기화 응답 전송 
-		this.indSendService.respondGatewayInit(domainId, gwNm, gwInitRes);
+		this.respondGatewayBoot(gateway, batch);
 	}
 	
 	/**
@@ -108,43 +104,61 @@ public class GwBootService extends AbstractQueryService {
 	 * @param gwNm
 	 */
 	public void respondGatewayBoot(Domain domain, String gwNm) {
-		// 1. 게이트웨이 조회
-		Long domainId = domain.getId();
-		Gateway gateway = LogisEntityUtil.findEntityBy(domainId, true, Gateway.class, "gwNm", gwNm);
-
+		Gateway gateway = LogisEntityUtil.findEntityBy(domain.getId(), true, Gateway.class, "gwNm", gwNm);
+		this.respondGatewayBoot(gateway, null);
+	}
+	
+	/**
+	 * Gateway, JobBatch, JobType으로 표시기 부팅 
+	 * 
+	 * @param gateway
+	 * @param batch
+	 */
+	public void respondGatewayBoot(Gateway gateway, JobBatch batch) {
+		// 1. domainId
+		Long domainId = gateway.getDomainId();
+		
 		// 2. Gateway 초기화 설정 정보 가져오기.
 		GatewayInitResponse gwInitRes = new GatewayInitResponse();
 		gwInitRes.setGwConf(this.newGatewayInitConfig(gateway));
 		
 		// 3. Gateway 소속 표시기 List를 설정
-		List<GatewayInitResIndList> indList = IndServiceUtil.indListForGwInit(gateway);
+		List<GatewayInitResIndList> indList = (batch != null) ?
+				GwQueryUtil.searchIndListForGwInit(gateway) : GwQueryUtil.searchIndListForGwInit(gateway, batch);
 		gwInitRes.setIndList(indList);
 		
 		// 4. Gateway가 관리하는 인디케이터 리스트 및 각각의 Indicator 별 설정 정보 가져오기.
-		String jobType = null;
-		if(ValueUtil.isNotEmpty(indList)) {
+		String jobType = (batch != null) ? batch.getJobType() : null;
+		
+		if(jobType == null && ValueUtil.isNotEmpty(indList)) {
 			GatewayInitResIndList girl = indList.get(0);
 			jobType = girl.getBizType();
 		}
 		
-		gwInitRes.setIndConf(IndicatorSetting.getGatewayBootConfig(domainId, jobType));
+		GatewayInitResIndConfig gwInitResIndConfig = (batch != null) ?
+				RuntimeIndicatorSetting.getGatewayBootConfig(batch, gateway) : StageIndicatorSetting.getGatewayBootConfig(gateway);
+		gwInitRes.setIndConf(gwInitResIndConfig);
 		
 		// 5. Gateway 최신버전 정보 설정.
-		String latestGatewayVer = IndicatorSetting.getGwLatestReleaseVersion(domainId);
+		String latestGatewayVer = (batch != null) ? 
+				RuntimeIndicatorSetting.getGwLatestReleaseVersion(batch, gateway) : StageIndicatorSetting.getGwLatestReleaseVersion(gateway);
 		gwInitRes.setGwVersion(latestGatewayVer);
 		
 		// 6. Indicator 최신버전 정보 설정.
-		String latestIndVer = IndicatorSetting.getIndLatestReleaseVersion(domainId);
+		String latestIndVer = (batch != null) ? 
+				RuntimeIndicatorSetting.getIndLatestReleaseVersion(batch) : StageIndicatorSetting.getIndLatestReleaseVersion(gateway);
 		gwInitRes.setIndVersion(latestIndVer);
 
 		// 7. 현재 시간 설정 - 밀리세컨드 제외
 		gwInitRes.setSvrTime((long)(new Date().getTime() / 1000));
 		
 		// 8. 상태 보고 주기 설정.
-		gwInitRes.setHealthPeriod(IndicatorSetting.getIndHealthPeriod(domainId));
+		int healthPeriod = (batch != null) ? 
+				RuntimeIndicatorSetting.getIndHealthPeriod(batch) : StageIndicatorSetting.getIndHealthPeriod(gateway.getDomainId(), gateway.getStageCd()); 
+		gwInitRes.setHealthPeriod(healthPeriod);
 		
 		// 9. 게이트웨이 초기화 응답 전송 
-		this.indSendService.respondGatewayInit(domainId, gwNm, gwInitRes);
+		this.indSendService.respondGatewayInit(domainId, gateway.getGwNm(), gwInitRes);		
 	}
 	
 	/**
@@ -178,8 +192,9 @@ public class GwBootService extends AbstractQueryService {
 	public void indicatorsOnByGateway(Domain domain, Gateway gateway) {
 		// 1. Gateway 정보로 호기 리스트 추출
 		Long domainId = domain.getId();
-		String sql = "select distinct(rack_cd) as rack_cd from cells where domain_id = :domainId and ind_cd in (select ind_cd from indicators where domain_id = :domainId and gw_cd = :gwCd) order by rack_cd";
-		List<String> rackCdList = this.queryManager.selectListBySql(sql, ValueUtil.newMap("domainId,gwCd", domainId, gateway.getGwCd()), String.class, 0, 0);
+		String sql = this.gwQueryStore.getEquipListByGateway();
+		// FIXME 설비 타입, 설비 코드를 동시에 받아서 처리하기 ...
+		List<String> rackCdList = LogisEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,gwCd,equipType", domainId, gateway.getGwCd(), "Rack");
 		
 		// 2. 호기로 부터 현재 작업 중인 배치 추출 
 		for(String rackCd : rackCdList) {
@@ -190,17 +205,16 @@ public class GwBootService extends AbstractQueryService {
 				continue;
 			}
 			
-			// 2-2. TODO 이벤트 전달하여 해당 모듈 (DAS, DPS, 반품 등)에서 처리하도록 수정 필요
-			
 			// 2-2. 작업 배치 및 상태 체크
-			// JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, rack.getBatchId());
+			JobBatch batch = LogisEntityUtil.findEntityById(false, JobBatch.class, rack.getBatchId());
 			
-			// if(batch == null || ValueUtil.isNotEqual(batch.getStatus(), JobBatch.STATUS_RUNNING)) {
-			//	continue;
-			// }
+			if(batch == null || ValueUtil.isNotEqual(batch.getStatus(), JobBatch.STATUS_RUNNING)) {
+				continue;
+			}
 			
 			// 2-3. 호기 코드, 게이트웨이 코드로 표시기 이전 상태 복원
-			// this.getAssortService(batch).restoreMpiOn(batch, gateway);
+			GatewayRebootEvent gwRebbotEvent = new GatewayRebootEvent(EventConstants.EVENT_STEP_AFTER, gateway, batch);
+			this.eventPublisher.publishEvent(gwRebbotEvent);
 		}
 	}
 

@@ -23,7 +23,7 @@ import xyz.anythings.gw.model.MiddlewareConnInfoModRequest;
 import xyz.anythings.gw.model.TimesyncResponse;
 import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.util.GwQueryUtil;
-import xyz.anythings.gw.service.util.IndicatorSetting;
+import xyz.anythings.gw.service.util.RuntimeIndicatorSetting;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.rabbitmq.message.MessageProperties;
@@ -93,7 +93,7 @@ public class IndSendService extends AbstractQueryService {
 			indOnForPickList.forEach((gwPath, indOnList) -> {
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 				for(IndicatorOnInformation indOnInfo : indOnList) {
-					indOnInfo.setBtnMode(IndicatorSetting.IND_BUTTON_MODE_STOP);
+					indOnInfo.setBtnMode(RuntimeIndicatorSetting.IND_BUTTON_MODE_STOP);
 				}
 				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.IND_ACTION_TYPE_INSPECT, indOnList));
 			});
@@ -463,7 +463,7 @@ public class IndSendService extends AbstractQueryService {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { IndicatorSetting.IND_SEGMENT_ROLE_RELAY_SEQ, IndicatorSetting.IND_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { RuntimeIndicatorSetting.IND_SEGMENT_ROLE_RELAY_SEQ, RuntimeIndicatorSetting.IND_SEGMENT_ROLE_PCS });
 		indOnInfo.setOrgAccmQty(accumQty);
 		indOnInfo.setOrgEaQty(pickedQty);
 		indOnList.add(indOnInfo);
@@ -569,7 +569,7 @@ public class IndSendService extends AbstractQueryService {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { IndicatorSetting.IND_SEGMENT_ROLE_STR, IndicatorSetting.IND_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { RuntimeIndicatorSetting.IND_SEGMENT_ROLE_STR, RuntimeIndicatorSetting.IND_SEGMENT_ROLE_PCS });
 		indOnInfo.setViewStr(leftStr);
 		indOnInfo.setOrgEaQty(rightQty);
 		indOnList.add(indOnInfo);
@@ -804,71 +804,5 @@ public class IndSendService extends AbstractQueryService {
 			}			
 		}
 	}
-
-	/**********************************************************************
-	 * 							9. 기타 / Private Methods 
-	 **********************************************************************/
-	
-//	/**
-//	 * 호기 및 장비 작업 존 별 게이트웨이 Path 정보 조회
-//	 * 
-//	 * @param domainId
-//	 * @param rackCd
-//	 * @param equipZoneCd
-//	 * @param sideCd
-//	 * @return
-//	 */
-//	public List<String> searchGwByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
-//		Map<String, Object> params = 
-//			ValueUtil.newMap("domainId,rackCd,equipZone,sideCd,activeFlag", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd), true);
-//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
-//		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
-//	}
-//	
-//	/**
-//	 * 호기 및 장비 존 코드 사이드 코드로 표시기 리스트를 조회  
-//	 * 
-//	 * @param domainId
-//	 * @param rackCd
-//	 * @param equipZoneCd
-//	 * @param sideCd
-//	 * @return
-//	 */
-//	public List<IndOffReq> searchIndByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
-//		Map<String, Object> params = 
-//			ValueUtil.newMap("domainId,rackCd,equipZone,sideCd,activeFlag,indQueryFlag", domainId, rackCd, equipZoneCd, MwConstants.checkSideCdForQuery(domainId, sideCd), true, true);
-//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
-//		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
-//	}	
-//	
-//	/**
-//	 * 호기 및 호기 작업 존 별 게이트웨이 Path 리스트 조회 
-//	 * 
-//	 * @param domainId
-//	 * @param rackCd
-//	 * @param stationCd
-//	 * @return
-//	 */
-//	public List<String> searchGwByStation(Long domainId, String rackCd, String stationCd) {
-//		Map<String, Object> params = 
-//			ValueUtil.newMap("domainId,rackCd,stationCd,activeFlag", domainId, rackCd, stationCd, true);
-//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
-//		return queryManager.selectListBySql(sql, params, String.class, 0, 0);
-//	}
-//	
-//	/**
-//	 * 호기 및 작업 존 코드로 표시기 리스트를 조회
-//	 * 
-//	 * @param domainId
-//	 * @param rackCd
-//	 * @param zoneCd
-//	 * @return
-//	 */
-//	public List<IndOffReq> searchIndByStation(Long domainId, String rackCd, String stationCd) {
-//		Map<String, Object> params = 
-//			ValueUtil.newMap("domainId,rackCd,stationCd,activeFlag,indQueryFlag", domainId, rackCd, stationCd, true, true);
-//		String sql = this.gwQueryStore.getSearchIndicatorsQuery();
-//		return queryManager.selectListBySql(sql, params, IndOffReq.class, 0, 0);
-//	}
 
 }

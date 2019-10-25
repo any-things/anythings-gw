@@ -38,4 +38,22 @@ public class GwQueryStore extends AbstractQueryStore {
 		return this.getQueryByPath("gw/SearchIndicators");
 	}
 
+	/**
+	 * 게이트웨이 소속 표시기를 사용하는 모든 설비 리스트를 조회
+	 *  
+	 * @return
+	 */
+	public String getEquipListByGateway() {
+		return this.getQueryByPath("gw/EquipListByGateway");
+	}
+
+	/**
+	 * 라우터 리부팅을 위한 표시기 리스트를 조회
+	 *  
+	 * @return
+	 */
+	public String getSearchIndListForGwInitQuery() {
+		return this.getQueryByPath("gw/SearchIndListForGwInit");
+	}
+
 }

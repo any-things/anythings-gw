@@ -28,7 +28,7 @@ import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.model.IndTest;
 import xyz.anythings.gw.service.model.IndTest.IndAction;
 import xyz.anythings.gw.service.model.IndTest.IndTarget;
-import xyz.anythings.gw.service.util.IndServiceUtil;
+import xyz.anythings.gw.service.util.RuntimeIndServiceUtil;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -327,7 +327,6 @@ public class IndicatorTestController {
 		
 		for(JobInstance job : jobList) {
 			job.setId(UUID.randomUUID().toString());
-			job.setComCd(mpiTest.getComCd());
 			job.setColorCd(btnColor);
 			job.setBoxInQty(1);
 			job.setInputSeq(firstQty);
@@ -335,7 +334,7 @@ public class IndicatorTestController {
 			job.setPickedQty(0);
 		}
 		
-		return IndServiceUtil.buildIndOnList(false, MwConstants.JOB_TYPE_DAS, jobList, false);
+		return RuntimeIndServiceUtil.buildTestIndOnList(mpiTest.getIndConfigSetId(), MwConstants.JOB_TYPE_DAS, jobList);
 	}
 	
 	/**
@@ -431,7 +430,7 @@ public class IndicatorTestController {
 		StringJoiner sql = new StringJoiner(SysConstants.LINE_SEPARATOR);
 		return 
 		sql.add("SELECT")
-		   .add("	GATE.domain_id, GATE.gw_nm as gw_path, CELL.ind_cd, LOC.cell_cd")
+		   .add("	GATE.domain_id, GATE.gw_nm as gw_path, CELL.ind_cd, CELL.cell_cd")
 		   .add("FROM")
 		   .add("	CELLS CELL")
 		   .add("	INNER JOIN INDICATORS IND ON CELL.DOMAIN_ID = IND.DOMAIN_ID AND CELL.IND_CD = IND.IND_CD")

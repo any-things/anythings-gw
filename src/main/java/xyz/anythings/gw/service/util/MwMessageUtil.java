@@ -10,6 +10,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.gw.MwConfigConstants;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.model.MessageObject;
@@ -29,6 +30,9 @@ import xyz.elidom.util.ValueUtil;
  */
 public class MwMessageUtil {
 	
+	/**
+	 * 시스템 메시지 큐 
+	 */
 	private static String SYSTEM_QUEUE = null;
 	
 	/**
@@ -175,7 +179,7 @@ public class MwMessageUtil {
 	/**
 	 * 표시기 점등 모델 생성 
 	 * 
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param orgRelay
@@ -183,66 +187,100 @@ public class MwMessageUtil {
 	 * @param orgEaQty
 	 * @return
 	 */
-	public static IndicatorOnInformation newMpiOnInfo(String mpiCd, String bizId, String color, Integer orgRelay, Integer orgBoxQty, Integer orgEaQty) {
-		IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-		mpiOnInfo.setId(mpiCd);
-		mpiOnInfo.setBizId(bizId);
-		mpiOnInfo.setColor(color);
-		mpiOnInfo.setOrgRelay(orgRelay);
-		mpiOnInfo.setOrgBoxQty(orgBoxQty);
-		mpiOnInfo.setOrgEaQty(orgEaQty);
-		return mpiOnInfo;
+	public static IndicatorOnInformation newIndOnInfo(String indCd, String bizId, String color, Integer orgRelay, Integer orgBoxQty, Integer orgEaQty) {
+		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+		indOnInfo.setId(indCd);
+		indOnInfo.setBizId(bizId);
+		indOnInfo.setColor(color);
+		indOnInfo.setOrgRelay(orgRelay);
+		indOnInfo.setOrgBoxQty(orgBoxQty);
+		indOnInfo.setOrgEaQty(orgEaQty);
+		return indOnInfo;
 	}
 	
 	/**
 	 * 표시기 점등 모델 생성 
 	 * 
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param orgRelay
 	 * @param orgEaQty
 	 * @return
 	 */
-	public static IndicatorOnInformation newMpiOnInfo(String mpiCd, String bizId, String color, Integer orgRelay, Integer orgEaQty) {
-		return newMpiOnInfo(mpiCd, bizId, color, orgRelay, null, orgEaQty);
+	public static IndicatorOnInformation newIndOnInfo(String indCd, String bizId, String color, Integer orgRelay, Integer orgEaQty) {
+		return newIndOnInfo(indCd, bizId, color, orgRelay, null, orgEaQty);
 	}
 	
 	/**
 	 * 표시기 점등 모델 생성 
 	 * 
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param orgEaQty
 	 * @return
 	 */
-	public static IndicatorOnInformation newMpiOnInfo(String mpiCd, String bizId, String color, Integer orgEaQty) {
-		return newMpiOnInfo(mpiCd, bizId, color, null, null, orgEaQty);
+	public static IndicatorOnInformation newIndOnInfo(String indCd, String bizId, String color, Integer orgEaQty) {
+		return newIndOnInfo(indCd, bizId, color, null, null, orgEaQty);
 	}
 	
 	/**
-	 * 표시기 점등 모델 생성
+	 * 작업 배치 범위 내에서 표시기 점등 모델 생성
 	 * 
-	 * @param domainId
-	 * @param jobType
-	 * @param mpiOnPick
+	 * @param batch
+	 * @param indOnPick
 	 * @return
 	 */
-	public static IndicatorOnInformation newMpiOnInfo(Long domainId, String jobType, IndOnPickReq mpiOnPick) {
-		IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-		mpiOnInfo.setId(mpiOnPick.getIndCd());
-		mpiOnInfo.setBizId(mpiOnPick.getJobInstanceId());
-		mpiOnInfo.setColor(mpiOnPick.getColorCd());
-		// mpiOnPick 정보로 mpiOnInfo에 orgRelay, orgBoxQty, orgEaQty 값 설정
-		IndicatorSetting.setMpiOnQty(domainId, jobType, mpiOnPick, mpiOnInfo);
-		return mpiOnInfo;
+	public static IndicatorOnInformation newIndOnInfo(JobBatch batch, IndOnPickReq indOnPick) {
+		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+		indOnInfo.setId(indOnPick.getIndCd());
+		indOnInfo.setBizId(indOnPick.getJobInstanceId());
+		indOnInfo.setColor(indOnPick.getColorCd());
+		// 작업 배치 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
+		RuntimeIndicatorSetting.setIndOnQty(batch, indOnPick, indOnInfo);
+		return indOnInfo;
+	}
+	
+	/**
+	 * 스테이지 범위 내에서 표시기 점등 모델 생성
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param indOnPick
+	 * @return
+	 */
+	public static IndicatorOnInformation newIndOnInfo(Long domainId, String stageCd, IndOnPickReq indOnPick) {
+		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+		indOnInfo.setId(indOnPick.getIndCd());
+		indOnInfo.setBizId(indOnPick.getJobInstanceId());
+		indOnInfo.setColor(indOnPick.getColorCd());
+		// 스테이지 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
+		StageIndicatorSetting.setIndOnQty(domainId, stageCd, indOnPick, indOnInfo);
+		return indOnInfo;
+	}
+	
+	/**
+	 * 스테이지 범위 내에서 표시기 점등 모델 생성
+	 * 
+	 * @param indConfigSetId
+	 * @param indOnPick
+	 * @return
+	 */
+	public static IndicatorOnInformation newIndOnInfo(String indConfigSetId, IndOnPickReq indOnPick) {
+		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+		indOnInfo.setId(indOnPick.getIndCd());
+		indOnInfo.setBizId(indOnPick.getJobInstanceId());
+		indOnInfo.setColor(indOnPick.getColorCd());
+		// 표시기 설정 ID 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
+		ConfigIndicatorSetting.setIndOnQty(indConfigSetId, indOnPick, indOnInfo);
+		return indOnInfo;
 	}
 	
 	/**
 	 * 표시기 점등 모델 생성 
 	 * 
-	 * @param mpiCd
+	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param segRole
@@ -251,8 +289,8 @@ public class MwMessageUtil {
 	 * @param thirdSegNo
 	 * @return
 	 */
-	public static IndicatorOnInformation newMpiOnInfo(
-			String mpiCd, 
+	public static IndicatorOnInformation newIndOnInfo(
+			String indCd, 
 			String bizId, 
 			String color, 
 			String[] segRole, 
@@ -260,75 +298,101 @@ public class MwMessageUtil {
 			Integer secondSegNo, 
 			Integer thirdSegNo) {
 		
-		IndicatorOnInformation mpiOnInfo = new IndicatorOnInformation();
-		mpiOnInfo.setId(mpiCd);
-		mpiOnInfo.setBizId(bizId);
-		mpiOnInfo.setColor(color);
-		mpiOnInfo.setSegRole(segRole);
-		mpiOnInfo.setOrgRelay(firstSegNo);
-		mpiOnInfo.setOrgBoxQty(secondSegNo);
-		mpiOnInfo.setOrgEaQty(thirdSegNo);
-		return mpiOnInfo;
+		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+		indOnInfo.setId(indCd);
+		indOnInfo.setBizId(bizId);
+		indOnInfo.setColor(color);
+		indOnInfo.setSegRole(segRole);
+		indOnInfo.setOrgRelay(firstSegNo);
+		indOnInfo.setOrgBoxQty(secondSegNo);
+		indOnInfo.setOrgEaQty(thirdSegNo);
+		return indOnInfo;
 	}
 
 	/**
-	 * jobType에 따라 MpiLightOnReq 배열을 gwPath - MpiLightOnReq 리스트로 그루핑하여 리턴
+	 * 작업 배치 범위 내에서 IndOnPickReq 배열을 gwPath - IndOnPickReq 리스트로 그루핑하여 리턴
 	 * 
-	 * @param domainId
-	 * @param jobType DAS, DPS, RTN
-	 * @param mpiOnReqList
+	 * @param batch
+	 * @param indOnReqList
 	 * @return
 	 */
 	public static Map<String, List<IndicatorOnInformation>> 
-		groupPickingByGwPath(Long domainId, String jobType, List<IndOnPickReq> mpiOnReqList) {
+		groupPickingByGwPath(JobBatch batch, List<IndOnPickReq> indOnReqList) {
 		
-		Map<String, List<IndicatorOnInformation>> groupGwMpiOnList = 
+		Map<String, List<IndicatorOnInformation>> groupGwIndOnList = 
 				new HashMap<String, List<IndicatorOnInformation>>();
 
-		for (IndOnPickReq mpiOnPick : mpiOnReqList) {
-			String gwPath = mpiOnPick.getGwPath();
+		for (IndOnPickReq indOnPick : indOnReqList) {
+			String gwPath = indOnPick.getGwPath();
 			
-			List<IndicatorOnInformation> mpiOnList = 
-					groupGwMpiOnList.containsKey(gwPath) ? 
-							groupGwMpiOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+			List<IndicatorOnInformation> indOnList = 
+					groupGwIndOnList.containsKey(gwPath) ? 
+							groupGwIndOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
 
-			IndicatorOnInformation mpiOnInfo = newMpiOnInfo(domainId, jobType, mpiOnPick);
-			mpiOnList.add(mpiOnInfo);
-			groupGwMpiOnList.put(gwPath, mpiOnList);
+			IndicatorOnInformation indOnInfo = newIndOnInfo(batch, indOnPick);
+			indOnList.add(indOnInfo);
+			groupGwIndOnList.put(gwPath, indOnList);
 		}
 
-		return groupGwMpiOnList;
+		return groupGwIndOnList;
 	}
 
 	/**
-	 * MpiLightOnStockReq 배열을 gwPath - MpiLightOnStockReq 리스트로 그루핑하여 리턴
+	 * IndicatorOnInformation 배열을 gwPath - IndicatorOnInformation 리스트로 그루핑하여 리턴
 	 * 
 	 * @param bizId
-	 * @param mpiColor
-	 * @param mpiOnStockReqList
+	 * @param color
+	 * @param indOnStockReqList
 	 * @return key : gatewayPath, value : IndicatorOnInformation List
 	 */
-	public static Map<String, List<IndicatorOnInformation>> groupStockByGatewayPath(
-			String bizId, String mpiColor, List<IndOnStockReq> mpiOnStockReqList) {
+	public static Map<String, List<IndicatorOnInformation>> groupStockByGwPath(
+			String bizId, String color, List<IndOnStockReq> indOnStockReqList) {
 		
-		Map<String, List<IndicatorOnInformation>> gwMpiOnListGroup = 
+		Map<String, List<IndicatorOnInformation>> gwIndOnListGroup = 
 				new HashMap<String, List<IndicatorOnInformation>>();
 
-		for (IndOnStockReq target : mpiOnStockReqList) {
+		for (IndOnStockReq target : indOnStockReqList) {
 			String gwPath = target.getGwPath();
 			
-			List<IndicatorOnInformation> mpiOnList = 
-					gwMpiOnListGroup.containsKey(gwPath) ? 
-							gwMpiOnListGroup.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+			List<IndicatorOnInformation> indOnList = 
+					gwIndOnListGroup.containsKey(gwPath) ? 
+							gwIndOnListGroup.get(gwPath) : new ArrayList<IndicatorOnInformation>();
 
 			IndicatorOnInformation stockInfo = 
-					newMpiOnInfo(target.getIndCd(), bizId, target.getColorCd(), target.getAllocQty(), target.getLoadQty());
+					newIndOnInfo(target.getIndCd(), bizId, target.getColorCd(), target.getAllocQty(), target.getLoadQty());
 
-			mpiOnList.add(stockInfo);
-			gwMpiOnListGroup.put(gwPath, mpiOnList);
+			indOnList.add(stockInfo);
+			gwIndOnListGroup.put(gwPath, indOnList);
 		}
 
-		return gwMpiOnListGroup;
+		return gwIndOnListGroup;
+	}
+	
+	/**
+	 * 표시기 설정 셋 ID 범위 내에서 IndOnPickReq 배열을 gwPath - IndOnPickReq 리스트로 그루핑하여 리턴
+	 * 
+	 * @param indConfigSetId
+	 * @param indOnReqList
+	 * @return
+	 */
+	public static Map<String, List<IndicatorOnInformation>> groupTestByGwPath(String indConfigSetId, List<IndOnPickReq> indOnReqList) {
+		
+		Map<String, List<IndicatorOnInformation>> groupGwIndOnList = 
+				new HashMap<String, List<IndicatorOnInformation>>();
+
+		for (IndOnPickReq indOnPick : indOnReqList) {
+			String gwPath = indOnPick.getGwPath();
+			
+			List<IndicatorOnInformation> indOnList = 
+					groupGwIndOnList.containsKey(gwPath) ? 
+							groupGwIndOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+
+			IndicatorOnInformation indOnInfo = newIndOnInfo(indConfigSetId, indOnPick);
+			indOnList.add(indOnInfo);
+			groupGwIndOnList.put(gwPath, indOnList);
+		}
+
+		return groupGwIndOnList;
 	}
 
 }

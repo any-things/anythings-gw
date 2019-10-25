@@ -36,9 +36,9 @@ public class IndTest {
 	public static final String TARGET_TYPE_INDICATOR = "indicator";
 	
 	/**
-	 * 고객사 코드 
+	 * 표시기 설정 셋 ID 
 	 */
-	private String comCd;
+	private String indConfigSetId;
 	
 	/**
 	 * 작업 유형 
@@ -54,12 +54,12 @@ public class IndTest {
 	 */
 	private IndAction action;
 	
-	public String getComCd() {
-		return comCd;
+	public String getIndConfigSetId() {
+		return indConfigSetId;
 	}
 
-	public void setComCd(String comCd) {
-		this.comCd = comCd;
+	public void setIndConfigSetId(String indConfigSetId) {
+		this.indConfigSetId = indConfigSetId;
 	}
 
 	public IndTarget getTarget() {
@@ -93,11 +93,11 @@ public class IndTest {
 	 */
 	public class IndTarget {
 		/**
-		 * MPI Target Type
+		 * 표시기 Target Type
 		 */
 		String targetType;
 		/**
-		 * MPI Target ID List
+		 * 표시기 Target ID List
 		 */
 		List<String> targetIdList;
 		
