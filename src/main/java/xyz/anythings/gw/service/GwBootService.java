@@ -18,6 +18,7 @@ import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.GatewayInitResponse;
 import xyz.anythings.gw.query.store.GwQueryStore;
+import xyz.anythings.gw.service.api.IGwBootService;
 import xyz.anythings.gw.service.util.GwQueryUtil;
 import xyz.anythings.gw.service.util.RuntimeIndicatorSetting;
 import xyz.anythings.gw.service.util.StageIndicatorSetting;
@@ -33,7 +34,7 @@ import xyz.elidom.sys.util.ValueUtil;
  * @author shortstop
  */
 @Component
-public class GwBootService extends AbstractQueryService {
+public class GwBootService extends AbstractQueryService implements IGwBootService {
 	
 	/**
 	 * Event Publisher
