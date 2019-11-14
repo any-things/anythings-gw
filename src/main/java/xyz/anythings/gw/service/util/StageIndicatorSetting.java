@@ -1,7 +1,7 @@
 package xyz.anythings.gw.service.util;
 
-import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.gw.MwConfigConstants;
+import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.model.IndOnPickReq;

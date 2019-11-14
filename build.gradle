@@ -31,5 +31,4 @@ repositories {
 dependencies {
 	compile project(':anythings-sys')
 	compile project(':anythings-comm-rabbitmq')
-	compile project(':anythings-logis-base')
 }

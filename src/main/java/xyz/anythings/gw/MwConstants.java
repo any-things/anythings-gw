@@ -1,13 +1,13 @@
 package xyz.anythings.gw;
 
-import xyz.anythings.base.LogisConstants;
+import xyz.elidom.sys.SysConstants;
 
 /**
  * 미들웨어 모듈 상수 정의 
  * 
  * @author shortstop
  */
-public class MwConstants extends LogisConstants {		
+public class MwConstants extends SysConstants {		
 	
 	/**
 	 * Indicator의 버튼에 대한 작업 수행 - 확정 처리

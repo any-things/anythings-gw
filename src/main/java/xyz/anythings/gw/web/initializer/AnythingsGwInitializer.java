@@ -13,8 +13,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.anythings.gw.config.ModuleProperties;
+import xyz.anythings.gw.service.api.IIndConfigSetService;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.config.ModuleConfigSet;
 import xyz.elidom.sys.entity.Domain;
@@ -51,7 +51,7 @@ public class AnythingsGwInitializer {
 	private IQueryManager queryManager;
 	
 	@Autowired
-	private ConfigSetService configSetSvc;
+	private IIndConfigSetService configSetSvc;
 	
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {

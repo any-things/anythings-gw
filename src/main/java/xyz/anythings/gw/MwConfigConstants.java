@@ -1,13 +1,13 @@
 package xyz.anythings.gw;
 
-import xyz.anythings.base.LogisConfigConstants;
+import xyz.elidom.sys.SysConfigConstants;
 
 /**
  * 미들웨어 모듈 설정 키 관련 상수 정의
  *
  * @author shortstop
  */
-public class MwConfigConstants extends LogisConfigConstants {
+public class MwConfigConstants extends SysConfigConstants {
 	
 	/**
 	 * 메시징 미들웨어와 통신할 큐 이름

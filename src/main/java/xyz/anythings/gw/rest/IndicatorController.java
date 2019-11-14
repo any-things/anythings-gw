@@ -13,22 +13,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.gw.entity.Deployment;
+import xyz.anythings.gw.entity.Indicator;
+import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.ValueUtil;
 
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/deployments")
-@ServiceDesc(description = "Deployment Service API")
-public class DeploymentController extends AbstractRestService {
+@RequestMapping("/rest/indicators")
+@ServiceDesc(description = "Indicator Service API")
+public class IndicatorController extends AbstractRestService {
 
 	@Override
 	protected Class<?> entityClass() {
-		return Deployment.class;
+		return Indicator.class;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,12 +44,35 @@ public class DeploymentController extends AbstractRestService {
 			@RequestParam(name = "select", required = false) String select,
 			@RequestParam(name = "sort", required = false) String sort,
 			@RequestParam(name = "query", required = false) String query) {
-		return this.search(this.entityClass(), page, limit, select, sort, query);
+		
+		Query condition = this.parseQuery(this.entityClass(), page, limit, select, sort, query);
+		List<Filter> filters = condition.getFilter();
+		Filter equipTypeFilter = null;
+		Filter equipCdFilter = null;
+		
+		for(Filter filter : filters) {
+			if(ValueUtil.isEqualIgnoreCase(filter.getName(), "equip_type")) {
+				equipTypeFilter = filter;
+			} else 	if(ValueUtil.isEqualIgnoreCase(filter.getName(), "equip_cd")) {
+				equipCdFilter = filter;
+			}
+		}
+		
+		if(equipCdFilter != null) {
+			condition.removeFilter("equip_type");
+			condition.removeFilter("equip_cd");
+			
+			String sql = "select ind_cd from cells where domain_id = :domainId and equip_type = :equipType and equip_cd = :equipCd";
+			List<String> indCdList = AnyEntityUtil.searchItems(Domain.currentDomainId(), true, String.class, sql, "domainId,equipType,equipCd", Domain.currentDomainId(), equipTypeFilter.getValue(), equipCdFilter.getValue());
+			condition.addFilter("ind_cd", SysConstants.IN, indCdList);
+		}
+		
+		return this.search(this.entityClass(), condition);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find one by ID")
-	public Deployment findOne(@PathVariable("id") String id) {
+	public Indicator findOne(@PathVariable("id") String id) {
 		return this.getOne(this.entityClass(), id);
 	}
 
@@ -56,13 +85,13 @@ public class DeploymentController extends AbstractRestService {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Create")
-	public Deployment create(@RequestBody Deployment input) {
+	public Indicator create(@RequestBody Indicator input) {
 		return this.createOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Update")
-	public Deployment update(@PathVariable("id") String id, @RequestBody Deployment input) {
+	public Indicator update(@PathVariable("id") String id, @RequestBody Indicator input) {
 		return this.updateOne(input);
 	}
 
@@ -74,7 +103,7 @@ public class DeploymentController extends AbstractRestService {
 
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
-	public Boolean multipleUpdate(@RequestBody List<Deployment> list) {
+	public Boolean multipleUpdate(@RequestBody List<Indicator> list) {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
 

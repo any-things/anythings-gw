@@ -1,7 +1,6 @@
 package xyz.anythings.gw.service.api;
 
-import xyz.anythings.base.entity.Gateway;
-import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.gw.entity.Gateway;
 import xyz.elidom.sys.entity.Domain;
 
 /**
@@ -34,7 +33,7 @@ public interface IGwBootService {
 	 * @param batch
 	 * @param gwNm
 	 */
-	public void respondGatewayBoot(JobBatch batch, String gwNm);
+	//public void respondGatewayBoot(JobBatch batch, String gwNm);
 	
 	/**
 	 * 작업 배치, 게이트웨이 정보로 게이트웨이 부트
@@ -42,7 +41,7 @@ public interface IGwBootService {
 	 * @param batch
 	 * @param gateway
 	 */
-	public void respondGatewayBoot(JobBatch batch, Gateway gateway);
+	//public void respondGatewayBoot(JobBatch batch, Gateway gateway);
 	
 	/**
 	 * 게이트웨이 초기화 응답에 대한 처리.
@@ -58,7 +57,7 @@ public interface IGwBootService {
 	 * @param gateway
 	 * @param batch
 	 */
-	public void respondGatewayBoot(Gateway gateway, JobBatch batch);
+	//public void respondGatewayBoot(Gateway gateway, JobBatch batch);
 	
 	/**
 	 * Gateway 초기화 리포트에 대한 처리.(Gateway Version 정보 Update)

@@ -1,9 +1,8 @@
 package xyz.anythings.gw.service.util;
 
-import xyz.anythings.base.LogisConstants;
-import xyz.anythings.base.entity.JobBatch;
-import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.anythings.gw.MwConfigConstants;
+import xyz.anythings.gw.MwConstants;
+import xyz.anythings.gw.service.api.IIndConfigSetService;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
@@ -45,16 +44,16 @@ public class BatchIndConfigUtil {
 	/**
 	 * 설정 프로파일 서비스
 	 */
-	public static ConfigSetService CONFIG_SET_SVC;
+	public static IIndConfigSetService CONFIG_SET_SVC;
 	
 	/**
 	 * 설정 프로파일 서비스 리턴
 	 * 
 	 * @return
 	 */
-	public static ConfigSetService getConfigSetService() {
+	public static IIndConfigSetService getConfigSetService() {
 		if(CONFIG_SET_SVC == null) {
-			CONFIG_SET_SVC = BeanUtil.get(ConfigSetService.class);
+			CONFIG_SET_SVC = BeanUtil.get(IIndConfigSetService.class);
 		}
 		
 		return CONFIG_SET_SVC;
@@ -68,11 +67,11 @@ public class BatchIndConfigUtil {
 	 * @param exceptionWhenEmptyValue
 	 * @return
 	 */
-	public static String getConfigValue(JobBatch batch, String key, boolean exceptionWhenEmptyValue) {
-		ConfigSetService configSvc = getConfigSetService();
+	public static String getConfigValue(String batchId, String key, boolean exceptionWhenEmptyValue) {
+		IIndConfigSetService configSvc = getConfigSetService();
 		
 		// 1. 작업 유형에 따른 설정값 조회
-		String value = configSvc.getJobConfigValue(batch, key);
+		String value = configSvc.getIndConfigValue(batchId, key);
 		
 		// 2. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리
 		if(exceptionWhenEmptyValue) {
@@ -88,9 +87,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getIndOnDelayTime(JobBatch batch) {
+	public static int getIndOnDelayTime(String batchId) {
 		// ind.action.delay.before.on
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_DELAY_BEFORE_ON, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_DELAY_BEFORE_ON, true);
 		return ValueUtil.toInteger(intVal);
 	}
 
@@ -100,9 +99,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getIndOnDelayTimeCancelPushed(JobBatch batch) {
+	public static int getIndOnDelayTimeCancelPushed(String batchId) {
 		// ind.action.delay.cancel.button.off
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, true);
 		return ValueUtil.toInteger(intVal);
 	}
 
@@ -112,9 +111,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static boolean isNoackWhenAlreadyOffEnabled(JobBatch batch) {
+	public static boolean isNoackWhenAlreadyOffEnabled(String batchId) {
 		// ind.action.send.off.ack.already.off
-		String boolVal = getConfigValue(batch, MwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, true);
+		String boolVal = getConfigValue(batchId, MwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, true);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -124,9 +123,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getDisplayStringBeforeIndOn(JobBatch batch) {
+	public static String getDisplayStringBeforeIndOn(String batchId) {
 		// ind.action.show.string.before.on
-		return getConfigValue(batch, MwConfigConstants.IND_SHOW_STRING_BEFORE_ON, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_SHOW_STRING_BEFORE_ON, true);
 	}
 
 	/**
@@ -135,9 +134,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getDisplayIntervalBeforeIndOn(JobBatch batch) {
+	public static int getDisplayIntervalBeforeIndOn(String batchId) {
 		// ind.action.show.string.delay.before.on
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, true);
 		return ValueUtil.toInteger(intVal);
 	}
 
@@ -147,9 +146,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getIndStateReportInterval(JobBatch batch) {
+	public static int getIndStateReportInterval(String batchId) {
 		// ind.action.status.report.interval
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_HEALTH_PERIOD, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_HEALTH_PERIOD, true);
 		return ValueUtil.toInteger(intVal);
 	}
 
@@ -159,10 +158,10 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String[] getIndButtonColorForRotation(JobBatch batch) {
+	public static String[] getIndButtonColorForRotation(String batchId) {
 		// ind.job.color.rotation.seq
-		String strVal = getConfigValue(batch, MwConfigConstants.IND_COLOR_ROTATION_SEQ, true);
-		return strVal.split(LogisConstants.COMMA);
+		String strVal = getConfigValue(batchId, MwConfigConstants.IND_COLOR_ROTATION_SEQ, true);
+		return strVal.split(MwConstants.COMMA);
 	}
 	
 	/**
@@ -172,9 +171,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getIndColorForStocktaking(JobBatch batch) {
+	public static String getIndColorForStocktaking(String batchId) {
 		// ind.job.color.stocktaking
-		return getConfigValue(batch, MwConfigConstants.IND_DEFAULT_COLOR_STOCKTAKING, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_DEFAULT_COLOR_STOCKTAKING, true);
 	}
 	
 	/**
@@ -183,8 +182,8 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getSegmentCount(JobBatch batch) {
-		return getSegmentRoles(batch).length;
+	public static int getSegmentCount(String batchId) {
+		return getSegmentRoles(batchId).length;
 	}
 	
 	/**
@@ -193,10 +192,10 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String[] getSegmentRoles(JobBatch batch) {
+	public static String[] getSegmentRoles(String batchId) {
 		// ind.job.segment.roles.on
-		String strVal = getConfigValue(batch, MwConfigConstants.IND_SEGMENT_ROLE_ON, true);
-		return strVal.split(LogisConstants.COMMA);
+		String strVal = getConfigValue(batchId, MwConfigConstants.IND_SEGMENT_ROLE_ON, true);
+		return strVal.split(MwConstants.COMMA);
 	}
 	
 	/**
@@ -205,9 +204,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getSegment1RoleForDisplay(JobBatch batch) {
+	public static String getSegment1RoleForDisplay(String batchId) {
 		// ind.show.segment1.mapping.role
-		return getConfigValue(batch, MwConfigConstants.IND_SEGMENT1_MAPPING_ROLE, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_SEGMENT1_MAPPING_ROLE, true);
 	}
 
 	/**
@@ -216,9 +215,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getSegment2RoleForDisplay(JobBatch batch) {
+	public static String getSegment2RoleForDisplay(String batchId) {
 		// ind.show.segment2.mapping.role
-		return getConfigValue(batch, MwConfigConstants.IND_SEGMENT2_MAPPING_ROLE, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_SEGMENT2_MAPPING_ROLE, true);
 	}
 
 	/**
@@ -227,9 +226,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getSegment3RoleForDisplay(JobBatch batch) {
+	public static String getSegment3RoleForDisplay(String batchId) {
 		// ind.show.segment3.mapping.role
-		return getConfigValue(batch, MwConfigConstants.IND_SEGMENT3_MAPPING_ROLE, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_SEGMENT3_MAPPING_ROLE, true);
 	}
 	
 	/**
@@ -238,9 +237,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getMaxRelayNo(JobBatch batch) {
+	public static int getMaxRelayNo(String batchId) {
 		// ind.show.relay.max.no
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_RELAY_MAX_NO, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_RELAY_MAX_NO, true);
 		return ValueUtil.isEmpty(intVal) ? -1 : ValueUtil.toInteger(intVal);
 	}
 	
@@ -250,9 +249,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getButtonBlinkInterval(JobBatch batch) {
+	public static int getButtonBlinkInterval(String batchId) {
 		// ind.show.button.blink.interval
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_BUTTON_BLINK_INTERVAL, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_BUTTON_BLINK_INTERVAL, true);
 		return ValueUtil.toInteger(intVal);
 	}
 	
@@ -262,9 +261,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getButtonOnMode(JobBatch batch) {
+	public static String getButtonOnMode(String batchId) {
 		// ind.show.button.on.mode
-		return getConfigValue(batch, MwConfigConstants.IND_BUTTON_ON_MODE, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_BUTTON_ON_MODE, true);
 	}
 	
 	/**
@@ -273,9 +272,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static boolean isFullButtonBlink(JobBatch batch) {
+	public static boolean isFullButtonBlink(String batchId) {
 		// ind.show.fullbox.button.blink
-		String boolVal = getConfigValue(batch, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, true);
+		String boolVal = getConfigValue(batchId, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, true);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -285,9 +284,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getShowViewType(JobBatch batch) {
+	public static String getShowViewType(String batchId) {
 		// ind.show.view-type
-		return getConfigValue(batch, MwConfigConstants.IND_SHOW_VIEW_TYPE, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_SHOW_VIEW_TYPE, true);
 	}
 	
 	/**
@@ -296,9 +295,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getShowNumberAlignment(JobBatch batch) {
+	public static String getShowNumberAlignment(String batchId) {
 		// ind.show.number.alignment
-		return getConfigValue(batch, MwConfigConstants.IND_NUMBER_ALIGNMENT, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_NUMBER_ALIGNMENT, true);
 	}
 	
 	/**
@@ -307,9 +306,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getLedBlinkInterval(JobBatch batch) {
+	public static int getLedBlinkInterval(String batchId) {
 		// ind.led.blink.interval
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_LED_BLINK_INTERVAL, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_LED_BLINK_INTERVAL, true);
 		return ValueUtil.toInteger(intVal);
 	}
 
@@ -319,10 +318,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static int getLedBrightness(JobBatch batch) {
+	public static int getLedBrightness(String batchId) {
 		// ind.led.brightness
-		
-		String intVal = getConfigValue(batch, MwConfigConstants.IND_LED_BRIGHTNESS, true);
+		String intVal = getConfigValue(batchId, MwConfigConstants.IND_LED_BRIGHTNESS, true);
 		return ValueUtil.toInteger(intVal);
 	}
 	
@@ -332,9 +330,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static boolean isLedBlink(JobBatch batch) {
+	public static boolean isLedBlink(String batchId) {
 		// ind.show.fullbox.button.blink
-		String boolVal = getConfigValue(batch, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, true);
+		String boolVal = getConfigValue(batchId, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, true);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -344,9 +342,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static boolean isUseLed(JobBatch batch) {
+	public static boolean isUseLed(String batchId) {
 		// ind.led.use.enabled			
-		String boolVal = getConfigValue(batch, MwConfigConstants.IND_LED_USE_ENABLED, true);
+		String boolVal = getConfigValue(batchId, MwConfigConstants.IND_LED_USE_ENABLED, true);
 		return ValueUtil.toBoolean(boolVal);
 	}
 
@@ -356,10 +354,10 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String[] getRackOfUsingLed(JobBatch batch) {
+	public static String[] getRackOfUsingLed(String batchId) {
 		// ind.led.use.enabled.racks
-		String strVal = getConfigValue(batch, MwConfigConstants.IND_LED_USE_ENABLED_RACKS, true);
-		return ValueUtil.isEmpty(strVal) ? null : strVal.split(LogisConstants.COMMA);
+		String strVal = getConfigValue(batchId, MwConfigConstants.IND_LED_USE_ENABLED_RACKS, true);
+		return ValueUtil.isEmpty(strVal) ? null : strVal.split(MwConstants.COMMA);
 	}
 		
 	/**
@@ -368,9 +366,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static boolean isUseButton(JobBatch batch) {
+	public static boolean isUseButton(String batchId) {
 		// ind.buttons.enable
-		String boolVal = getConfigValue(batch, MwConfigConstants.IND_BUTTONS_ENABLE, true);
+		String boolVal = getConfigValue(batchId, MwConfigConstants.IND_BUTTONS_ENABLE, true);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -380,9 +378,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getIndLatestReleaseVersion(JobBatch batch) {
+	public static String getIndLatestReleaseVersion(String batchId) {
 		// ind.latest.release.version
-		return getConfigValue(batch, MwConfigConstants.IND_LATEST_RELEASE_VERSION, true);
+		return getConfigValue(batchId, MwConfigConstants.IND_LATEST_RELEASE_VERSION, true);
 	}
 	
 	/**
@@ -391,9 +389,9 @@ public class BatchIndConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getGwLatestReleaseVersion(JobBatch batch) {
+	public static String getGwLatestReleaseVersion(String batchId) {
 		// ind.gw.latest.release.version
-		return getConfigValue(batch, MwConfigConstants.GW_LATEST_RELEASE_VERSION, true);
+		return getConfigValue(batchId, MwConfigConstants.GW_LATEST_RELEASE_VERSION, true);
 	}
 
 }

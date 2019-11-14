@@ -15,9 +15,7 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'anythings-gw'
+include 'anythings-sys', ':anythings-comm-rabbitmq'
 
-include 'anythings-sys',':anythings-comm-rabbitmq',':anythings-logis-base'
 project(':anythings-sys').projectDir = new File(settingsDir, '../anythings-sys')
 project(':anythings-comm-rabbitmq').projectDir = new File(settingsDir, '../anythings-comm-rabbitmq')
-project(':anythings-logis-base').projectDir = new File(settingsDir, '../anythings-logis-base')

@@ -1,12 +1,10 @@
 package xyz.anythings.gw.service.util;
 
-import xyz.anythings.base.LogisConstants;
-import xyz.anythings.base.entity.Gateway;
-import xyz.anythings.base.entity.JobBatch;
-import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.anythings.gw.MwConfigConstants;
+import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
+import xyz.anythings.gw.service.api.IIndConfigSetService;
 import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.sys.SysConstants;
@@ -22,7 +20,7 @@ public class RuntimeIndicatorSetting {
 	/**
 	 * 기본 색상 로테이션 순서
 	 */
-	public static String DEFAULT_ROTATION_SEQ = LogisConstants.COLOR_RED + SysConstants.COMMA + LogisConstants.COLOR_BLUE + SysConstants.COMMA + LogisConstants.COLOR_GREEN + SysConstants.COMMA + LogisConstants.COLOR_YELLOW;
+	public static String DEFAULT_ROTATION_SEQ = "R" + SysConstants.COMMA + "B" + SysConstants.COMMA + "G" + SysConstants.COMMA + "Y";
 
 	/**
 	 * 표시기 점등을 위한 세그먼트 기본 값
@@ -161,20 +159,8 @@ public class RuntimeIndicatorSetting {
 	 * @param deafultValue
 	 * @return
 	 */
-	public static String getIndConfigValueByBatchScope(JobBatch batch, String indConfig, String deafultValue) {
-		return BeanUtil.get(ConfigSetService.class).getIndConfigValue(batch.getId(), indConfig, deafultValue);
-	}
-	
-	/**
-	 * 작업 배치 범위 내에서 indConfig 값을 조회 후 리턴
-	 * 
-	 * @param batchId
-	 * @param indConfig
-	 * @param deafultValue
-	 * @return
-	 */
 	public static String getIndConfigValueByBatchScope(String batchId, String indConfig, String deafultValue) {
-		return BeanUtil.get(ConfigSetService.class).getIndConfigValue(batchId, indConfig, deafultValue);
+		return BeanUtil.get(IIndConfigSetService.class).getIndConfigValue(batchId, indConfig, deafultValue);
 	}
 	
 	/**
@@ -184,8 +170,8 @@ public class RuntimeIndicatorSetting {
 	 * @param currentColor
 	 * @return
 	 */
-	public static String getNextIndColor(JobBatch batch, String currentColor) {
-		String[] colorRotations = getIndColorRotations(batch);
+	public static String getNextIndColor(String batchId, String currentColor) {
+		String[] colorRotations = getIndColorRotations(batchId);
 
 		if(ValueUtil.isEmpty(currentColor)) {
 			return colorRotations[0];
@@ -206,221 +192,221 @@ public class RuntimeIndicatorSetting {
 	/**
 	 * 작업 배치 범위 내에서 표시기 색상 로테이션 값 배열
 	 *
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String[] getIndColorRotations(JobBatch batch) {
-		return getIndColorRotationSeq(batch).split(SysConstants.COMMA);
+	public static String[] getIndColorRotations(String batchId) {
+		return getIndColorRotationSeq(batchId).split(SysConstants.COMMA);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 색상 로테이션 값 리턴
 	 *
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndColorRotationSeq(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch.getId(), MwConfigConstants.IND_COLOR_ROTATION_SEQ, DEFAULT_ROTATION_SEQ);
+	public static String getIndColorRotationSeq(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_COLOR_ROTATION_SEQ, DEFAULT_ROTATION_SEQ);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 점등을 위한 세그먼트 역할
 	 *
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String[] getIndSegmentRolesOn(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch.getId(), MwConfigConstants.IND_SEGMENT_ROLE_ON, null);
+	public static String[] getIndSegmentRolesOn(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_SEGMENT_ROLE_ON, null);
 		return ValueUtil.isEmpty(value) ? null : value.split(SysConstants.COMMA);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 세그먼트 사용 개수
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static int getIndSegmentCount(JobBatch batch) {
-		return getIndSegmentRolesOn(batch).length;
+	public static int getIndSegmentCount(String batchId) {
+		return getIndSegmentRolesOn(batchId).length;
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 넘버 표시 정렬
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndNumberAlignment(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_NUMBER_ALIGNMENT, IND_NUMBER_ALIGNMENT_LEFT);
+	public static String getIndNumberAlignment(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_NUMBER_ALIGNMENT, IND_NUMBER_ALIGNMENT_LEFT);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 버튼 점등 모드 (B : Blink, S : Static)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndButtonOnMode(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_BUTTON_ON_MODE, IND_BUTTON_MODE_BLINK);
+	public static String getIndButtonOnMode(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_BUTTON_ON_MODE, IND_BUTTON_MODE_BLINK);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 버튼 깜빡임 주기 (300ms)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Integer getIndButtonBlinkInterval(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_BUTTON_BLINK_INTERVAL, DEFAULT_IND_BUTTON_BLINK_INTERVAL);
+	public static Integer getIndButtonBlinkInterval(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_BUTTON_BLINK_INTERVAL, DEFAULT_IND_BUTTON_BLINK_INTERVAL);
 		return ValueUtil.toInteger(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 점등 전 표시 문자
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndShowStringBeforeOn(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_SHOW_STRING_BEFORE_ON, null);
+	public static String getIndShowStringBeforeOn(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_SHOW_STRING_BEFORE_ON, null);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 점등 전 문자 표시 시간 (100ms)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Integer getIndShowStringDelayBeforeOn(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, DEFAULT_IND_SHOW_STRING_DELAY_BEFORE_ON);
+	public static Integer getIndShowStringDelayBeforeOn(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, DEFAULT_IND_SHOW_STRING_DELAY_BEFORE_ON);
 		return ValueUtil.toInteger(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 점등 전 딜레이 (1sec)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Integer getIndDelayBeforeOn(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_DELAY_BEFORE_ON, DEFAULT_IND_DELAY_BEFORE_ON);
+	public static Integer getIndDelayBeforeOn(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_DELAY_BEFORE_ON, DEFAULT_IND_DELAY_BEFORE_ON);
 		return ValueUtil.toInteger(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 취소 버튼 터치시 소등까지 딜레이 (100ms)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Integer getIndDelayCancelButtonOff(JobBatch batch) {
-				String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, DEFAULT_IND_DELAY_CANCEL_BUTTON_OFF);
+	public static Integer getIndDelayCancelButtonOff(String batchId) {
+				String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, DEFAULT_IND_DELAY_CANCEL_BUTTON_OFF);
 		return ValueUtil.toInteger(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 풀 박스 터치시 버튼 깜빡임 여부 (true / false)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Boolean isIndFullboxButtonBlink(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING);
+	public static Boolean isIndFullboxButtonBlink(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기가 이미 소등된 상태에서 소등 요청을 받았을 때 ACK를 응답할 지 여부 (true / false)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Boolean isIndSendOffAckAlreadyOff(JobBatch batch) {
-				String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING);
+	public static Boolean isIndSendOffAckAlreadyOff(String batchId) {
+				String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 LED 점등 모드 (B: 깜빡임, S: 정지)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndLedOnMode(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_LED_ON_MODE, IND_BUTTON_MODE_STOP);
+	public static String getIndLedOnMode(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_LED_ON_MODE, IND_BUTTON_MODE_STOP);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 LED 깜빡임 주기
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Integer getIndLedBlinkInterval(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_LED_BLINK_INTERVAL, DEFAULT_IND_LED_BLINK_INTERVAL);
+	public static Integer getIndLedBlinkInterval(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_LED_BLINK_INTERVAL, DEFAULT_IND_LED_BLINK_INTERVAL);
 		return ValueUtil.toInteger(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 LED 바 밝기 정도 (1~10)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Integer getIndLedBrightness(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_LED_BRIGHTNESS, DEFAULT_IND_LED_BRIGHTNESS);
+	public static Integer getIndLedBrightness(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_LED_BRIGHTNESS, DEFAULT_IND_LED_BRIGHTNESS);
 		return ValueUtil.toInteger(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 View Type
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndDisplayViewType(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
+	public static String getIndDisplayViewType(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 상태 보고 주기 
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static Integer getIndHealthPeriod(JobBatch batch) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_HEALTH_PERIOD, DEFAULT_IND_HEALTH_PERIOD);
+	public static Integer getIndHealthPeriod(String batchId) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_HEALTH_PERIOD, DEFAULT_IND_HEALTH_PERIOD);
 		return ValueUtil.toInteger(value);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 표시기 점등 정보로 부터 indOnInfo에 relaySeq, boxQty, eaQty 등을 설정한다.
 	 *
-	 * @param batch
+	 * @param batchId
 	 * @param indOnReq
 	 * @param indOnInfo
 	 */
-	public static void setIndOnQty(JobBatch batch, IndOnPickReq indOnReq, IndicatorOnInformation indOnInfo) {
-		setIndOnQty(indOnInfo, batch, indOnReq.getProcessSeq(), indOnReq.getBoxInQty(), indOnReq.getPickQty());
+	public static void setIndOnQty(String batchId, IndOnPickReq indOnReq, IndicatorOnInformation indOnInfo) {
+		setIndOnQty(indOnInfo, batchId, indOnReq.getProcessSeq(), indOnReq.getBoxInQty(), indOnReq.getPickQty());
 	}
 
 	/**
 	 * 작업 배치 범위 내에서 표시기 점등 옵션으로 표시기 점등 정보 indOnInfo에 relaySeq, boxQty, eaQty 등을 설정한다.
 	 *
 	 * @param indOnInfo
-	 * @param batch
+	 * @param batchId
 	 * @param relaySeq
 	 * @param boxInQty
 	 * @param pickQty
 	 */
-	public static void setIndOnQty(IndicatorOnInformation indOnInfo, JobBatch batch, Integer relaySeq, Integer boxInQty, Integer pickQty) {
-		String[] onSegments = RuntimeIndicatorSetting.getIndSegmentRolesOn(batch);
+	public static void setIndOnQty(IndicatorOnInformation indOnInfo, String batchId, Integer relaySeq, Integer boxInQty, Integer pickQty) {
+		String[] onSegments = RuntimeIndicatorSetting.getIndSegmentRolesOn(batchId);
 		indOnInfo.setSegRole(onSegments);
 		
 		for(String segment : onSegments) {
 			// 세그먼트가 릴레이 번호라면
 			if(ValueUtil.isEqualIgnoreCase(segment, RuntimeIndicatorSetting.IND_SEGMENT_ROLE_RELAY_SEQ)) {
-				indOnInfo.setOrgRelay(fitRelaySeq(batch, relaySeq));
+				indOnInfo.setOrgRelay(fitRelaySeq(batchId, relaySeq));
 
 			// 세그먼트가 박스 수량이라면
 			} else if(ValueUtil.isEqualIgnoreCase(segment, RuntimeIndicatorSetting.IND_SEGMENT_ROLE_BOX)) {
@@ -437,12 +423,12 @@ public class RuntimeIndicatorSetting {
 	/**
 	 * 릴레이 시퀀스 자리수가 최대 릴레이 값이 넘었다면 1로 리셋하고 그렇지 않으면 릴레이 값을 리턴한다.
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @param relaySeq
 	 * @return
 	 */
-	public static Integer fitRelaySeq(JobBatch batch, Integer relaySeq) {
-		String value = getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_RELAY_MAX_NO, DEFAULT_IND_RELAY_MAX_NO);
+	public static Integer fitRelaySeq(String batchId, Integer relaySeq) {
+		String value = getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_RELAY_MAX_NO, DEFAULT_IND_RELAY_MAX_NO);
 		int relayMaxNo = ValueUtil.toInteger(value);
 		return (relaySeq > relayMaxNo) ? 1 : relaySeq;
 	}
@@ -450,25 +436,25 @@ public class RuntimeIndicatorSetting {
 	/**
 	 * 작업 배치 범위 내에서 작업 유형별 표시기 표현 형식 - 0 : 기본, 1 : 박스 / 낱개, 2 : 누적수량 / 낱개
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndViewType(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
+	public static String getIndViewType(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
 	}
 	
 	/**
 	 * 작업 배치 범위 내에서 라우터 펌웨어 최신 릴리즈 버전
 	 *
-	 * @param batch
+	 * @param batchId
 	 * @param gateway
 	 * @return
 	 */
-	public static String getGwLatestReleaseVersion(JobBatch batch, Gateway gateway) {
+	public static String getGwLatestReleaseVersion(String batchId, Gateway gateway) {
 		String version = gateway.getVersion();
 		
 		if(ValueUtil.isEmpty(version)) {
-			return getIndConfigValueByBatchScope(batch, MwConfigConstants.GW_LATEST_RELEASE_VERSION, DEFAULT_GW_LATEST_RELEASE_VERSION);
+			return getIndConfigValueByBatchScope(batchId, MwConfigConstants.GW_LATEST_RELEASE_VERSION, DEFAULT_GW_LATEST_RELEASE_VERSION);
 		} else {
 			return version;
 		}
@@ -477,11 +463,11 @@ public class RuntimeIndicatorSetting {
 	/**
 	 * 작업 배치 범위 내에서 표시기 펌웨어 최신 릴리즈 버전
 	 *
-	 * @param batch
+	 * @param batchId
 	 * @return
 	 */
-	public static String getIndLatestReleaseVersion(JobBatch batch) {
-		return getIndConfigValueByBatchScope(batch, MwConfigConstants.IND_LATEST_RELEASE_VERSION, DEFAULT_IND_LATEST_RELEASE_VERSION);
+	public static String getIndLatestReleaseVersion(String batchId) {
+		return getIndConfigValueByBatchScope(batchId, MwConfigConstants.IND_LATEST_RELEASE_VERSION, DEFAULT_IND_LATEST_RELEASE_VERSION);
 	}
 	
 	/**
@@ -501,26 +487,26 @@ public class RuntimeIndicatorSetting {
 	/**
 	 * 게이트웨이 부트시에 게이트웨이에 내려 줄 부트 설정을 생성하여 리턴 
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @param gateway
 	 * @return
 	 */
-	public static GatewayInitResIndConfig getGatewayBootConfig(JobBatch batch, Gateway gateway) {
+	public static GatewayInitResIndConfig getGatewayBootConfig(String batchId, Gateway gateway) {
 		GatewayInitResIndConfig config = new GatewayInitResIndConfig();
-		config.setAlignment(getIndNumberAlignment(batch));
-		config.setSegRole(getIndSegmentRolesOn(batch));
-		config.setBtnMode(getIndButtonOnMode(batch));
-		config.setBtnIntvl(getIndButtonBlinkInterval(batch));
-		config.setBfOnMsg(getIndShowStringBeforeOn(batch));
-		config.setBfOnMsgT(getIndShowStringDelayBeforeOn(batch));
-		config.setBfOnDelay(getIndDelayBeforeOn(batch));
-		config.setCnclDelay(getIndDelayCancelButtonOff(batch));
-		config.setBlinkIfFull(isIndFullboxButtonBlink(batch));
-		config.setOffUseRes(isIndSendOffAckAlreadyOff(batch));
-		config.setLedBarMode(getIndLedOnMode(batch));
-		config.setLedBarIntvl(getIndLedBlinkInterval(batch));
-		config.setLedBarBrtns(getIndLedBrightness(batch));
-		config.setViewType(getIndViewType(batch));
+		config.setAlignment(getIndNumberAlignment(batchId));
+		config.setSegRole(getIndSegmentRolesOn(batchId));
+		config.setBtnMode(getIndButtonOnMode(batchId));
+		config.setBtnIntvl(getIndButtonBlinkInterval(batchId));
+		config.setBfOnMsg(getIndShowStringBeforeOn(batchId));
+		config.setBfOnMsgT(getIndShowStringDelayBeforeOn(batchId));
+		config.setBfOnDelay(getIndDelayBeforeOn(batchId));
+		config.setCnclDelay(getIndDelayCancelButtonOff(batchId));
+		config.setBlinkIfFull(isIndFullboxButtonBlink(batchId));
+		config.setOffUseRes(isIndSendOffAckAlreadyOff(batchId));
+		config.setLedBarMode(getIndLedOnMode(batchId));
+		config.setLedBarIntvl(getIndLedBlinkInterval(batchId));
+		config.setLedBarBrtns(getIndLedBrightness(batchId));
+		config.setViewType(getIndViewType(batchId));
 		return config;
 	}
 

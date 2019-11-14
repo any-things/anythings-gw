@@ -1,8 +1,8 @@
 package xyz.anythings.gw.service.util;
 
-import xyz.anythings.base.LogisConstants;
-import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.anythings.gw.MwConfigConstants;
+import xyz.anythings.gw.MwConstants;
+import xyz.anythings.gw.service.api.IIndConfigSetService;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
@@ -47,16 +47,16 @@ public class StageIndConfigUtil {
 	/**
 	 * 설정 프로파일 서비스
 	 */
-	public static ConfigSetService CONFIG_SET_SVC;
+	public static IIndConfigSetService CONFIG_SET_SVC;
 	
 	/**
 	 * 설정 프로파일 서비스 리턴
 	 * 
 	 * @return
 	 */
-	public static ConfigSetService getConfigSetService() {
+	public static IIndConfigSetService getConfigSetService() {
 		if(CONFIG_SET_SVC == null) {
-			CONFIG_SET_SVC = BeanUtil.get(ConfigSetService.class);
+			CONFIG_SET_SVC = BeanUtil.get(IIndConfigSetService.class);
 		}
 		
 		return CONFIG_SET_SVC;
@@ -71,7 +71,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getConfigValue(String stageCd, String key, boolean exceptionWhenEmptyValue) {
-		ConfigSetService configSvc = getConfigSetService();
+		IIndConfigSetService configSvc = getConfigSetService();
 		
 		// 1. 작업 유형에 따른 설정값 조회
 		String value = configSvc.getIndConfigValue(stageCd, key);
@@ -164,7 +164,7 @@ public class StageIndConfigUtil {
 	public static String[] getIndButtonColorForRotation(String stageCd) {
 		// ind.job.color.rotation.seq
 		String strVal = getConfigValue(stageCd, MwConfigConstants.IND_COLOR_ROTATION_SEQ, true);
-		return strVal.split(LogisConstants.COMMA);
+		return strVal.split(MwConstants.COMMA);
 	}
 	
 	/**
@@ -198,7 +198,7 @@ public class StageIndConfigUtil {
 	public static String[] getSegmentRoles(String stageCd) {
 		// ind.job.segment.roles.on
 		String strVal = getConfigValue(stageCd, MwConfigConstants.IND_SEGMENT_ROLE_ON, true);
-		return strVal.split(LogisConstants.COMMA);
+		return strVal.split(MwConstants.COMMA);
 	}
 	
 	/**
@@ -361,7 +361,7 @@ public class StageIndConfigUtil {
 	public static String[] getRackOfUsingLed(String stageCd) {
 		// ind.led.use.enabled.racks
 		String strVal = getConfigValue(stageCd, MwConfigConstants.IND_LED_USE_ENABLED_RACKS, true);
-		return ValueUtil.isEmpty(strVal) ? null : strVal.split(LogisConstants.COMMA);
+		return ValueUtil.isEmpty(strVal) ? null : strVal.split(MwConstants.COMMA);
 	}
 		
 	/**

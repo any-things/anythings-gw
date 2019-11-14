@@ -1,6 +1,7 @@
 package xyz.anythings.gw.rest;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,22 +14,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.gw.entity.Deployment;
+import xyz.anythings.gw.entity.Gateway;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.ValueUtil;
 
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/deployments")
-@ServiceDesc(description = "Deployment Service API")
-public class DeploymentController extends AbstractRestService {
+@RequestMapping("/rest/gateways")
+@ServiceDesc(description = "Gateway Service API")
+public class GatewayController extends AbstractRestService {
 
 	@Override
 	protected Class<?> entityClass() {
-		return Deployment.class;
+		return Gateway.class;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +46,7 @@ public class DeploymentController extends AbstractRestService {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find one by ID")
-	public Deployment findOne(@PathVariable("id") String id) {
+	public Gateway findOne(@PathVariable("id") String id) {
 		return this.getOne(this.entityClass(), id);
 	}
 
@@ -56,13 +59,13 @@ public class DeploymentController extends AbstractRestService {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Create")
-	public Deployment create(@RequestBody Deployment input) {
+	public Gateway create(@RequestBody Gateway input) {
 		return this.createOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Update")
-	public Deployment update(@PathVariable("id") String id, @RequestBody Deployment input) {
+	public Gateway update(@PathVariable("id") String id, @RequestBody Gateway input) {
 		return this.updateOne(input);
 	}
 
@@ -74,8 +77,16 @@ public class DeploymentController extends AbstractRestService {
 
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
-	public Boolean multipleUpdate(@RequestBody List<Deployment> list) {
+	public Boolean multipleUpdate(@RequestBody List<Gateway> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+	
+	@RequestMapping(value = "/search_by_equip/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Gateways By EquipTYpe and EquipCd")
+	public List<Gateway> searchByRegion(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
+		String sql = "select * from gateways where id in (select distinct(g.id) as gw_id from gateways g inner join indicators i on g.domain_id = i.domain_id and g.gw_cd = i.gw_cd inner join cells c on i.domain_id = c.domain_id and i.ind_cd = c.ind_cd where g.domain_id = :domainId and c.equip_type = :equipType and c.equip_cd = :equipCd)";
+		Map<String, Object> params = ValueUtil.newMap("domainId,equipType,equipCd", Domain.currentDomainId(), equipType, equipCd);
+		return this.queryManager.selectListBySql(sql, params, Gateway.class, 0, 0);
 	}
 
 }

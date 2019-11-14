@@ -10,7 +10,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.gw.MwConfigConstants;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.model.MessageObject;
@@ -228,17 +227,17 @@ public class MwMessageUtil {
 	/**
 	 * 작업 배치 범위 내에서 표시기 점등 모델 생성
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @param indOnPick
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(JobBatch batch, IndOnPickReq indOnPick) {
+	public static IndicatorOnInformation newIndOnInfo(String batchId, IndOnPickReq indOnPick) {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indOnPick.getIndCd());
 		indOnInfo.setBizId(indOnPick.getJobInstanceId());
 		indOnInfo.setColor(indOnPick.getColorCd());
 		// 작업 배치 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
-		RuntimeIndicatorSetting.setIndOnQty(batch, indOnPick, indOnInfo);
+		RuntimeIndicatorSetting.setIndOnQty(batchId, indOnPick, indOnInfo);
 		return indOnInfo;
 	}
 	
@@ -267,7 +266,7 @@ public class MwMessageUtil {
 	 * @param indOnPick
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(String indConfigSetId, IndOnPickReq indOnPick) {
+	/*public static IndicatorOnInformation newIndOnInfo(String indConfigSetId, IndOnPickReq indOnPick) {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indOnPick.getIndCd());
 		indOnInfo.setBizId(indOnPick.getJobInstanceId());
@@ -275,7 +274,7 @@ public class MwMessageUtil {
 		// 표시기 설정 ID 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
 		ConfigIndicatorSetting.setIndOnQty(indConfigSetId, indOnPick, indOnInfo);
 		return indOnInfo;
-	}
+	}*/
 	
 	/**
 	 * 표시기 점등 모델 생성 
@@ -317,7 +316,7 @@ public class MwMessageUtil {
 	 * @return
 	 */
 	public static Map<String, List<IndicatorOnInformation>> 
-		groupPickingByGwPath(JobBatch batch, List<IndOnPickReq> indOnReqList) {
+		groupPickingByGwPath(String batchId, List<IndOnPickReq> indOnReqList) {
 		
 		Map<String, List<IndicatorOnInformation>> groupGwIndOnList = 
 				new HashMap<String, List<IndicatorOnInformation>>();
@@ -329,7 +328,7 @@ public class MwMessageUtil {
 					groupGwIndOnList.containsKey(gwPath) ? 
 							groupGwIndOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
 
-			IndicatorOnInformation indOnInfo = newIndOnInfo(batch, indOnPick);
+			IndicatorOnInformation indOnInfo = newIndOnInfo(batchId, indOnPick);
 			indOnList.add(indOnInfo);
 			groupGwIndOnList.put(gwPath, indOnList);
 		}
