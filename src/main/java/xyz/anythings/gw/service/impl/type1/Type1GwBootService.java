@@ -1,4 +1,4 @@
-package xyz.anythings.gw.service;
+package xyz.anythings.gw.service.impl.type1;
 
 import java.util.Date;
 import java.util.List;
@@ -34,7 +34,7 @@ import xyz.elidom.sys.util.ValueUtil;
  * @author shortstop
  */
 @Component
-public class GwBootService extends AbstractQueryService implements IGwBootService {
+public class Type1GwBootService extends AbstractQueryService implements IGwBootService {
 	
 	/**
 	 * Event Publisher
@@ -45,7 +45,7 @@ public class GwBootService extends AbstractQueryService implements IGwBootServic
 	 * 표시기 점등 서비스
 	 */
 	@Autowired
-	private IndSendService indSendService;
+	private Type1IndicatorRequestService indSendService;
 	/**
 	 * 게이트웨이 관련 쿼리 스토어
 	 */

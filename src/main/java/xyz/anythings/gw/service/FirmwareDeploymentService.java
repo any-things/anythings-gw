@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.gw.entity.Deployment;
+import xyz.anythings.gw.service.impl.type1.Type1IndicatorRequestService;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.sys.util.ValueUtil;
 
@@ -18,7 +19,7 @@ import xyz.elidom.sys.util.ValueUtil;
 public class FirmwareDeploymentService extends AbstractQueryService {
 
 	@Autowired
-	private IndSendService indSendService;
+	private Type1IndicatorRequestService indSendService;
 	
 	/**
 	 * 펌웨어 배포

@@ -23,7 +23,7 @@ import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.Action;
 import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.IndSendService;
+import xyz.anythings.gw.service.impl.type1.Type1IndicatorRequestService;
 import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.model.IndTest;
 import xyz.anythings.gw.service.model.IndTest.IndAction;
@@ -55,7 +55,7 @@ public class IndicatorTestController {
 	 * 표시기 요청 관련 서비스
 	 */
 	@Autowired
-	private IndSendService indSendService;
+	private Type1IndicatorRequestService indSendService;
 
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicator Unit Test")

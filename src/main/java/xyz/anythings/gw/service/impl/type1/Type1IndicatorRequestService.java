@@ -1,4 +1,4 @@
-package xyz.anythings.gw.service;
+package xyz.anythings.gw.service.impl.type1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,10 +21,12 @@ import xyz.anythings.gw.model.LedOffRequest;
 import xyz.anythings.gw.model.LedOnRequest;
 import xyz.anythings.gw.model.MiddlewareConnInfoModRequest;
 import xyz.anythings.gw.model.TimesyncResponse;
+import xyz.anythings.gw.service.MwSender;
+import xyz.anythings.gw.service.api.IIndicatorRequestService;
 import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.util.GwQueryUtil;
-import xyz.anythings.gw.service.util.RuntimeIndicatorSetting;
 import xyz.anythings.gw.service.util.MwMessageUtil;
+import xyz.anythings.gw.service.util.RuntimeIndicatorSetting;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.rabbitmq.message.MessageProperties;
 import xyz.elidom.sys.util.ValueUtil;
@@ -37,7 +39,7 @@ import xyz.elidom.sys.util.ValueUtil;
  * @author shortstop
  */
 @Component
-public class IndSendService extends AbstractQueryService {
+public class Type1IndicatorRequestService extends AbstractQueryService implements IIndicatorRequestService {
 
 	/**
 	 * 미들웨어로 메시지를 전송하기 위한 유틸리티

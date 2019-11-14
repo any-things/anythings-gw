@@ -12,7 +12,7 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.IndSendService;
+import xyz.anythings.gw.service.impl.type1.Type1IndicatorRequestService;
 import xyz.anythings.gw.service.model.IndCommonReq;
 import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.sys.util.AnyOrmUtil;
@@ -39,7 +39,7 @@ public class RuntimeIndServiceUtil {
 	public static int indOnNoboxDisplay(JobBatch batch, List<IndCommonReq> indList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(indList)) {
-			IndSendService sendSvc = BeanUtil.get(IndSendService.class);
+			Type1IndicatorRequestService sendSvc = BeanUtil.get(Type1IndicatorRequestService.class);
 			
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
 			Map<String, List<IndicatorOnInformation>> indOnInfoList = new HashMap<String, List<IndicatorOnInformation>>();
@@ -75,7 +75,7 @@ public class RuntimeIndServiceUtil {
 	public static int restoreIndDisplayJobPicked(JobBatch batch, List<JobInstance> jobList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
-			IndSendService sendSvc = BeanUtil.get(IndSendService.class);
+			Type1IndicatorRequestService sendSvc = BeanUtil.get(Type1IndicatorRequestService.class);
 			
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
 			Map<String, List<IndicatorOnInformation>> indOnInfoList = new HashMap<String, List<IndicatorOnInformation>>();
@@ -154,7 +154,7 @@ public class RuntimeIndServiceUtil {
 	 */
 	public static List<WorkCell> restoreIndDisplayBoxingEnd(JobBatch batch, List<WorkCell> workCells) {
 		if(ValueUtil.isNotEmpty(workCells)) {
-			IndSendService indSendService = BeanUtil.get(IndSendService.class);
+			Type1IndicatorRequestService indSendService = BeanUtil.get(Type1IndicatorRequestService.class);
 
 			for(WorkCell cell : workCells) {
 				String jobStatus = cell.getStatus();
@@ -229,7 +229,7 @@ public class RuntimeIndServiceUtil {
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				BeanUtil.get(IndSendService.class).requestIndsOn(firstJob.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				BeanUtil.get(Type1IndicatorRequestService.class).requestIndsOn(firstJob.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -256,7 +256,7 @@ public class RuntimeIndServiceUtil {
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				BeanUtil.get(IndSendService.class).requestIndsOn(firstJob.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				BeanUtil.get(Type1IndicatorRequestService.class).requestIndsOn(firstJob.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -292,7 +292,7 @@ public class RuntimeIndServiceUtil {
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					BeanUtil.get(IndSendService.class).requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
+					BeanUtil.get(Type1IndicatorRequestService.class).requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
@@ -328,7 +328,7 @@ public class RuntimeIndServiceUtil {
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					BeanUtil.get(IndSendService.class).requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
+					BeanUtil.get(Type1IndicatorRequestService.class).requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
@@ -359,7 +359,7 @@ public class RuntimeIndServiceUtil {
 			
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				// 4. 표시기 점등 요청
-				BeanUtil.get(IndSendService.class).requestIndsInspectOn(batch.getDomainId(), batch.getJobType(), indOnList);
+				BeanUtil.get(Type1IndicatorRequestService.class).requestIndsInspectOn(batch.getDomainId(), batch.getJobType(), indOnList);
 				// 5. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
