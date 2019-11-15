@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.gw.MwConstants;
+import xyz.anythings.gw.GwConstants;
 import xyz.anythings.gw.entity.IndConfig;
 import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.gw.service.api.IIndConfigProfileService;
@@ -142,7 +142,7 @@ public class IndConfigSetController extends AbstractRestService {
 	@ApiDesc(description = "Clear config set by batch id")
 	public BaseResponse clearBatchConfigSet(@PathVariable("batch_id") String batchId) {
 		this.configSetService.clearConfigSet(batchId);
-		return new BaseResponse(true, MwConstants.OK_STRING);
+		return new BaseResponse(true, GwConstants.OK_STRING);
 	}
 	
 	@RequestMapping(value = "/stage/build_config_set/{stage_cd}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -166,7 +166,7 @@ public class IndConfigSetController extends AbstractRestService {
 			}
 		}
 		
-		return new BaseResponse(true, MwConstants.OK_STRING);
+		return new BaseResponse(true, GwConstants.OK_STRING);
 	}
 	
 	@RequestMapping(value = "/stage/config_value/{stage_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

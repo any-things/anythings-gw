@@ -7,7 +7,7 @@ import xyz.elidom.sys.SysConfigConstants;
  *
  * @author shortstop
  */
-public class MwConfigConstants extends SysConfigConstants {
+public class GwConfigConstants extends SysConfigConstants {
 	
 	/**
 	 * 메시징 미들웨어와 통신할 큐 이름

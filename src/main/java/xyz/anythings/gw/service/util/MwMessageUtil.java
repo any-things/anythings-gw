@@ -10,7 +10,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import xyz.anythings.gw.MwConfigConstants;
+import xyz.anythings.gw.GwConfigConstants;
 import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.model.MessageObject;
 import xyz.anythings.gw.service.model.IndOnPickReq;
@@ -41,11 +41,11 @@ public class MwMessageUtil {
 	 */
 	public static String getMwSystemQueue() {
 		if(SYSTEM_QUEUE == null) {
-			SYSTEM_QUEUE = EnvUtil.getValue(MwConfigConstants.MW_SYSTEM_QUEUE_NAME);
+			SYSTEM_QUEUE = EnvUtil.getValue(GwConfigConstants.MW_SYSTEM_QUEUE_NAME);
 		}
 		
 		if(SYSTEM_QUEUE == null) {
-			throw ThrowUtil.newValidationErrorWithNoLog("Environment key [" + MwConfigConstants.MW_SYSTEM_QUEUE_NAME + "] has no value");
+			throw ThrowUtil.newValidationErrorWithNoLog("Environment key [" + GwConfigConstants.MW_SYSTEM_QUEUE_NAME + "] has no value");
 		}
 		
 		return SYSTEM_QUEUE;

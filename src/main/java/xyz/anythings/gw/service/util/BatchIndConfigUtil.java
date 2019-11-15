@@ -1,6 +1,6 @@
 package xyz.anythings.gw.service.util;
 
-import xyz.anythings.gw.MwConfigConstants;
+import xyz.anythings.gw.GwConfigConstants;
 import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
@@ -587,7 +587,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndColorRotationSeq(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_COLOR_ROTATION_SEQ, DEFAULT_ROTATION_SEQ);
+		return getConfigValue(batchId, GwConfigConstants.IND_COLOR_ROTATION_SEQ, DEFAULT_ROTATION_SEQ);
 	}
 	
 	/**
@@ -597,7 +597,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String[] getIndSegmentRolesOn(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_SEGMENT_ROLE_ON, true);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_SEGMENT_ROLE_ON, true);
 		return ValueUtil.isEmpty(value) ? null : value.split(SysConstants.COMMA);
 	}
 	
@@ -618,7 +618,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndNumberAlignment(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_NUMBER_ALIGNMENT, IND_NUMBER_ALIGNMENT_LEFT);
+		return getConfigValue(batchId, GwConfigConstants.IND_NUMBER_ALIGNMENT, IND_NUMBER_ALIGNMENT_LEFT);
 	}
 	
 	/**
@@ -628,7 +628,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndButtonOnMode(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_BUTTON_ON_MODE, IND_BUTTON_MODE_BLINK);
+		return getConfigValue(batchId, GwConfigConstants.IND_BUTTON_ON_MODE, IND_BUTTON_MODE_BLINK);
 	}
 	
 	/**
@@ -638,7 +638,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndButtonBlinkInterval(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_BUTTON_BLINK_INTERVAL, DEFAULT_IND_BUTTON_BLINK_INTERVAL);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_BUTTON_BLINK_INTERVAL, DEFAULT_IND_BUTTON_BLINK_INTERVAL);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -649,7 +649,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndShowStringBeforeOn(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_SHOW_STRING_BEFORE_ON, null);
+		return getConfigValue(batchId, GwConfigConstants.IND_SHOW_STRING_BEFORE_ON, null);
 	}
 	
 	/**
@@ -659,7 +659,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndShowStringDelayBeforeOn(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, DEFAULT_IND_SHOW_STRING_DELAY_BEFORE_ON);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, DEFAULT_IND_SHOW_STRING_DELAY_BEFORE_ON);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -670,7 +670,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndDelayBeforeOn(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_DELAY_BEFORE_ON, DEFAULT_IND_DELAY_BEFORE_ON);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_DELAY_BEFORE_ON, DEFAULT_IND_DELAY_BEFORE_ON);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -681,7 +681,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndDelayCancelButtonOff(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, DEFAULT_IND_DELAY_CANCEL_BUTTON_OFF);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, DEFAULT_IND_DELAY_CANCEL_BUTTON_OFF);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -692,7 +692,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Boolean isIndFullboxButtonBlink(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(value);
 	}
 	
@@ -703,7 +703,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Boolean isIndSendOffAckAlreadyOff(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(value);
 	}
 	
@@ -714,7 +714,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndLedOnMode(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_LED_ON_MODE, IND_BUTTON_MODE_STOP);
+		return getConfigValue(batchId, GwConfigConstants.IND_LED_ON_MODE, IND_BUTTON_MODE_STOP);
 	}
 	
 	/**
@@ -724,7 +724,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndLedBlinkInterval(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_LED_BLINK_INTERVAL, DEFAULT_IND_LED_BLINK_INTERVAL);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_LED_BLINK_INTERVAL, DEFAULT_IND_LED_BLINK_INTERVAL);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -735,7 +735,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndLedBrightness(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_LED_BRIGHTNESS, DEFAULT_IND_LED_BRIGHTNESS);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_LED_BRIGHTNESS, DEFAULT_IND_LED_BRIGHTNESS);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -746,7 +746,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndDisplayViewType(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
+		return getConfigValue(batchId, GwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
 	}
 	
 	/**
@@ -756,7 +756,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndHealthPeriod(String batchId) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_HEALTH_PERIOD, DEFAULT_IND_HEALTH_PERIOD);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_HEALTH_PERIOD, DEFAULT_IND_HEALTH_PERIOD);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -809,7 +809,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static Integer fitRelaySeq(String batchId, Integer relaySeq) {
-		String value = getConfigValue(batchId, MwConfigConstants.IND_RELAY_MAX_NO, DEFAULT_IND_RELAY_MAX_NO);
+		String value = getConfigValue(batchId, GwConfigConstants.IND_RELAY_MAX_NO, DEFAULT_IND_RELAY_MAX_NO);
 		int relayMaxNo = ValueUtil.toInteger(value);
 		return (relaySeq > relayMaxNo) ? 1 : relaySeq;
 	}
@@ -821,7 +821,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndViewType(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
+		return getConfigValue(batchId, GwConfigConstants.IND_SHOW_VIEW_TYPE, DEFAULT_IND_SHOW_VIEW_TYPE);
 	}
 	
 	/**
@@ -835,7 +835,7 @@ public class BatchIndConfigUtil {
 		String version = gateway.getVersion();
 		
 		if(ValueUtil.isEmpty(version)) {
-			return getConfigValue(batchId, MwConfigConstants.GW_LATEST_RELEASE_VERSION, DEFAULT_GW_LATEST_RELEASE_VERSION);
+			return getConfigValue(batchId, GwConfigConstants.GW_LATEST_RELEASE_VERSION, DEFAULT_GW_LATEST_RELEASE_VERSION);
 		} else {
 			return version;
 		}
@@ -848,7 +848,7 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndLatestReleaseVersion(String batchId) {
-		return getConfigValue(batchId, MwConfigConstants.IND_LATEST_RELEASE_VERSION, DEFAULT_IND_LATEST_RELEASE_VERSION);
+		return getConfigValue(batchId, GwConfigConstants.IND_LATEST_RELEASE_VERSION, DEFAULT_IND_LATEST_RELEASE_VERSION);
 	}
 	
 	/**

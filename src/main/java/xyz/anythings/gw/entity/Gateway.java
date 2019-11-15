@@ -1,6 +1,6 @@
 package xyz.anythings.gw.entity;
 
-import xyz.anythings.gw.MwConstants;
+import xyz.anythings.gw.GwConstants;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Ignore;
@@ -144,7 +144,7 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 	
 	public static String buildGatewayPath(String siteCd, String areaCd, String stageCd, String gwCd) {
-		return siteCd + MwConstants.SLASH + areaCd + MwConstants.SLASH + stageCd + MwConstants.SLASH + gwCd;
+		return siteCd + GwConstants.SLASH + areaCd + GwConstants.SLASH + stageCd + GwConstants.SLASH + gwCd;
 	}
 	
 	/*@Override

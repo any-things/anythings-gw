@@ -1,6 +1,6 @@
 package xyz.anythings.gw.service.util;
 
-import xyz.anythings.gw.MwConfigConstants;
+import xyz.anythings.gw.GwConfigConstants;
 import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
@@ -468,7 +468,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndColorRotationSeq(Long domainId, String stageCd) {
-		return getConfigValue(domainId, stageCd, MwConfigConstants.IND_COLOR_ROTATION_SEQ, BatchIndConfigUtil.DEFAULT_ROTATION_SEQ);
+		return getConfigValue(domainId, stageCd, GwConfigConstants.IND_COLOR_ROTATION_SEQ, BatchIndConfigUtil.DEFAULT_ROTATION_SEQ);
 	}
 	
 	/**
@@ -479,7 +479,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String[] getIndSegmentRolesOn(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_SEGMENT_ROLE_ON, null);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_SEGMENT_ROLE_ON, null);
 		return ValueUtil.isEmpty(value) ? null : value.split(SysConstants.COMMA);
 	}
 	
@@ -502,7 +502,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndNumberAlignment(Long domainId, String stageCd) {
-		return getConfigValue(domainId, stageCd, MwConfigConstants.IND_NUMBER_ALIGNMENT, BatchIndConfigUtil.IND_NUMBER_ALIGNMENT_LEFT);
+		return getConfigValue(domainId, stageCd, GwConfigConstants.IND_NUMBER_ALIGNMENT, BatchIndConfigUtil.IND_NUMBER_ALIGNMENT_LEFT);
 	}
 	
 	/**
@@ -513,7 +513,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndButtonOnMode(Long domainId, String stageCd) {
-		return getConfigValue(domainId, stageCd, MwConfigConstants.IND_BUTTON_ON_MODE, BatchIndConfigUtil.IND_BUTTON_MODE_BLINK);
+		return getConfigValue(domainId, stageCd, GwConfigConstants.IND_BUTTON_ON_MODE, BatchIndConfigUtil.IND_BUTTON_MODE_BLINK);
 	}
 	
 	/**
@@ -524,7 +524,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndButtonBlinkInterval(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_BUTTON_BLINK_INTERVAL, BatchIndConfigUtil.DEFAULT_IND_BUTTON_BLINK_INTERVAL);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_BUTTON_BLINK_INTERVAL, BatchIndConfigUtil.DEFAULT_IND_BUTTON_BLINK_INTERVAL);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -536,7 +536,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndShowStringBeforeOn(Long domainId, String stageCd) {
-		return getConfigValue(domainId, stageCd, MwConfigConstants.IND_SHOW_STRING_BEFORE_ON, null);
+		return getConfigValue(domainId, stageCd, GwConfigConstants.IND_SHOW_STRING_BEFORE_ON, null);
 	}
 	
 	/**
@@ -547,7 +547,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndShowStringDelayBeforeOn(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, BatchIndConfigUtil.DEFAULT_IND_SHOW_STRING_DELAY_BEFORE_ON);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_SHOW_STRING_DELAY_BEFORE_ON, BatchIndConfigUtil.DEFAULT_IND_SHOW_STRING_DELAY_BEFORE_ON);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -559,7 +559,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndDelayBeforeOn(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_DELAY_BEFORE_ON, BatchIndConfigUtil.DEFAULT_IND_DELAY_BEFORE_ON);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_DELAY_BEFORE_ON, BatchIndConfigUtil.DEFAULT_IND_DELAY_BEFORE_ON);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -571,7 +571,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndDelayCancelButtonOff(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, BatchIndConfigUtil.DEFAULT_IND_DELAY_CANCEL_BUTTON_OFF);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_DELAY_CANCEL_BUTTON_OFF, BatchIndConfigUtil.DEFAULT_IND_DELAY_CANCEL_BUTTON_OFF);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -583,7 +583,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Boolean isIndFullboxButtonBlink(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_FULLBOX_BUTTON_BLINK, AnyConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(value);
 	}
 	
@@ -595,7 +595,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Boolean isIndSendOffAckAlreadyOff(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_SEND_OFF_ACK_ALREADY_OFF, AnyConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(value);
 	}
 	
@@ -607,7 +607,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndLedOnMode(Long domainId, String stageCd) {
-		return getConfigValue(domainId, stageCd, MwConfigConstants.IND_LED_ON_MODE, BatchIndConfigUtil.IND_BUTTON_MODE_STOP);
+		return getConfigValue(domainId, stageCd, GwConfigConstants.IND_LED_ON_MODE, BatchIndConfigUtil.IND_BUTTON_MODE_STOP);
 	}
 	
 	/**
@@ -618,7 +618,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndLedBlinkInterval(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_LED_BLINK_INTERVAL, BatchIndConfigUtil.DEFAULT_IND_LED_BLINK_INTERVAL);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_LED_BLINK_INTERVAL, BatchIndConfigUtil.DEFAULT_IND_LED_BLINK_INTERVAL);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -630,7 +630,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndLedBrightness(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_LED_BRIGHTNESS, BatchIndConfigUtil.DEFAULT_IND_LED_BRIGHTNESS);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_LED_BRIGHTNESS, BatchIndConfigUtil.DEFAULT_IND_LED_BRIGHTNESS);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -642,7 +642,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndDisplayViewType(Long domainId, String stageCd) {
-		return getConfigValue(domainId, stageCd, MwConfigConstants.IND_SHOW_VIEW_TYPE, BatchIndConfigUtil.DEFAULT_IND_SHOW_VIEW_TYPE);
+		return getConfigValue(domainId, stageCd, GwConfigConstants.IND_SHOW_VIEW_TYPE, BatchIndConfigUtil.DEFAULT_IND_SHOW_VIEW_TYPE);
 	}
 	
 	/**
@@ -653,7 +653,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer getIndHealthPeriod(Long domainId, String stageCd) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_HEALTH_PERIOD, BatchIndConfigUtil.DEFAULT_IND_HEALTH_PERIOD);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_HEALTH_PERIOD, BatchIndConfigUtil.DEFAULT_IND_HEALTH_PERIOD);
 		return ValueUtil.toInteger(value);
 	}
 	
@@ -709,7 +709,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static Integer fitRelaySeq(Long domainId, String stageCd, Integer relaySeq) {
-		String value = getConfigValue(domainId, stageCd, MwConfigConstants.IND_RELAY_MAX_NO, BatchIndConfigUtil.DEFAULT_IND_RELAY_MAX_NO);
+		String value = getConfigValue(domainId, stageCd, GwConfigConstants.IND_RELAY_MAX_NO, BatchIndConfigUtil.DEFAULT_IND_RELAY_MAX_NO);
 		int relayMaxNo = ValueUtil.toInteger(value);
 		return (relaySeq > relayMaxNo) ? 1 : relaySeq;
 	}
@@ -722,7 +722,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndViewType(Long domainId, String stageCd) {
-		return getConfigValue(domainId, stageCd, MwConfigConstants.IND_SHOW_VIEW_TYPE, BatchIndConfigUtil.DEFAULT_IND_SHOW_VIEW_TYPE);		
+		return getConfigValue(domainId, stageCd, GwConfigConstants.IND_SHOW_VIEW_TYPE, BatchIndConfigUtil.DEFAULT_IND_SHOW_VIEW_TYPE);		
 	}
 	
 	/**
@@ -735,7 +735,7 @@ public class StageIndConfigUtil {
 		String version = gateway.getVersion();
 		
 		if(ValueUtil.isEmpty(version)) {
-			return getConfigValue(gateway.getDomainId(), gateway.getStageCd(), MwConfigConstants.GW_LATEST_RELEASE_VERSION, BatchIndConfigUtil.DEFAULT_GW_LATEST_RELEASE_VERSION);
+			return getConfigValue(gateway.getDomainId(), gateway.getStageCd(), GwConfigConstants.GW_LATEST_RELEASE_VERSION, BatchIndConfigUtil.DEFAULT_GW_LATEST_RELEASE_VERSION);
 		} else {
 			return version;
 		}
@@ -748,7 +748,7 @@ public class StageIndConfigUtil {
 	 * @return
 	 */
 	public static String getIndLatestReleaseVersion(Gateway gateway) {
-		return getConfigValue(gateway.getDomainId(), gateway.getStageCd(), MwConfigConstants.IND_LATEST_RELEASE_VERSION, BatchIndConfigUtil.DEFAULT_IND_LATEST_RELEASE_VERSION);
+		return getConfigValue(gateway.getDomainId(), gateway.getStageCd(), GwConfigConstants.IND_LATEST_RELEASE_VERSION, BatchIndConfigUtil.DEFAULT_IND_LATEST_RELEASE_VERSION);
 	}
 	
 	/**

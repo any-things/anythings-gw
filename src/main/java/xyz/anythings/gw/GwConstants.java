@@ -7,7 +7,7 @@ import xyz.elidom.sys.SysConstants;
  * 
  * @author shortstop
  */
-public class MwConstants extends SysConstants {		
+public class GwConstants extends SysConstants {		
 	
 	/**
 	 * Indicator의 버튼에 대한 작업 수행 - 확정 처리
