@@ -1,6 +1,5 @@
 package xyz.anythings.gw.entity;
 
-import xyz.anythings.gw.service.FirmwareDeploymentService;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Ignore;
@@ -10,7 +9,6 @@ import xyz.elidom.dbist.annotation.Table;
 import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.SysConstants;
-import xyz.elidom.sys.util.DateUtil;
 import xyz.elidom.sys.util.SettingUtil;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
@@ -255,19 +253,19 @@ public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * 
 	 * @return
 	 */
-	public Boolean deployNow() {
+	/*public Boolean deployNow() {
 		if(!ValueUtil.isEqualIgnoreCase(this.status, Deployment.STATUS_WAIT) && !ValueUtil.isEqualIgnoreCase(this.status, Deployment.STATUS_RESERVED)) {
 			throw new ElidomRuntimeException("상태가 '예약대기' 혹은 '예약됨' 상태가 아닙니다");
 		}
 		
 		this.setStatus(Deployment.STATUS_RUN);
 		this.setStartedAt(DateUtil.currentTimeStr());
-		BeanUtil.get(FirmwareDeploymentService.class).deployFirmware(this);
+		BeanUtil.get(Type1FirmwareDeployService.class).deployFirmware(this);
 		this.setStatus(Deployment.STATUS_END);
 		this.setFinishedAt(DateUtil.currentTimeStr());
 		BeanUtil.get(IQueryManager.class).update(this, SysConstants.ENTITY_FIELD_STATUS, "startedAt", "finishedAt");
 		return true;
-	}
+	}*/
 	
 	/**
 	 * 배포 예약

@@ -72,14 +72,12 @@ public class ModuleProperties implements IModuleProperties {
 	 */
 	@Value("${anythings.gw.rabbitQueue:not_use}")
 	private String rabbitQueue;
-
-
 	/**
 	 * Project Name
 	 * 
 	 * @return
 	 */
-	@Value("${anythings.sys.projectName}")
+	@Value("${anythings.gw.projectName}")
 	private String projectName;
 
 	public String getName() {

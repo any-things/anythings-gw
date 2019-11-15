@@ -1,4 +1,4 @@
-package xyz.anythings.gw.service.impl;
+package xyz.anythings.gw.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;

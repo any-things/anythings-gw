@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.gw.service.api.IIndicatorRequestService;
-import xyz.anythings.gw.service.impl.IndConfigProfileService;
 
 /**
  * 인디케이터 벤더별 서비스 디스패처
