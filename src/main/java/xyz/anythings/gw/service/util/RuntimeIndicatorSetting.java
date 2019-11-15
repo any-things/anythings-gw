@@ -4,7 +4,7 @@ import xyz.anythings.gw.MwConfigConstants;
 import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.api.IIndConfigSetService;
+import xyz.anythings.gw.service.api.IIndConfigProfileService;
 import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.sys.SysConstants;
@@ -160,7 +160,7 @@ public class RuntimeIndicatorSetting {
 	 * @return
 	 */
 	public static String getIndConfigValueByBatchScope(String batchId, String indConfig, String deafultValue) {
-		return BeanUtil.get(IIndConfigSetService.class).getIndConfigValue(batchId, indConfig, deafultValue);
+		return BeanUtil.get(IIndConfigProfileService.class).getConfigValue(batchId, indConfig, deafultValue);
 	}
 	
 	/**

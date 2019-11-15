@@ -2,7 +2,7 @@ package xyz.anythings.gw.service.util;
 
 import xyz.anythings.gw.MwConfigConstants;
 import xyz.anythings.gw.MwConstants;
-import xyz.anythings.gw.service.api.IIndConfigSetService;
+import xyz.anythings.gw.service.api.IIndConfigProfileService;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
@@ -44,16 +44,16 @@ public class BatchIndConfigUtil {
 	/**
 	 * 설정 프로파일 서비스
 	 */
-	public static IIndConfigSetService CONFIG_SET_SVC;
+	public static IIndConfigProfileService CONFIG_SET_SVC;
 	
 	/**
 	 * 설정 프로파일 서비스 리턴
 	 * 
 	 * @return
 	 */
-	public static IIndConfigSetService getConfigSetService() {
+	public static IIndConfigProfileService getConfigSetService() {
 		if(CONFIG_SET_SVC == null) {
-			CONFIG_SET_SVC = BeanUtil.get(IIndConfigSetService.class);
+			CONFIG_SET_SVC = BeanUtil.get(IIndConfigProfileService.class);
 		}
 		
 		return CONFIG_SET_SVC;
@@ -68,10 +68,10 @@ public class BatchIndConfigUtil {
 	 * @return
 	 */
 	public static String getConfigValue(String batchId, String key, boolean exceptionWhenEmptyValue) {
-		IIndConfigSetService configSvc = getConfigSetService();
+		IIndConfigProfileService configSvc = getConfigSetService();
 		
 		// 1. 작업 유형에 따른 설정값 조회
-		String value = configSvc.getIndConfigValue(batchId, key);
+		String value = configSvc.getConfigValue(batchId, key);
 		
 		// 2. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리
 		if(exceptionWhenEmptyValue) {

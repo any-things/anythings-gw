@@ -14,7 +14,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.gw.config.ModuleProperties;
-import xyz.anythings.gw.service.api.IIndConfigSetService;
+import xyz.anythings.gw.service.api.IIndConfigProfileService;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.config.ModuleConfigSet;
 import xyz.elidom.sys.entity.Domain;
@@ -51,7 +51,7 @@ public class AnythingsGwInitializer {
 	private IQueryManager queryManager;
 	
 	@Autowired
-	private IIndConfigSetService configSetSvc;
+	private IIndConfigProfileService configSetSvc;
 	
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {
@@ -86,7 +86,7 @@ public class AnythingsGwInitializer {
 		List<Domain> domainList = this.queryManager.selectListBySql(sql, new HashMap<String, Object>(1), Domain.class, 0, 0);
 		
 		for(Domain domain : domainList) {
-			this.configSetSvc.buildStageIndConfigSet(domain.getId());
+			this.configSetSvc.buildStageConfigSet(domain.getId());
 		}
 	}
 

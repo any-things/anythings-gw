@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import xyz.anythings.gw.MwConstants;
 import xyz.anythings.gw.entity.IndConfig;
 import xyz.anythings.gw.entity.IndConfigSet;
-import xyz.anythings.gw.service.api.IIndConfigSetService;
+import xyz.anythings.gw.service.api.IIndConfigProfileService;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.model.KeyValue;
 import xyz.anythings.sys.util.AnyEntityUtil;
@@ -38,7 +38,7 @@ import xyz.elidom.sys.util.ValueUtil;
 public class IndConfigSetController extends AbstractRestService {
 
 	@Autowired
-	private IIndConfigSetService configSetService;
+	private IIndConfigProfileService configSetService;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -128,20 +128,20 @@ public class IndConfigSetController extends AbstractRestService {
 	@ApiDesc(description = "Build config set by batch id & indicator config set id")
 	public IndConfigSet buildBatchConfigSet(@PathVariable("batch_id") String batchId, @PathVariable("ind_config_set_id") String indConfigSetId) {
 		IndConfigSet configSet = AnyEntityUtil.findEntityById(true, IndConfigSet.class, indConfigSetId);
-		return this.configSetService.buildIndConfigSet(batchId, configSet);
+		return this.configSetService.addConfigSet(batchId, configSet);
 	}
 	
 	@RequestMapping(value = "/batch/config_value/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Config key by batch id")
 	public KeyValue getConfigValueInBatchScope(@PathVariable("batch_id") String batchId, @RequestParam(name = "config_key", required = true) String configKey) {
-		String value = this.configSetService.getIndConfigValue(batchId, configKey);
+		String value = this.configSetService.getConfigValue(batchId, configKey);
 		return new KeyValue(configKey, value);
 	}
 
 	@RequestMapping(value = "/clear_config_set/{batch_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Clear config set by batch id")
 	public BaseResponse clearBatchConfigSet(@PathVariable("batch_id") String batchId) {
-		this.configSetService.clearIndConfigSet(batchId);
+		this.configSetService.clearConfigSet(batchId);
 		return new BaseResponse(true, MwConstants.OK_STRING);
 	}
 	
@@ -153,7 +153,7 @@ public class IndConfigSetController extends AbstractRestService {
 		Long domainId = Domain.currentDomainId();
 		
 		if(stageCd == null) {
-			this.configSetService.buildStageIndConfigSet(domainId);
+			this.configSetService.buildStageConfigSet(domainId);
 			
 		} else {
 			String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd,ind_type from ind_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd = :stageCd and equip_type is null and equip_cd is null and job_type is null and com_cd is null";
@@ -161,7 +161,7 @@ public class IndConfigSetController extends AbstractRestService {
 			
 			if(ValueUtil.isNotEmpty(confSetList)) {
 				for(IndConfigSet confSet : confSetList) {
-					this.configSetService.buildStageIndConfigSet(confSet);
+					this.configSetService.addStageConfigSet(confSet);
 				}
 			}
 		}
@@ -172,7 +172,7 @@ public class IndConfigSetController extends AbstractRestService {
 	@RequestMapping(value = "/stage/config_value/{stage_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Config key by stage code")
 	public KeyValue getConfigValueInStageScope(@PathVariable("stage_cd") String stageCd, @RequestParam(name = "config_key", required = true) String configKey) {
-		String value = this.configSetService.getIndConfigValue(stageCd, configKey);
+		String value = this.configSetService.getStageConfigValue(Domain.currentDomainId(), stageCd, configKey);
 		return new KeyValue(configKey, value);
 	}
 
