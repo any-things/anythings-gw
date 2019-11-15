@@ -237,7 +237,7 @@ public class MwMessageUtil {
 		indOnInfo.setBizId(indOnPick.getJobInstanceId());
 		indOnInfo.setColor(indOnPick.getColorCd());
 		// 작업 배치 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
-		RuntimeIndicatorSetting.setIndOnQty(batchId, indOnPick, indOnInfo);
+		BatchIndConfigUtil.setIndOnQty(batchId, indOnPick, indOnInfo);
 		return indOnInfo;
 	}
 	
@@ -255,7 +255,7 @@ public class MwMessageUtil {
 		indOnInfo.setBizId(indOnPick.getJobInstanceId());
 		indOnInfo.setColor(indOnPick.getColorCd());
 		// 스테이지 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
-		StageIndicatorSetting.setIndOnQty(domainId, stageCd, indOnPick, indOnInfo);
+		StageIndConfigUtil.setIndOnQty(domainId, stageCd, indOnPick, indOnInfo);
 		return indOnInfo;
 	}
 	

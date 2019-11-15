@@ -264,17 +264,6 @@ public interface IIndicatorRequestService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param indCd
-	 * @param bizId
-	 * @param displayStr
-	 */
-	public void requestShowString(Long domainId, String jobType, String indCd, String bizId, String displayStr);
-
-	/**
-	 * 표시기에 문자열 표시 요청
-	 * 
-	 * @param domainId
-	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
@@ -313,12 +302,13 @@ public interface IIndicatorRequestService {
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param leftQty
 	 * @param rightQty
 	 */
-	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String indCd, String bizId, Integer leftQty, Integer rightQty);
+	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String gwPath, String indCd, String bizId, Integer leftQty, Integer rightQty);
 
 	/**********************************************************************
 	 * 							4. 게이트웨이 초기화 요청

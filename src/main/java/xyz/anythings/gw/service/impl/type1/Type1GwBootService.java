@@ -14,8 +14,8 @@ import xyz.anythings.gw.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.model.GatewayInitResIndList;
 import xyz.anythings.gw.model.GatewayInitResponse;
 import xyz.anythings.gw.service.api.IGwBootService;
-import xyz.anythings.gw.service.util.RuntimeIndicatorSetting;
-import xyz.anythings.gw.service.util.StageIndicatorSetting;
+import xyz.anythings.gw.service.util.BatchIndConfigUtil;
+import xyz.anythings.gw.service.util.StageIndConfigUtil;
 import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.anythings.sys.util.AnyEntityUtil;
@@ -61,17 +61,17 @@ public class Type1GwBootService extends AbstractQueryService implements IGwBootS
 		
 		// 4. Gateway가 관리하는 인디케이터 리스트 및 각각의 Indicator 별 설정 정보 가져오기.		
 		GatewayInitResIndConfig gwInitResIndConfig = (batchId != null) ?
-				RuntimeIndicatorSetting.getGatewayBootConfig(batchId, gateway) : StageIndicatorSetting.getGatewayBootConfig(gateway);
+				BatchIndConfigUtil.getGatewayBootConfig(batchId, gateway) : StageIndConfigUtil.getGatewayBootConfig(gateway);
 		gwInitRes.setIndConf(gwInitResIndConfig);
 		
 		// 5. Gateway 최신버전 정보 설정.
 		String latestGatewayVer = (batchId != null) ? 
-				RuntimeIndicatorSetting.getGwLatestReleaseVersion(batchId, gateway) : StageIndicatorSetting.getGwLatestReleaseVersion(gateway);
+				BatchIndConfigUtil.getGwLatestReleaseVersion(batchId, gateway) : StageIndConfigUtil.getGwLatestReleaseVersion(gateway);
 		gwInitRes.setGwVersion(latestGatewayVer);
 		
 		// 6. Indicator 최신버전 정보 설정.
 		String latestIndVer = (batchId != null) ? 
-				RuntimeIndicatorSetting.getIndLatestReleaseVersion(batchId) : StageIndicatorSetting.getIndLatestReleaseVersion(gateway);
+				BatchIndConfigUtil.getIndLatestReleaseVersion(batchId) : StageIndConfigUtil.getIndLatestReleaseVersion(gateway);
 		gwInitRes.setIndVersion(latestIndVer);
 
 		// 7. 현재 시간 설정 - 밀리세컨드 제외
@@ -79,7 +79,7 @@ public class Type1GwBootService extends AbstractQueryService implements IGwBootS
 		
 		// 8. 상태 보고 주기 설정.
 		int healthPeriod = (batchId != null) ? 
-				RuntimeIndicatorSetting.getIndHealthPeriod(batchId) : StageIndicatorSetting.getIndHealthPeriod(gateway.getDomainId(), gateway.getStageCd()); 
+				BatchIndConfigUtil.getIndHealthPeriod(batchId) : StageIndConfigUtil.getIndHealthPeriod(gateway.getDomainId(), gateway.getStageCd()); 
 		gwInitRes.setHealthPeriod(healthPeriod);
 		
 		// 9. 게이트웨이 초기화 응답 전송 

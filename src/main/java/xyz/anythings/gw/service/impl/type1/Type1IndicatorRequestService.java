@@ -24,8 +24,8 @@ import xyz.anythings.gw.model.TimesyncResponse;
 import xyz.anythings.gw.service.MwSender;
 import xyz.anythings.gw.service.api.IIndicatorRequestService;
 import xyz.anythings.gw.service.model.IndOffReq;
+import xyz.anythings.gw.service.util.BatchIndConfigUtil;
 import xyz.anythings.gw.service.util.MwMessageUtil;
-import xyz.anythings.gw.service.util.RuntimeIndicatorSetting;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.rabbitmq.message.MessageProperties;
 import xyz.elidom.sys.util.ValueUtil;
@@ -97,7 +97,7 @@ public class Type1IndicatorRequestService extends AbstractQueryService implement
 			indOnForPickList.forEach((gwPath, indOnList) -> {
 				MessageProperties property = MwMessageUtil.newReqMessageProp(gwPath);
 				for(IndicatorOnInformation indOnInfo : indOnList) {
-					indOnInfo.setBtnMode(RuntimeIndicatorSetting.IND_BUTTON_MODE_STOP);
+					indOnInfo.setBtnMode(BatchIndConfigUtil.IND_BUTTON_MODE_STOP);
 				}
 				this.mwMsgSender.send(domainId, property, new IndicatorOnRequest(jobType, MwConstants.IND_ACTION_TYPE_INSPECT, indOnList));
 			});
@@ -478,7 +478,7 @@ public class Type1IndicatorRequestService extends AbstractQueryService implement
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { RuntimeIndicatorSetting.IND_SEGMENT_ROLE_RELAY_SEQ, RuntimeIndicatorSetting.IND_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { BatchIndConfigUtil.IND_SEGMENT_ROLE_RELAY_SEQ, BatchIndConfigUtil.IND_SEGMENT_ROLE_PCS });
 		indOnInfo.setOrgAccmQty(accumQty);
 		indOnInfo.setOrgEaQty(pickedQty);
 		indOnList.add(indOnInfo);
@@ -500,20 +500,6 @@ public class Type1IndicatorRequestService extends AbstractQueryService implement
 	@Override
 	public void requestFullbox(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color) {
 		this.requestCommonIndOn(domainId, jobType, gwPath, indCd, bizId, MwConstants.IND_BIZ_FLAG_FULL, color, 0, 0);
-	}
-	
-	/**
-	 * 표시기에 문자열 표시 요청
-	 * 
-	 * @param domainId
-	 * @param jobType
-	 * @param indCd
-	 * @param bizId
-	 * @param displayStr
-	 */
-	@Override
-	public void requestShowString(Long domainId, String jobType, String indCd, String bizId, String displayStr) {
-		this.requestShowString(domainId, jobType, null, indCd, bizId, displayStr);
 	}
 
 	/**
@@ -577,7 +563,7 @@ public class Type1IndicatorRequestService extends AbstractQueryService implement
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
-		indOnInfo.setSegRole(new String[] { RuntimeIndicatorSetting.IND_SEGMENT_ROLE_STR, RuntimeIndicatorSetting.IND_SEGMENT_ROLE_PCS });
+		indOnInfo.setSegRole(new String[] { BatchIndConfigUtil.IND_SEGMENT_ROLE_STR, BatchIndConfigUtil.IND_SEGMENT_ROLE_PCS });
 		indOnInfo.setViewStr(leftStr);
 		indOnInfo.setOrgEaQty(rightQty);
 		indOnList.add(indOnInfo);
@@ -597,7 +583,7 @@ public class Type1IndicatorRequestService extends AbstractQueryService implement
 	 * @param rightQty
 	 */
 	@Override
-	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String indCd, String bizId, Integer leftQty, Integer rightQty) {
+	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String gwPath, String indCd, String bizId, Integer leftQty, Integer rightQty) {
 		StringBuffer showStr = new StringBuffer();
 		
 		if(leftQty != null) {
@@ -612,7 +598,7 @@ public class Type1IndicatorRequestService extends AbstractQueryService implement
 			showStr.append("   ");
 		}
 		
-		this.requestShowString(domainId, jobType, indCd, bizId, showStr.toString());
+		this.requestShowString(domainId, jobType, gwPath, indCd, bizId, showStr.toString());
 	}
 
 	/**********************************************************************
