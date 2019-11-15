@@ -51,40 +51,28 @@ public interface IIndicatorRequestService {
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestPickIndOn(Long domainId, String jobType, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
+	public void requestPickIndOn(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
 	
 	/**
 	 * 하나의 표시기에 검수를 위한 점등 요청
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestInspectIndOn(Long domainId, String jobType, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
-	
-	/**
-	 * 하나의 표시기에 액션 타입별 점등 요청 
-	 * 
-	 * @param domainId
-	 * @param jobType
-	 * @param indCd
-	 * @param bizId
-	 * @param actionType
-	 * @param color
-	 * @param boxQty
-	 * @param eaQty
-	 */
-	public void requestCommonIndOn(Long domainId, String jobType, String indCd, String bizId, String actionType, String color, Integer boxQty, Integer eaQty);
+	public void requestInspectIndOn(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
 	
 	/**
 	 * 하나의 표시기에 액션 타입별 점등 요청 
@@ -108,28 +96,30 @@ public interface IIndicatorRequestService {
 	 * 표시기 하나에 대한 소등 요청 
 	 * 
 	 * @param domainId
+	 * @param gwPath
 	 * @param indCd
 	 * @param forceOff
 	 */
-	public void requestIndOff(Long domainId, String indCd, boolean forceOff);
+	public void requestIndOff(Long domainId, String gwPath, String indCd, boolean forceOff);
 	
 	/**
 	 * 표시기 하나에 대한 소등 요청 
 	 * 
 	 * @param domainId
+	 * @param gwPath
 	 * @param indCd
 	 */
-	public void requestIndOff(Long domainId, String indCd);
+	public void requestIndOff(Long domainId, String gwPath, String indCd);
 	
 	/**
-	 * 게이트웨이 리스트로 표시기 소등 요청
+	 * 게이트웨이 - 표시기 리스트 값으로 표시기 소등 요청
 	 * 
 	 * @param domainId
-	 * @param gwPathList
+	 * @param indOffMap gwPath -> indicator Code List
 	 * @param forceOff
 	 */
-	public void requestIndOff(Long domainId, List<String> gwPathList, boolean forceOff);
-	
+	public void requestIndListOff(Long domainId, Map<String, List<String>> indOffMap, boolean forceOff);
+		
 	/**
 	 * 게이트웨이에 게이트웨이 소속 모든 표시기 소등 요청
 	 * 
@@ -138,44 +128,16 @@ public interface IIndicatorRequestService {
 	 * @param indCdList
 	 * @param forceOff 강제 소등 여부
 	 */
-	public void requestIndOff(Long domainId, String gwPath, List<String> indCdList, boolean forceOff);
+	public void requestIndListOff(Long domainId, String gwPath, List<String> indCdList, boolean forceOff);
 	
 	/**
 	 * 호기별 표시기 Off 요청 전송 
 	 * 
 	 * @param domainId
-	 * @param rackCd 호기 코드
+	 * @param indOffList 소등할 표시기 리스트 
 	 * @param forceOff 강제 소등 여부
 	 */
-	public void requestIndOffByRack(Long domainId, String rackCd, boolean forceOff);
-	
-	/**
-	 * 호기 및 장비 작업 존 별 표시기 Off 요청 전송 
-	 * 
-	 * @param domainId
-	 * @param rackCd
-	 * @param equipZoneCd
-	 * @param sideCd
-	 */
-	public void requestIndOffByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd);
-	
-	/**
-	 * 호기 및 작업 스테이션 별 표시기 Off 요청 전송 
-	 * 
-	 * @param domainId
-	 * @param rackCd
-	 * @param zoneCd
-	 */
-	public void requestIndOffByStation(Long domainId, String rackCd, String zoneCd);
-	
-	/**
-	 * 표시기 리스트로 표시기 Off
-	 * 
-	 * @param domainId
-	 * @param indList
-	 * @param forceOff 강제 소등 여부 
-	 */
-	public void requestOffByIndList(Long domainId, List<IndOffReq> indList, boolean forceOff);
+	public void requestIndListOff(Long domainId, List<IndOffReq> indList, boolean forceOff);
 	
 	/**********************************************************************
 	 * 							3. 표시기 숫자, 문자 표시 요청
@@ -186,59 +148,65 @@ public interface IIndicatorRequestService {
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param finalEnd 최종 완료 (End End 표시 후 Fullbox까지 마쳤는지) 여부
 	 */
-	public void requestIndEndDisplay(Long domainId, String jobType, String indCd, String bizId, boolean finalEnd);
+	public void requestIndEndDisplay(Long domainId, String jobType, String gwPath, String indCd, String bizId, boolean finalEnd);
 	
 	/**
 	 * 로케이션 별 공박스 매핑 필요 표시 요청
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 */
-	public void requestIndNoBoxDisplay(Long domainId, String jobType, String indCd);
+	public void requestIndNoBoxDisplay(Long domainId, String jobType, String gwPath, String indCd);
 	
 	/**
 	 * Fullbox시에 로케이션-공박스 매핑이 안 된 에러를 표시기에 표시하기 위한 요청
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 */
-	public void requestIndErrBoxDisplay(Long domainId, String jobType, String indCd);
+	public void requestIndErrBoxDisplay(Long domainId, String jobType, String gwPath, String indCd);
 	
 	/**
 	 * 표시기에 버튼 점등은 되지 않고 eaQty 정보로 표시 - 사용자 터치 반응 안함 
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param pickEaQty
 	 */
-	public void requestIndDisplayOnly(Long domainId, String jobType, String indCd, String bizId, Integer pickEaQty);
+	public void requestIndDisplayOnly(Long domainId, String jobType, String gwPath, String indCd, String bizId, Integer pickEaQty);
 	
 	/**
 	 * 세그먼트 정보를 커스터마이징 한 표시기 표시 - 이 때 Fullbox가 되어야 하므로 readOnly는 false로
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param firstSegQty
 	 * @param secondSegQty
 	 * @param thirdSegQty
 	 */
-	public void requestIndSegmentDisplay(Long domainId, String jobType, String indCd, String bizId, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty);
+	public void requestIndSegmentDisplay(Long domainId, String jobType, String gwPath, String indCd, String bizId, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty);
 	
 	/**
 	 * 각종 옵션으로 표시기에 표시 요청 
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param displayActionType
@@ -247,13 +215,14 @@ public interface IIndicatorRequestService {
 	 * @param secondSegQty
 	 * @param thirdSegQty
 	 */
-	public void requestIndDisplay(Long domainId, String jobType, String indCd, String bizId, String displayActionType, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty);
+	public void requestIndDisplay(Long domainId, String jobType, String gwPath, String indCd, String bizId, String displayActionType, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty);
 	
 	/**
 	 * 각종 옵션으로 표시기에 표시 요청 
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param displayActionType
@@ -263,43 +232,32 @@ public interface IIndicatorRequestService {
 	 * @param secondSegQty
 	 * @param thirdSegQty
 	 */
-	public void requestIndDisplay(Long domainId, String jobType, String indCd, String bizId, String displayActionType, String[] segRole, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty);
+	public void requestIndDisplay(Long domainId, String jobType, String gwPath, String indCd, String bizId, String displayActionType, String[] segRole, boolean readOnly, Integer firstSegQty, Integer secondSegQty, Integer thirdSegQty);
 	
 	/**
 	 * 총 처리한 수량 / 방금 처리한 수량을 표시
 	 * 
 	 * @param domainId
+	 * @param jobType
 	 * @param gwPath
-	 * @param jobType
 	 * @param indCd
 	 * @param bizId
 	 * @param accumQty
 	 * @param pickedQty
 	 */
-	public void requestIndDisplayAccumQty(Long domainId, String gwPath, String jobType, String indCd, String bizId, Integer accumQty, Integer pickedQty);
-	
-	/**
-	 * 총 처리한 수량 / 방금 처리한 수량을 표시
-	 * 
-	 * @param domainId
-	 * @param jobType
-	 * @param indCd
-	 * @param bizId
-	 * @param accumQty
-	 * @param pickedQty
-	 */
-	public void requestIndDisplayAccumQty(Long domainId, String jobType, String indCd, String bizId, Integer accumQty, Integer pickedQty);
-	
+	public void requestIndDisplayAccumQty(Long domainId, String jobType, String gwPath, String indCd, String bizId, Integer accumQty, Integer pickedQty);
+		
 	/**
 	 * FullBox 표시기 표시 요청 
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param color
 	 */
-	public void requestFullbox(Long domainId, String jobType, String indCd, String bizId, String color);
+	public void requestFullbox(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color);
 	
 	/**
 	 * 표시기에 문자열 표시 요청
@@ -323,30 +281,32 @@ public interface IIndicatorRequestService {
 	 * @param displayStr
 	 */
 	public void requestShowString(Long domainId, String jobType, String gwPath, String indCd, String bizId, String displayStr);
-
+	
 	/**
 	 * 표시기 표시 방향과 숫자를 동시에 표시 - 왼쪽은 'L' or 'R' 표시 오른쪽은 숫자 표시
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param leftSideFlag 왼쪽 로케이션 표시용인지 여부
 	 * @param rightQty
 	 */
-	public void requestDisplayDirectionAndQty(Long domainId, String jobType, String indCd, String bizId, boolean leftSideFlag, Integer rightQty);
+	public void requestDisplayDirectionAndQty(Long domainId, String jobType, String gwPath, String indCd, String bizId, boolean leftSideFlag, Integer rightQty);
 	
 	/**
 	 * 왼쪽은 문자 오른쪽은 숫자 표시
 	 * 
 	 * @param domainId
 	 * @param jobType
+	 * @param gwPath
 	 * @param indCd
 	 * @param bizId
 	 * @param leftStr
 	 * @param rightQty
 	 */
-	public void requestDisplayLeftStringRightQty(Long domainId, String jobType, String indCd, String bizId, String leftStr, Integer rightQty);
+	public void requestDisplayLeftStringRightQty(Long domainId, String jobType, String gwPath, String indCd, String bizId, String leftStr, Integer rightQty);
 	
 	/**
 	 * 표시기 표시 방향과 표시 수량을 좌, 우측에 동시에 표시 
@@ -435,18 +395,20 @@ public interface IIndicatorRequestService {
 	 * 표시기 LED 점등 
 	 * 
 	 * @param domainId
+	 * @param gwPath
 	 * @param indCd
 	 * @param ledBarBrightness
 	 */
-	public void requestLedOn(Long domainId, String indCd, Integer ledBarBrightness);
+	public void requestLedOn(Long domainId, String gwPath, String indCd, Integer ledBarBrightness);
 	
 	/**
 	 * 표시기 LED 소등 
 	 * 
 	 * @param domainId
+	 * @param gwPath
 	 * @param indCd
 	 */
-	public void requestLedOff(Long domainId, String indCd);
+	public void requestLedOff(Long domainId, String gwPath, String indCd);
 	
 	/**
 	 * 표시기 LED 리스트 점등 

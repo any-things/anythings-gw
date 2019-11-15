@@ -11,6 +11,14 @@ import xyz.anythings.sys.event.model.SysEvent;
 public class GatewayRebootEvent extends SysEvent {
 
 	/**
+	 * 이전 : 1
+	 */
+	public static final short EVENT_STEP_BEFORE = 1;
+	/**
+	 * 이후 : 2
+	 */
+	public static final short EVENT_STEP_AFTER = 2;
+	/**
 	 * 이벤트 스텝 - 1 : 전 처리 , 2 : 후 처리
 	 */
 	protected short eventStep;
@@ -18,27 +26,19 @@ public class GatewayRebootEvent extends SysEvent {
 	 * 게이트웨이 
 	 */
 	private Gateway gateway;
-	/**
-	 * 스테이지 코드
-	 */
-	private String stageCd;
-	/**
-	 * 작업 유형 
-	 */
-	private String jobType;
-	/**
-	 * 작업 배치
-	 */
-	private String batchId;
 	
-	public GatewayRebootEvent(short eventStep, Gateway gateway, String stageCd, String batchId, String jobType) {
-		this.eventStep = eventStep;
-		this.gateway = gateway;
-		this.stageCd = stageCd;
-		this.batchId = batchId;
-		this.jobType = jobType;
+	/**
+	 * 생성자 1 
+	 * 
+	 * @param domainId
+	 * @param eventStep
+	 * @param gateway
+	 */
+	public GatewayRebootEvent(short eventStep, Gateway gateway) {
+		this.setEventStep(eventStep);
+		this.setGateway(gateway);
 	}
-
+	
 	public short getEventStep() {
 		return eventStep;
 	}
@@ -53,30 +53,7 @@ public class GatewayRebootEvent extends SysEvent {
 
 	public void setGateway(Gateway gateway) {
 		this.gateway = gateway;
-	}
-
-	public String getStageCd() {
-		return stageCd;
-	}
-
-	public void setStageCd(String stageCd) {
-		this.stageCd = stageCd;
-	}
-
-	public String getJobType() {
-		return jobType;
-	}
-
-	public void setJobType(String jobType) {
-		this.jobType = jobType;
-	}
-
-	public String getBatchId() {
-		return batchId;
-	}
-
-	public void setBatchId(String batchId) {
-		this.batchId = batchId;
+		this.setDomainId(gateway.getDomainId());
 	}
 
 }

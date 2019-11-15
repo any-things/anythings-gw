@@ -3,6 +3,7 @@ package xyz.anythings.gw.entity;
 import xyz.anythings.gw.MwConstants;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
@@ -47,7 +48,13 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "remark", length = 1000)
 	private String remark;
-  
+	
+	/**
+	 * 작업 배치 ID
+	 */
+	@Ignore
+	private String batchId;
+
 	public String getId() {
 		return id;
 	}
@@ -126,6 +133,14 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	
+	public String getBatchId() {
+		return batchId;
+	}
+
+	public void setBatchId(String batchId) {
+		this.batchId = batchId;
 	}
 	
 	public static String buildGatewayPath(String siteCd, String areaCd, String stageCd, String gwCd) {
