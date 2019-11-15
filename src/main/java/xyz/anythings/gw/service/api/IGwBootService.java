@@ -3,7 +3,7 @@ package xyz.anythings.gw.service.api;
 import java.util.List;
 
 import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.service.mw.model.GatewayInitResIndList;
+import xyz.anythings.gw.service.mq.model.GatewayInitResIndList;
 
 /**
  * 게이트웨이 부트 서비스 인터페이스
