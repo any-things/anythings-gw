@@ -2,10 +2,10 @@ package xyz.anythings.gw.service.util;
 
 import xyz.anythings.gw.GwConfigConstants;
 import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.model.GatewayInitResIndConfig;
-import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.api.IIndConfigProfileService;
 import xyz.anythings.gw.service.model.IndOnPickReq;
+import xyz.anythings.gw.service.mw.model.GatewayInitResIndConfig;
+import xyz.anythings.gw.service.mw.model.IndicatorOnInformation;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.util.ThrowUtil;

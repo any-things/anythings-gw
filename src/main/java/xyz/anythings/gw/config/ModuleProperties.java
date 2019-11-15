@@ -10,7 +10,7 @@ import xyz.elidom.sys.system.config.module.IModuleProperties;
 import xyz.elidom.util.FormatUtil;
 
 /**
- * Gateway 모듈 정보 파일
+ * 게이트웨이 API 모듈 정보 파일
  * 
  * @author shortstop
  */

@@ -3,10 +3,10 @@ package xyz.anythings.gw.service.api;
 import java.util.List;
 import java.util.Map;
 
-import xyz.anythings.gw.model.GatewayInitResponse;
-import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.model.MiddlewareConnInfoModRequest;
 import xyz.anythings.gw.service.model.IndOffReq;
+import xyz.anythings.gw.service.mw.model.GatewayInitResponse;
+import xyz.anythings.gw.service.mw.model.IndicatorOnInformation;
+import xyz.anythings.gw.service.mw.model.MiddlewareConnInfoModRequest;
 
 /**
  * 표시기 각종 점/소등 요청 서비스 인터페이스 
