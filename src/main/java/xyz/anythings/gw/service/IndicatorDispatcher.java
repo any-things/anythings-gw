@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.gw.entity.IndConfigSet;
-import xyz.anythings.gw.service.api.IIndicatorRequestService;
+import xyz.anythings.gw.service.api.IIndRequestService;
 
 /**
  * 인디케이터 벤더별 서비스 디스패처
@@ -42,9 +42,9 @@ public class IndicatorDispatcher implements BeanFactoryAware {
 	 * @param indType
 	 * @return
 	 */
-	public IIndicatorRequestService getIndicatorRequestService(String indType) {
+	public IIndRequestService getIndicatorRequestService(String indType) {
 		String indReqSvcName = indType.toLowerCase() + this.indicatorRequestServiceName;
-		return (IIndicatorRequestService)this.beanFactory.getBean(indReqSvcName);
+		return (IIndRequestService)this.beanFactory.getBean(indReqSvcName);
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public class IndicatorDispatcher implements BeanFactoryAware {
 	 * @param batchId
 	 * @return
 	 */
-	public IIndicatorRequestService getIndicatorRequestServiceByBatch(String batchId) {
+	public IIndRequestService getIndicatorRequestServiceByBatch(String batchId) {
 		IndConfigSet configSet = this.indConfigSetService.getConfigSet(batchId);
 		return this.getIndicatorRequestService(configSet.getIndType());
 	}
@@ -64,7 +64,7 @@ public class IndicatorDispatcher implements BeanFactoryAware {
 	 * @param stageCd
 	 * @return
 	 */
-	public IIndicatorRequestService getIndicatorRequestServiceByStage(Long domainId, String stageCd) {
+	public IIndRequestService getIndicatorRequestServiceByStage(Long domainId, String stageCd) {
 		IndConfigSet configSet = this.indConfigSetService.getStageConfigSet(domainId, stageCd);
 		return this.getIndicatorRequestService(configSet.getIndType());
 	}

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import xyz.anythings.gw.GwConfigConstants;
+import xyz.anythings.gw.service.model.IIndOnInfo;
 import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.gw.service.model.IndOnStockReq;
 import xyz.anythings.gw.service.mq.model.IndicatorOnInformation;
@@ -186,7 +187,7 @@ public class MwMessageUtil {
 	 * @param orgEaQty
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(String indCd, String bizId, String color, Integer orgRelay, Integer orgBoxQty, Integer orgEaQty) {
+	public static IIndOnInfo newIndOnInfo(String indCd, String bizId, String color, Integer orgRelay, Integer orgBoxQty, Integer orgEaQty) {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indCd);
 		indOnInfo.setBizId(bizId);
@@ -207,7 +208,7 @@ public class MwMessageUtil {
 	 * @param orgEaQty
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(String indCd, String bizId, String color, Integer orgRelay, Integer orgEaQty) {
+	public static IIndOnInfo newIndOnInfo(String indCd, String bizId, String color, Integer orgRelay, Integer orgEaQty) {
 		return newIndOnInfo(indCd, bizId, color, orgRelay, null, orgEaQty);
 	}
 	
@@ -220,7 +221,7 @@ public class MwMessageUtil {
 	 * @param orgEaQty
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(String indCd, String bizId, String color, Integer orgEaQty) {
+	public static IIndOnInfo newIndOnInfo(String indCd, String bizId, String color, Integer orgEaQty) {
 		return newIndOnInfo(indCd, bizId, color, null, null, orgEaQty);
 	}
 	
@@ -231,7 +232,7 @@ public class MwMessageUtil {
 	 * @param indOnPick
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(String batchId, IndOnPickReq indOnPick) {
+	public static IIndOnInfo newIndOnInfo(String batchId, IndOnPickReq indOnPick) {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indOnPick.getIndCd());
 		indOnInfo.setBizId(indOnPick.getJobInstanceId());
@@ -249,7 +250,7 @@ public class MwMessageUtil {
 	 * @param indOnPick
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(Long domainId, String stageCd, IndOnPickReq indOnPick) {
+	public static IIndOnInfo newIndOnInfo(Long domainId, String stageCd, IndOnPickReq indOnPick) {
 		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
 		indOnInfo.setId(indOnPick.getIndCd());
 		indOnInfo.setBizId(indOnPick.getJobInstanceId());
@@ -288,7 +289,7 @@ public class MwMessageUtil {
 	 * @param thirdSegNo
 	 * @return
 	 */
-	public static IndicatorOnInformation newIndOnInfo(
+	public static IIndOnInfo newIndOnInfo(
 			String indCd, 
 			String bizId, 
 			String color, 
@@ -315,20 +316,18 @@ public class MwMessageUtil {
 	 * @param indOnReqList
 	 * @return
 	 */
-	public static Map<String, List<IndicatorOnInformation>> 
-		groupPickingByGwPath(String batchId, List<IndOnPickReq> indOnReqList) {
+	public static Map<String, List<IIndOnInfo>> groupPickingByGwPath(String batchId, List<IndOnPickReq> indOnReqList) {
 		
-		Map<String, List<IndicatorOnInformation>> groupGwIndOnList = 
-				new HashMap<String, List<IndicatorOnInformation>>();
+		Map<String, List<IIndOnInfo>> groupGwIndOnList = new HashMap<String, List<IIndOnInfo>>();
 
 		for (IndOnPickReq indOnPick : indOnReqList) {
 			String gwPath = indOnPick.getGwPath();
 			
-			List<IndicatorOnInformation> indOnList = 
+			List<IIndOnInfo> indOnList = 
 					groupGwIndOnList.containsKey(gwPath) ? 
-							groupGwIndOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+							groupGwIndOnList.get(gwPath) : new ArrayList<IIndOnInfo>();
 
-			IndicatorOnInformation indOnInfo = newIndOnInfo(batchId, indOnPick);
+			IIndOnInfo indOnInfo = newIndOnInfo(batchId, indOnPick);
 			indOnList.add(indOnInfo);
 			groupGwIndOnList.put(gwPath, indOnList);
 		}
@@ -344,20 +343,20 @@ public class MwMessageUtil {
 	 * @param indOnStockReqList
 	 * @return key : gatewayPath, value : IndicatorOnInformation List
 	 */
-	public static Map<String, List<IndicatorOnInformation>> groupStockByGwPath(
+	public static Map<String, List<IIndOnInfo>> groupStockByGwPath(
 			String bizId, String color, List<IndOnStockReq> indOnStockReqList) {
 		
-		Map<String, List<IndicatorOnInformation>> gwIndOnListGroup = 
-				new HashMap<String, List<IndicatorOnInformation>>();
+		Map<String, List<IIndOnInfo>> gwIndOnListGroup = 
+				new HashMap<String, List<IIndOnInfo>>();
 
 		for (IndOnStockReq target : indOnStockReqList) {
 			String gwPath = target.getGwPath();
 			
-			List<IndicatorOnInformation> indOnList = 
+			List<IIndOnInfo> indOnList = 
 					gwIndOnListGroup.containsKey(gwPath) ? 
-							gwIndOnListGroup.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+							gwIndOnListGroup.get(gwPath) : new ArrayList<IIndOnInfo>();
 
-			IndicatorOnInformation stockInfo = 
+			IIndOnInfo stockInfo = 
 					newIndOnInfo(target.getIndCd(), bizId, target.getColorCd(), target.getAllocQty(), target.getLoadQty());
 
 			indOnList.add(stockInfo);
@@ -374,19 +373,18 @@ public class MwMessageUtil {
 	 * @param indOnReqList
 	 * @return
 	 */
-	public static Map<String, List<IndicatorOnInformation>> groupTestByGwPath(String indConfigSetId, List<IndOnPickReq> indOnReqList) {
+	public static Map<String, List<IIndOnInfo>> groupTestByGwPath(String indConfigSetId, List<IndOnPickReq> indOnReqList) {
 		
-		Map<String, List<IndicatorOnInformation>> groupGwIndOnList = 
-				new HashMap<String, List<IndicatorOnInformation>>();
+		Map<String, List<IIndOnInfo>> groupGwIndOnList = new HashMap<String, List<IIndOnInfo>>();
 
 		for (IndOnPickReq indOnPick : indOnReqList) {
 			String gwPath = indOnPick.getGwPath();
 			
-			List<IndicatorOnInformation> indOnList = 
+			List<IIndOnInfo> indOnList = 
 					groupGwIndOnList.containsKey(gwPath) ? 
-							groupGwIndOnList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
+							groupGwIndOnList.get(gwPath) : new ArrayList<IIndOnInfo>();
 
-			IndicatorOnInformation indOnInfo = newIndOnInfo(indConfigSetId, indOnPick);
+			IIndOnInfo indOnInfo = newIndOnInfo(indConfigSetId, indOnPick);
 			indOnList.add(indOnInfo);
 			groupGwIndOnList.put(gwPath, indOnList);
 		}

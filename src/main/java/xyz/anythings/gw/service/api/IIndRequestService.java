@@ -3,29 +3,35 @@ package xyz.anythings.gw.service.api;
 import java.util.List;
 import java.util.Map;
 
+import xyz.anythings.gw.entity.Deployment;
+import xyz.anythings.gw.service.model.IGwIndInit;
+import xyz.anythings.gw.service.model.IIndOnInfo;
 import xyz.anythings.gw.service.model.IndOffReq;
-import xyz.anythings.gw.service.mq.model.GatewayInitResponse;
-import xyz.anythings.gw.service.mq.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.mq.model.MiddlewareConnInfoModRequest;
 
 /**
  * 표시기 각종 점/소등 요청 서비스 인터페이스 
  * 
  * @author shortstop
  */
-public interface IIndicatorRequestService {
-
-	/**********************************************************************
-	 * 							1. 표시기 On 요청
-	 **********************************************************************/	
+public interface IIndRequestService {
 	
 	/**
-	 * 여러 표시기 한꺼번에 재고 실사용 점등 요청
+	 * 표시기 정보 모델 생성 
 	 * 
-	 * @param domainId
-	 * @param stockIndOnList
+	 * @return
 	 */
-	public void requestStockIndOn(Long domainId, Map<String, List<IndicatorOnInformation>> stockIndOnList);
+	public IIndOnInfo newIndicatorInfomration();
+	
+	/**
+	 * 게이트웨이 정보 모델 생성
+	 * 
+	 * @return
+	 */
+	public IGwIndInit newGwIndicatorInit(); 
+	
+	/**********************************************************************
+	 * 							1. 표시기 On 요청
+	 **********************************************************************/
 	
 	/**
 	 * 여러 표시기에 한꺼번에 분류 처리를 위한 점등 요청
@@ -35,7 +41,15 @@ public interface IIndicatorRequestService {
 	 * @param actionType
 	 * @param indOnForPickList - key : gwPath, value : indOnInfo 
 	 */
-	public void requestIndsOn(Long domainId, String jobType, String actionType, Map<String, List<IndicatorOnInformation>> indOnForPickList);
+	public void requestIndListOn(Long domainId, String jobType, String actionType, Map<String, List<IIndOnInfo>> indOnForPickList);
+	
+	/**
+	 * 여러 표시기 한꺼번에 재고 실사용 점등 요청
+	 * 
+	 * @param domainId
+	 * @param stockIndOnList
+	 */
+	public void requestIndListOnForStocktake(Long domainId, Map<String, List<IIndOnInfo>> stockIndOnList);
 	
 	/**
 	 * 여러 표시기에 한꺼번에 분류 처리를 위한 점등 요청
@@ -44,7 +58,7 @@ public interface IIndicatorRequestService {
 	 * @param jobType
 	 * @param indOnForPickList - key : gwPath, value : indOnInfo 
 	 */
-	public void requestIndsInspectOn(Long domainId, String jobType, Map<String, List<IndicatorOnInformation>> indOnForPickList);
+	public void requestIndListOnForInspect(Long domainId, String jobType, Map<String, List<IIndOnInfo>> indOnForPickList);
 	
 	/**
 	 * 하나의 표시기에 분류 처리를 위한 점등 요청
@@ -58,7 +72,7 @@ public interface IIndicatorRequestService {
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestPickIndOn(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
+	public void requestIndOnForPick(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
 	
 	/**
 	 * 하나의 표시기에 검수를 위한 점등 요청
@@ -72,7 +86,7 @@ public interface IIndicatorRequestService {
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestInspectIndOn(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
+	public void requestIndOnForInspect(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
 	
 	/**
 	 * 하나의 표시기에 액션 타입별 점등 요청 
@@ -87,7 +101,7 @@ public interface IIndicatorRequestService {
 	 * @param boxQty
 	 * @param eaQty
 	 */
-	public void requestCommonIndOn(Long domainId, String jobType, String indCd, String gwPath, String bizId, String actionType, String color, Integer boxQty, Integer eaQty);
+	public void requestIndOn(Long domainId, String jobType, String indCd, String gwPath, String bizId, String actionType, String color, Integer boxQty, Integer eaQty);
 	
 	/**********************************************************************
 	 * 							2. 표시기 Off 요청
@@ -309,76 +323,9 @@ public interface IIndicatorRequestService {
 	 * @param rightQty
 	 */
 	public void requestDisplayBothDirectionQty(Long domainId, String jobType, String gwPath, String indCd, String bizId, Integer leftQty, Integer rightQty);
-
-	/**********************************************************************
-	 * 							4. 게이트웨이 초기화 요청
-	 **********************************************************************/	
-	
-	/**
-	 * 게이트웨이 초기화 응답 전송.
-	 * 
-	 * @param domainId
-	 * @param msgDestId
-	 * @param gatewayInitRes
-	 */
-	public void respondGatewayInit(Long domainId, String msgDestId, GatewayInitResponse gatewayInitRes);
 	
 	/**********************************************************************
-	 * 							5. 미들웨어 정보 변경 요청
-	 **********************************************************************/	
-
-	/**
-	 * 게이트웨이에 미들웨어 접속 정보 변경 요청
-	 * 
-	 * @param domainId
-	 * @param msgDestId
-	 * @param mwConnModifyReq
-	 */
-	public void requestMwConnectionModify(Long domainId, String msgDestId, MiddlewareConnInfoModRequest mwConnModifyReq);
-	
-	/**********************************************************************
-	 * 							6. 게이트웨이 시스템 시간 동기화 
-	 **********************************************************************/	
-
-	/**
-	 * 게이트웨이와 시스템간의 시간 동기화 응답 요청.
-	 * 
-	 * @param domainId
-	 * @param msgDestId
-	 * @param serverTime
-	 */
-	public void respondTimesync(Long domainId, String msgDestId, long serverTime);
-	
-	/**********************************************************************
-	 * 							7. 게이트웨이 / 표시기 펌웨어 배포  
-	 **********************************************************************/	
-	
-	/**
-	 * 게이트웨이에 게이트웨이 펌웨어 배포 정보 전송 
-	 * 
-	 * @parma domainId
-	 * @param gwChannel 게이트웨이 구분 채널 
-	 * @param gwVersion 게이트웨이 펌웨어 버전 
-	 * @param gwFwDownloadUrl 게이트웨이 펌웨어 다운로드 URL
-	 * @param filename 파일명
-	 * @param forceFlag 강제 업데이트 여부
-	 */
-	public void deployGatewayFirmware(Long domainId, String gwChannel, String gwVersion, String gwFwDownloadUrl, String filename, Boolean forceFlag);
-	
-	/**
-	 * 게이트웨이에 표시기 펌웨어 배포 정보 전송 
-	 * 
-	 * @param domainId
-	 * @param gwChannel 게이트웨이 구분 채널
-	 * @param indVersion 표시기 펌웨어 버전 
-	 * @param indFwDownloadUrl 표시기 펌웨어 다운로드 URL
-	 * @param filename 파일명
-	 * @param forceFlag 강제 업데이트 여부
-	 */
-	public void deployIndFirmware(Long domainId, String gwChannel, String indVersion, String indFwDownloadUrl, String filename, Boolean forceFlag);
-	
-	/**********************************************************************
-	 * 							8. LED 바 점등 / 소등 
+	 * 							4. LED 바 점등 / 소등 
 	 **********************************************************************/	
 	
 	/**
@@ -416,5 +363,79 @@ public interface IIndicatorRequestService {
 	 * @param indList
 	 */
 	public void requestLedListOff(Long domainId, List<IndOffReq> indList);
+	
+	/**********************************************************************
+	 * 							5. 게이트웨이 / 표시기 펌웨어 배포  
+	 **********************************************************************/	
+	
+	/**
+	 * 펌웨어 배포 요청
+	 * 
+	 * @param deployment
+	 */
+	public void deployFirmware(Deployment deployment);
+	
+	/**
+	 * 게이트웨이에 게이트웨이 펌웨어 배포 정보 전송 
+	 * 
+	 * @parma domainId
+	 * @param gwChannel 게이트웨이 구분 채널 
+	 * @param gwVersion 게이트웨이 펌웨어 버전 
+	 * @param gwFwDownloadUrl 게이트웨이 펌웨어 다운로드 URL
+	 * @param filename 파일명
+	 * @param forceFlag 강제 업데이트 여부
+	 */
+	public void deployGwFirmware(Long domainId, String gwChannel, String gwVersion, String gwFwDownloadUrl, String filename, Boolean forceFlag);
+	
+	/**
+	 * 게이트웨이에 표시기 펌웨어 배포 정보 전송 
+	 * 
+	 * @param domainId
+	 * @param gwChannel 게이트웨이 구분 채널
+	 * @param indVersion 표시기 펌웨어 버전 
+	 * @param indFwDownloadUrl 표시기 펌웨어 다운로드 URL
+	 * @param filename 파일명
+	 * @param forceFlag 강제 업데이트 여부
+	 */
+	public void deployIndFirmware(Long domainId, String gwChannel, String indVersion, String indFwDownloadUrl, String filename, Boolean forceFlag);
+
+	/**********************************************************************
+	 * 							4. 게이트웨이 초기화 요청
+	 **********************************************************************/	
+	
+	/**
+	 * 게이트웨이 초기화 응답 전송.
+	 * 
+	 * @param domainId
+	 * @param msgDestId
+	 * @param gatewayInitRes
+	 */
+	//public void respondGatewayInit(Long domainId, String msgDestId, GatewayInitResponse gatewayInitRes);
+	
+	/**********************************************************************
+	 * 							4. 미들웨어 정보 변경 요청
+	 **********************************************************************/	
+
+	/**
+	 * 게이트웨이에 미들웨어 접속 정보 변경 요청
+	 * 
+	 * @param domainId
+	 * @param msgDestId
+	 * @param mwConnModifyReq
+	 */
+	//public void requestMwConnectionModify(Long domainId, String msgDestId, MiddlewareConnInfoModRequest mwConnModifyReq);
+	
+	/**********************************************************************
+	 * 							4. 게이트웨이 시스템 시간 동기화 
+	 **********************************************************************/	
+
+	/**
+	 * 게이트웨이와 시스템간의 시간 동기화 응답 요청.
+	 * 
+	 * @param domainId
+	 * @param msgDestId
+	 * @param serverTime
+	 */
+	//public void respondTimesync(Long domainId, String msgDestId, long serverTime);
 
 }

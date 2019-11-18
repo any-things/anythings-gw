@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import xyz.anythings.gw.service.model.IGwIndInit;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class GatewayInitResIndList {
+public class GatewayInitResIndList implements IGwIndInit {
 	
 	// 인디케이터 id
 	private String id;

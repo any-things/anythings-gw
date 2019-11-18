@@ -27,7 +27,7 @@ public class IndicatorOnRequest implements IMessageBody {
 		this.actionType = actionType;
 		this.indOn = indOn;
 	}
-	
+		
 	// 작업 타입 
 	private String bizType;
 	
