@@ -4,11 +4,11 @@ import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.sys.event.model.SysEvent;
 
 /**
- * 게이트웨이 리부팅 이벤트
+ * 게이트웨이 관련 최상위 이벤트 
  * 
  * @author shortstop
  */
-public class GatewayRebootEvent extends SysEvent {
+public class AbstractGatewayEvent extends SysEvent {
 
 	/**
 	 * 이전 : 1
@@ -25,20 +25,8 @@ public class GatewayRebootEvent extends SysEvent {
 	/**
 	 * 게이트웨이 
 	 */
-	private Gateway gateway;
-	
-	/**
-	 * 생성자 1 
-	 * 
-	 * @param domainId
-	 * @param eventStep
-	 * @param gateway
-	 */
-	public GatewayRebootEvent(short eventStep, Gateway gateway) {
-		this.setEventStep(eventStep);
-		this.setGateway(gateway);
-	}
-	
+	protected Gateway gateway;
+		
 	public short getEventStep() {
 		return eventStep;
 	}
@@ -55,5 +43,5 @@ public class GatewayRebootEvent extends SysEvent {
 		this.gateway = gateway;
 		this.setDomainId(gateway.getDomainId());
 	}
-
+	
 }

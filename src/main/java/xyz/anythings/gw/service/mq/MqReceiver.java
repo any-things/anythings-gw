@@ -142,8 +142,8 @@ public class MqReceiver extends MqCommon  {
 	 * @param siteDomain
 	 * @param msgObj
 	 */
-	private void handleUnkownMessage(Domain siteDomain, MessageObject msgObj) {
+	/*private void handleUnkownMessage(Domain siteDomain, MessageObject msgObj) {
 		throw new ElidomRuntimeException("Unknown type Message Received");
-	}
+	}*/
 
 }
