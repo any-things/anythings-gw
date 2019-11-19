@@ -373,7 +373,8 @@ public class MwMessageUtil {
 	 * @param indOnReqList
 	 * @return
 	 */
-	public static Map<String, List<IIndOnInfo>> groupTestByGwPath(String indConfigSetId, List<IndOnPickReq> indOnReqList) {
+	public static Map<String, List<IIndOnInfo>> groupTestByGwPath(
+			String indConfigSetId, List<IndOnPickReq> indOnReqList) {
 		
 		Map<String, List<IIndOnInfo>> groupGwIndOnList = new HashMap<String, List<IIndOnInfo>>();
 

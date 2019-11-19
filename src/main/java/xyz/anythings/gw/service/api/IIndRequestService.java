@@ -6,7 +6,7 @@ import java.util.Map;
 import xyz.anythings.gw.entity.Deployment;
 import xyz.anythings.gw.service.model.IGwIndInit;
 import xyz.anythings.gw.service.model.IIndOnInfo;
-import xyz.anythings.gw.service.model.IndOffReq;
+import xyz.anythings.gw.service.model.IndCommonReq;
 
 /**
  * 표시기 각종 점/소등 요청 서비스 인터페이스 
@@ -29,6 +29,15 @@ public interface IIndRequestService {
 	 */
 	public IGwIndInit newGwIndicatorInit(); 
 	
+	/**
+	 * 표시기가 소속된 게이트웨이 경로를 찾는다.
+	 * 
+	 * @param domainId
+	 * @param indCd
+	 * @return
+	 */
+	public String findGwPath(Long domainId, String indCd);
+	
 	/**********************************************************************
 	 * 							1. 표시기 On 요청
 	 **********************************************************************/
@@ -39,15 +48,15 @@ public interface IIndRequestService {
 	 * @param domainId
 	 * @param jobType
 	 * @param actionType
-	 * @param indOnForPickList - key : gwPath, value : indOnInfo 
+	 * @param indOnForPickList - key : gwPath, value : IIndOnInfo 
 	 */
 	public void requestIndListOn(Long domainId, String jobType, String actionType, Map<String, List<IIndOnInfo>> indOnForPickList);
 	
 	/**
-	 * 여러 표시기 한꺼번에 재고 실사용 점등 요청
+	 * 여러 표시기에 한꺼번에 재고 실사용 점등 요청
 	 * 
 	 * @param domainId
-	 * @param stockIndOnList
+	 * @param stockIndOnList - key : gwPath, value : IIndOnInfo 
 	 */
 	public void requestIndListOnForStocktake(Long domainId, Map<String, List<IIndOnInfo>> stockIndOnList);
 	
@@ -56,9 +65,38 @@ public interface IIndRequestService {
 	 * 
 	 * @param domainId
 	 * @param jobType
-	 * @param indOnForPickList - key : gwPath, value : indOnInfo 
+	 * @param indOnForPickList - key : gwPath, value : IIndOnInfo 
 	 */
 	public void requestIndListOnForInspect(Long domainId, String jobType, Map<String, List<IIndOnInfo>> indOnForPickList);
+	
+	/**
+	 * 하나의 표시기에 액션 타입별 점등 요청 
+	 * 
+	 * @param domainId
+	 * @param jobType
+	 * @param indCd
+	 * @param bizId
+	 * @param actionType
+	 * @param color
+	 * @param boxQty
+	 * @param eaQty
+	 */
+	//public void requestIndOn(Long domainId, String jobType, String indCd, String bizId, String actionType, String color, Integer boxQty, Integer eaQty);
+	
+	/**
+	 * 하나의 표시기에 액션 타입별 점등 요청 
+	 * 
+	 * @param domainId
+	 * @param jobType
+	 * @param gwPath
+	 * @param indCd
+	 * @param bizId
+	 * @param actionType
+	 * @param color
+	 * @param boxQty
+	 * @param eaQty
+	 */
+	public void requestIndOn(Long domainId, String jobType, String gwPath, String indCd, String bizId, String actionType, String color, Integer boxQty, Integer eaQty);
 	
 	/**
 	 * 하나의 표시기에 분류 처리를 위한 점등 요청
@@ -88,24 +126,18 @@ public interface IIndRequestService {
 	 */
 	public void requestIndOnForInspect(Long domainId, String jobType, String gwPath, String indCd, String bizId, String color, Integer boxQty, Integer eaQty);
 	
-	/**
-	 * 하나의 표시기에 액션 타입별 점등 요청 
-	 * 
-	 * @param domainId
-	 * @param jobType
-	 * @param indCd
-	 * @param gwPath
-	 * @param bizId
-	 * @param actionType
-	 * @param color
-	 * @param boxQty
-	 * @param eaQty
-	 */
-	public void requestIndOn(Long domainId, String jobType, String indCd, String gwPath, String bizId, String actionType, String color, Integer boxQty, Integer eaQty);
-	
 	/**********************************************************************
 	 * 							2. 표시기 Off 요청
-	 **********************************************************************/	
+	 **********************************************************************/
+	/**
+	 * 표시기 하나에 대한 소등 요청 
+	 * 
+	 * @param domainId
+	 * @param indCd
+	 * @param forceOff
+	 */
+	//public void requestIndOff(Long domainId, String indCd, boolean forceOff);
+	
 	/**
 	 * 표시기 하나에 대한 소등 요청 
 	 * 
@@ -120,6 +152,14 @@ public interface IIndRequestService {
 	 * 표시기 하나에 대한 소등 요청 
 	 * 
 	 * @param domainId
+	 * @param indCd
+	 */
+	//public void requestIndOff(Long domainId, String indCd);
+	
+	/**
+	 * 표시기 하나에 대한 소등 요청 
+	 * 
+	 * @param domainId
 	 * @param gwPath
 	 * @param indCd
 	 */
@@ -129,7 +169,7 @@ public interface IIndRequestService {
 	 * 게이트웨이 - 표시기 리스트 값으로 표시기 소등 요청
 	 * 
 	 * @param domainId
-	 * @param indOffMap gwPath -> indicator Code List
+	 * @param indOffMap - key : gwPath, value : indicator code list
 	 * @param forceOff
 	 */
 	public void requestIndListOff(Long domainId, Map<String, List<String>> indOffMap, boolean forceOff);
@@ -139,7 +179,7 @@ public interface IIndRequestService {
 	 * 
 	 * @param domainId
 	 * @param gwPath
-	 * @param indCdList
+	 * @param indCdList indicator code list
 	 * @param forceOff 강제 소등 여부
 	 */
 	public void requestIndListOff(Long domainId, String gwPath, List<String> indCdList, boolean forceOff);
@@ -151,7 +191,7 @@ public interface IIndRequestService {
 	 * @param indOffList 소등할 표시기 리스트 
 	 * @param forceOff 강제 소등 여부
 	 */
-	public void requestIndListOff(Long domainId, List<IndOffReq> indList, boolean forceOff);
+	public void requestIndListOff(Long domainId, List<IndCommonReq> indList, boolean forceOff);
 	
 	/**********************************************************************
 	 * 							3. 표시기 숫자, 문자 표시 요청
@@ -354,7 +394,7 @@ public interface IIndRequestService {
 	 * @param indList
 	 * @param ledBrightness
 	 */
-	public void requestLedListOn(Long domainId, List<IndOffReq> indList, Integer ledBrightness);
+	public void requestLedListOn(Long domainId, List<IndCommonReq> indList, Integer ledBrightness);
 	
 	/**
 	 * 표시기 LED 리스트 소등 
@@ -362,7 +402,7 @@ public interface IIndRequestService {
 	 * @param domainId
 	 * @param indList
 	 */
-	public void requestLedListOff(Long domainId, List<IndOffReq> indList);
+	public void requestLedListOff(Long domainId, List<IndCommonReq> indList);
 	
 	/**********************************************************************
 	 * 							5. 게이트웨이 / 표시기 펌웨어 배포  
@@ -398,44 +438,5 @@ public interface IIndRequestService {
 	 * @param forceFlag 강제 업데이트 여부
 	 */
 	public void deployIndFirmware(Long domainId, String gwChannel, String indVersion, String indFwDownloadUrl, String filename, Boolean forceFlag);
-
-	/**********************************************************************
-	 * 							4. 게이트웨이 초기화 요청
-	 **********************************************************************/	
-	
-	/**
-	 * 게이트웨이 초기화 응답 전송.
-	 * 
-	 * @param domainId
-	 * @param msgDestId
-	 * @param gatewayInitRes
-	 */
-	//public void respondGatewayInit(Long domainId, String msgDestId, GatewayInitResponse gatewayInitRes);
-	
-	/**********************************************************************
-	 * 							4. 미들웨어 정보 변경 요청
-	 **********************************************************************/	
-
-	/**
-	 * 게이트웨이에 미들웨어 접속 정보 변경 요청
-	 * 
-	 * @param domainId
-	 * @param msgDestId
-	 * @param mwConnModifyReq
-	 */
-	//public void requestMwConnectionModify(Long domainId, String msgDestId, MiddlewareConnInfoModRequest mwConnModifyReq);
-	
-	/**********************************************************************
-	 * 							4. 게이트웨이 시스템 시간 동기화 
-	 **********************************************************************/	
-
-	/**
-	 * 게이트웨이와 시스템간의 시간 동기화 응답 요청.
-	 * 
-	 * @param domainId
-	 * @param msgDestId
-	 * @param serverTime
-	 */
-	//public void respondTimesync(Long domainId, String msgDestId, long serverTime);
 
 }

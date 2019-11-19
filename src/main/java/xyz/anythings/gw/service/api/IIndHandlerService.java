@@ -91,9 +91,9 @@ public interface IIndHandlerService {
 	 * 
 	 * @param domainId
 	 * @param indCd
-	 * @param locCd
+	 * @param cellCd
 	 */
-	public void handleChangeCellOfIndReq(Long domainId, String indCd, String locCd);
+	public void handleChangeCellOfIndReq(Long domainId, String indCd, String cellCd);
 	
 	/**
 	 * 셀의 표시기를 교체 

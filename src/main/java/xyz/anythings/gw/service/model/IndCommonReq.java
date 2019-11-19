@@ -12,6 +12,10 @@ public class IndCommonReq {
 	 */
 	private Long domainId;
 	/**
+	 * 스테이지 코드
+	 */
+	private String stageCd;
+	/**
 	 * 표시기 코드
 	 */
 	private String indCd;
@@ -20,11 +24,19 @@ public class IndCommonReq {
 	 */
 	private String cellCd;
 	/**
-	 * gateway path
+	 * 게이트웨이 Path
 	 */
 	private String gwPath;
 	
 	public IndCommonReq() {
+	}
+	
+	public IndCommonReq(Long domainId, String stageCd, String indCd, String cellCd, String gwPath) {
+		this.domainId = domainId;
+		this.stageCd = stageCd;
+		this.indCd = indCd;
+		this.cellCd = cellCd;
+		this.gwPath = gwPath;
 	}
 	
 	public IndCommonReq(Long domainId, String indCd, String cellCd, String gwPath) {
@@ -40,6 +52,14 @@ public class IndCommonReq {
 
 	public void setDomainId(Long domainId) {
 		this.domainId = domainId;
+	}
+
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
 	}
 
 	public String getIndCd() {
@@ -65,5 +85,5 @@ public class IndCommonReq {
 	public void setGwPath(String gwPath) {
 		this.gwPath = gwPath;
 	}
-	
+
 }
