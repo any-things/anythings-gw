@@ -20,24 +20,15 @@ public interface IIndHandlerService {
 	 * @return
 	 */
 	public boolean handleGatewayBootReq(Gateway gateway);
-	
-	/**
-	 * 게이트웨이에서의 부팅 요청에 대한 애플리케이션 측 응답
-	 * 
-	 * @param gateway 게이트웨이 
-	 * @param batchId 배치 ID
-	 * @param indList 표시기 리스트
-	 * @return
-	 */
-	//public boolean handleGatewayBootReq(Gateway gateway, String batchId, List<IGwIndInit> indList);
-	
+		
 	/**
 	 * 게이트웨이 측 타임 싱크 요청에 대한 애플리케이션 측 처리
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param msgDestId
 	 */
-	public void handleTimesyncReq(Long domainId, String msgDestId);
+	public void handleTimesyncReq(Long domainId, String stageCd, String msgDestId);
 	
 	/**
 	 * 게이트웨이 초기화 완료 보고에 대한 애플리케이션 측 처리
@@ -51,9 +42,10 @@ public interface IIndHandlerService {
 	 * 표시기 초기화 완료 보고에 대한 애플리케이션 측 처리
 	 * 
 	 * @param indicator
+	 * @param stageCd
 	 * @param params
 	 */
-	public void handleIndicatorInitReport(Indicator indicator, Object ... params);
+	public void handleIndicatorInitReport(Indicator indicator, String stageCd, Object ... params);
 	
 	/**
 	 * 게이트웨이 상태 보고에 대한 애플리케이션 측 처리
@@ -69,11 +61,12 @@ public interface IIndHandlerService {
 	 * 표시기 상태 보고에 대한 애플리케이션 측 처리
 	 * 
 	 * @param indicator
+	 * @param stageCd
 	 * @param status
 	 * @param version
 	 * @param params
 	 */
-	public void handleIndicatorStatusReport(Indicator indicator, String status, String version, Object ... params);
+	public void handleIndicatorStatusReport(Indicator indicator, String stageCd, String status, String version, Object ... params);
 	
 	/**
 	 * 펌웨어 배포 완료 응답에 대한 애플리케이션 측 처리
