@@ -768,7 +768,7 @@ public class BatchIndConfigUtil {
 	 * @param indOnInfo
 	 */
 	public static void setIndOnQty(String batchId, IndOnPickReq indOnReq, IndicatorOnInformation indOnInfo) {
-		setIndOnQty(indOnInfo, batchId, indOnReq.getProcessSeq(), indOnReq.getBoxInQty(), indOnReq.getPickQty());
+		setIndOnQty(indOnInfo, batchId, indOnReq.getInputSeq(), indOnReq.getBoxInQty(), indOnReq.getPickQty());
 	}
 
 	/**

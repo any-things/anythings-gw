@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.gw.entity.IndConfigSet;
+import xyz.anythings.gw.service.api.IIndHandlerService;
 import xyz.anythings.gw.service.api.IIndRequestService;
 
 /**
@@ -27,13 +28,51 @@ public class IndicatorDispatcher implements BeanFactoryAware {
 	@Autowired
 	private IndConfigProfileService indConfigSetService;
 	/**
+	 * 표시기 요청 혹은 응답에 대한 핸들러 서비스 컴포넌트 기본 명 
+	 */
+	private String indicatorHandlerServiceName = "IndHandlerService";
+	/**
 	 * 표시기 점, 소등 요청 서비스 컴포넌트 기본 명 
 	 */
-	private String indicatorRequestServiceName = "IndicatorRequestService";
+	private String indicatorRequestServiceName = "IndRequestService";
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
+	}
+	
+	/**
+	 * 표시기 타입으로 요청 혹은 응답에 대한 핸들러 서비스 찾아 리턴
+	 * 
+	 * @param indType
+	 * @return
+	 */
+	public IIndHandlerService getIndicatorHandlerService(String indType) {
+		String indReqSvcName = indType.toLowerCase() + this.indicatorHandlerServiceName;
+		return (IIndHandlerService)this.beanFactory.getBean(indReqSvcName);
+	}
+	
+	/**
+	 * 작업 배치 ID로 요청 혹은 응답에 대한 핸들러 서비스 찾아 리턴
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	public IIndHandlerService getIndicatorHandlerServiceByBatch(String batchId) {
+		IndConfigSet configSet = this.indConfigSetService.getConfigSet(batchId);
+		return this.getIndicatorHandlerService(configSet.getIndType());
+	}
+	
+	/**
+	 * 스테이지 코드로 요청 혹은 응답에 대한 핸들러 서비스 찾아 리턴
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @return
+	 */
+	public IIndHandlerService getIndicatorHandlerServiceByStage(Long domainId, String stageCd) {
+		IndConfigSet configSet = this.indConfigSetService.getStageConfigSet(domainId, stageCd);
+		return this.getIndicatorHandlerService(configSet.getIndType());
 	}
 
 	/**
@@ -61,6 +100,7 @@ public class IndicatorDispatcher implements BeanFactoryAware {
 	/**
 	 * 스테이지 코드로 표시기 점,소등 요청 서비스 찾아 리턴
 	 * 
+	 * @param domainId
 	 * @param stageCd
 	 * @return
 	 */

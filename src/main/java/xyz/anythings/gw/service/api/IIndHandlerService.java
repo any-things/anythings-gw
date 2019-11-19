@@ -4,7 +4,6 @@ import java.util.List;
 
 import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.entity.Indicator;
-import xyz.anythings.gw.service.model.IGwIndInit;
 import xyz.elidom.sys.entity.Domain;
 
 /**
@@ -18,10 +17,9 @@ public interface IIndHandlerService {
 	 * 게이트웨이에서의 부팅 요청에 대한 애플리케이션 측 응답
 	 * 
 	 * @param gateway 게이트웨이 
-	 * @param indList 표시기 리스트
 	 * @return
 	 */
-	public boolean handleGatewayBootReq(Gateway gateway, List<IGwIndInit> indList);
+	public boolean handleGatewayBootReq(Gateway gateway);
 	
 	/**
 	 * 게이트웨이에서의 부팅 요청에 대한 애플리케이션 측 응답
@@ -31,7 +29,7 @@ public interface IIndHandlerService {
 	 * @param indList 표시기 리스트
 	 * @return
 	 */
-	public boolean handleGatewayBootReq(Gateway gateway, String batchId, List<IGwIndInit> indList);
+	//public boolean handleGatewayBootReq(Gateway gateway, String batchId, List<IGwIndInit> indList);
 	
 	/**
 	 * 게이트웨이 측 타임 싱크 요청에 대한 애플리케이션 측 처리

@@ -666,7 +666,7 @@ public class StageIndConfigUtil {
 	 * @param indOnInfo
 	 */
 	public static void setIndOnQty(Long domainId, String stageCd, IndOnPickReq indOnReq, IndicatorOnInformation indOnInfo) {
-		setIndOnQty(indOnInfo, domainId, stageCd, indOnReq.getProcessSeq(), indOnReq.getBoxInQty(), indOnReq.getPickQty());
+		setIndOnQty(indOnInfo, domainId, stageCd, indOnReq.getInputSeq(), indOnReq.getBoxInQty(), indOnReq.getPickQty());
 	}
 
 	/**

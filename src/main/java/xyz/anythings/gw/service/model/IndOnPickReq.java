@@ -18,7 +18,7 @@ public class IndOnPickReq {
 	/**
 	 * 실행 순서
 	 */
-	private Integer processSeq;
+	private Integer inputSeq;
 	/**
 	 * 표시기 코드
 	 */
@@ -59,12 +59,12 @@ public class IndOnPickReq {
 		this.comCd = comCd;
 	}
 
-	public Integer getProcessSeq() {
-		return processSeq;
+	public Integer getInputSeq() {
+		return inputSeq;
 	}
 
-	public void setProcessSeq(Integer processSeq) {
-		this.processSeq = processSeq;
+	public void setInputSeq(Integer inputSeq) {
+		this.inputSeq = inputSeq;
 	}
 
 	public String getIndCd() {

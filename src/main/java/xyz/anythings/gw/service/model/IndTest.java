@@ -2,6 +2,8 @@ package xyz.anythings.gw.service.model;
 
 import java.util.List;
 
+import xyz.anythings.gw.entity.IndConfigSet;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.util.FormatUtil;
 
 /**
@@ -41,6 +43,11 @@ public class IndTest {
 	private String indConfigSetId;
 	
 	/**
+	 * 설정 프로파일
+	 */
+	private IndConfigSet indConfigSet;
+		
+	/**
 	 * 작업 유형 
 	 */
 	private String jobType;
@@ -60,6 +67,15 @@ public class IndTest {
 
 	public void setIndConfigSetId(String indConfigSetId) {
 		this.indConfigSetId = indConfigSetId;
+		this.indConfigSet = AnyEntityUtil.findEntityById(true, IndConfigSet.class, indConfigSetId);
+	}
+
+	public IndConfigSet getIndConfigSet() {
+		return indConfigSet;
+	}
+
+	public void setIndConfigSet(IndConfigSet indConfigSet) {
+		this.indConfigSet = indConfigSet;
 	}
 
 	public IndTarget getTarget() {

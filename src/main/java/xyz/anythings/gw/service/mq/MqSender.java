@@ -3,7 +3,6 @@ package xyz.anythings.gw.service.mq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.gw.config.ModuleProperties;
 import xyz.anythings.gw.service.mq.model.IMessageBody;
 import xyz.anythings.gw.service.mq.model.MessageObject;
 import xyz.anythings.gw.service.util.MwMessageUtil;
@@ -30,11 +29,11 @@ public class MqSender extends MqCommon {
 	 */
 	@Autowired
 	private DomainController domainCtrl;
-	/**
-	 * 모듈 프로퍼티
-	 */
-	@Autowired
-	private ModuleProperties modulePorperties;
+//	/**
+//	 * 모듈 프로퍼티
+//	 */
+//	@Autowired
+//	private ModuleProperties modulePorperties;
 	/**
 	 * 도메인
 	 */
@@ -162,8 +161,10 @@ public class MqSender extends MqCommon {
 			message.setBody(msgBody);
 		}
 
-		String value = MwMessageUtil.messageObjectToJson(message);
-		this.mwSystemClient.sendMessage(virtualHost, this.modulePorperties.getRabbitQueue(), msgProp.getDestId(), value);
+		String value = MwMessageUtil.messageObjectToJson(message);		
+		//this.mwSystemClient.sendMessage(virtualHost, this.modulePorperties.getRabbitQueue(), msgProp.getDestId(), value);
+		// FIXME 아래 하드 코딩 제거 필요 -> stageCd를 항상 받아야 함 ...
+		this.mwSystemClient.sendMessage(virtualHost, "any/A/A1", msgProp.getDestId(), value);
 	}
 	
 	/**

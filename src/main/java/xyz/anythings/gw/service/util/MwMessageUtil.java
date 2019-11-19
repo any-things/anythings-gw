@@ -259,24 +259,7 @@ public class MwMessageUtil {
 		StageIndConfigUtil.setIndOnQty(domainId, stageCd, indOnPick, indOnInfo);
 		return indOnInfo;
 	}
-	
-	/**
-	 * 스테이지 범위 내에서 표시기 점등 모델 생성
-	 * 
-	 * @param indConfigSetId
-	 * @param indOnPick
-	 * @return
-	 */
-	/*public static IndicatorOnInformation newIndOnInfo(String indConfigSetId, IndOnPickReq indOnPick) {
-		IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
-		indOnInfo.setId(indOnPick.getIndCd());
-		indOnInfo.setBizId(indOnPick.getJobInstanceId());
-		indOnInfo.setColor(indOnPick.getColorCd());
-		// 표시기 설정 ID 범위 내에서 indOnPick 정보에 수량 설정에 따른 orgRelay, orgBoxQty, orgEaQty 값 설정
-		ConfigIndicatorSetting.setIndOnQty(indConfigSetId, indOnPick, indOnInfo);
-		return indOnInfo;
-	}*/
-	
+		
 	/**
 	 * 표시기 점등 모델 생성 
 	 * 
@@ -316,7 +299,8 @@ public class MwMessageUtil {
 	 * @param indOnReqList
 	 * @return
 	 */
-	public static Map<String, List<IIndOnInfo>> groupPickingByGwPath(String batchId, List<IndOnPickReq> indOnReqList) {
+	public static Map<String, List<IIndOnInfo>> groupPickingByGwPath(
+			String batchId, List<IndOnPickReq> indOnReqList) {
 		
 		Map<String, List<IIndOnInfo>> groupGwIndOnList = new HashMap<String, List<IIndOnInfo>>();
 
@@ -327,8 +311,7 @@ public class MwMessageUtil {
 					groupGwIndOnList.containsKey(gwPath) ? 
 							groupGwIndOnList.get(gwPath) : new ArrayList<IIndOnInfo>();
 
-			IIndOnInfo indOnInfo = newIndOnInfo(batchId, indOnPick);
-			indOnList.add(indOnInfo);
+			indOnList.add(newIndOnInfo(batchId, indOnPick));
 			groupGwIndOnList.put(gwPath, indOnList);
 		}
 
@@ -356,10 +339,7 @@ public class MwMessageUtil {
 					gwIndOnListGroup.containsKey(gwPath) ? 
 							gwIndOnListGroup.get(gwPath) : new ArrayList<IIndOnInfo>();
 
-			IIndOnInfo stockInfo = 
-					newIndOnInfo(target.getIndCd(), bizId, target.getColorCd(), target.getAllocQty(), target.getLoadQty());
-
-			indOnList.add(stockInfo);
+			indOnList.add(newIndOnInfo(target.getIndCd(), bizId, target.getColorCd(), target.getAllocQty(), target.getLoadQty()));
 			gwIndOnListGroup.put(gwPath, indOnList);
 		}
 
@@ -369,12 +349,13 @@ public class MwMessageUtil {
 	/**
 	 * 표시기 설정 셋 ID 범위 내에서 IndOnPickReq 배열을 gwPath - IndOnPickReq 리스트로 그루핑하여 리턴
 	 * 
-	 * @param indConfigSetId
+	 * @param domainId
+	 * @param stageCd
 	 * @param indOnReqList
 	 * @return
 	 */
 	public static Map<String, List<IIndOnInfo>> groupTestByGwPath(
-			String indConfigSetId, List<IndOnPickReq> indOnReqList) {
+			Long domainId, String stageCd, List<IndOnPickReq> indOnReqList) {
 		
 		Map<String, List<IIndOnInfo>> groupGwIndOnList = new HashMap<String, List<IIndOnInfo>>();
 
@@ -385,8 +366,7 @@ public class MwMessageUtil {
 					groupGwIndOnList.containsKey(gwPath) ? 
 							groupGwIndOnList.get(gwPath) : new ArrayList<IIndOnInfo>();
 
-			IIndOnInfo indOnInfo = newIndOnInfo(indConfigSetId, indOnPick);
-			indOnList.add(indOnInfo);
+			indOnList.add(newIndOnInfo(domainId, stageCd, indOnPick));
 			groupGwIndOnList.put(gwPath, indOnList);
 		}
 
