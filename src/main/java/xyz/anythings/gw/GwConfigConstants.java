@@ -10,10 +10,6 @@ import xyz.elidom.sys.SysConfigConstants;
 public class GwConfigConstants extends SysConfigConstants {
 	
 	/**
-	 * 메시징 미들웨어와 통신할 큐 이름
-	 */
-	public static String MW_SYSTEM_QUEUE_NAME = "mq.system.receive.queue.name";
-	/**
 	 * 미들웨어 메시지 로깅 활성화 여부
 	 */
 	public static final String MW_LOG_RCV_MSG_ENABLED = "mw.log.receive.msg.enabled";

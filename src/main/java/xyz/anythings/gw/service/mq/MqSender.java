@@ -67,7 +67,7 @@ public class MqSender extends MqCommon {
 	 * @param msgBody
 	 */
 	public void sendRequest(String virtualHost, String stageCd, String msgDestId, IMessageBody msgBody) {
-		this.send(virtualHost, stageCd, MwMessageUtil.newMessageProp(msgDestId, false), msgBody);
+		this.send(virtualHost, stageCd, MwMessageUtil.newMessageProp(stageCd, msgDestId, false), msgBody);
 	}
 	
 	/**
@@ -119,7 +119,7 @@ public class MqSender extends MqCommon {
 	 * @param msgBody
 	 */
 	public void sendResponse(String virtualHost, String stageCd, String msgDestId, IMessageBody msgBody) {
-		this.send(virtualHost, stageCd, MwMessageUtil.newMessageProp(msgDestId, true), msgBody);
+		this.send(virtualHost, stageCd, MwMessageUtil.newMessageProp(stageCd, msgDestId, true), msgBody);
 	}
 	
 	/**

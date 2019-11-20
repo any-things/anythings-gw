@@ -10,7 +10,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import xyz.anythings.gw.GwConfigConstants;
 import xyz.anythings.gw.service.model.IIndOnInfo;
 import xyz.anythings.gw.service.model.IndOnPickReq;
 import xyz.anythings.gw.service.model.IndOnStockReq;
@@ -19,8 +18,6 @@ import xyz.anythings.gw.service.mq.model.MessageObject;
 import xyz.elidom.exception.server.ElidomServiceException;
 import xyz.elidom.rabbitmq.client.event.SystemMessageReceiveEvent;
 import xyz.elidom.rabbitmq.message.MessageProperties;
-import xyz.elidom.sys.util.EnvUtil;
-import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -29,28 +26,6 @@ import xyz.elidom.util.ValueUtil;
  * @author shortstop
  */
 public class MwMessageUtil {
-	
-	/**
-	 * 시스템 메시지 큐 
-	 */
-	private static String SYSTEM_QUEUE = null;
-	
-	/**
-	 * 미들웨어 시스템 큐
-	 * 
-	 * @return
-	 */
-	public static String getMwSystemQueue() {
-		if(SYSTEM_QUEUE == null) {
-			SYSTEM_QUEUE = EnvUtil.getValue(GwConfigConstants.MW_SYSTEM_QUEUE_NAME);
-		}
-		
-		if(SYSTEM_QUEUE == null) {
-			throw ThrowUtil.newValidationErrorWithNoLog("Environment key [" + GwConfigConstants.MW_SYSTEM_QUEUE_NAME + "] has no value");
-		}
-		
-		return SYSTEM_QUEUE;
-	}
 	
 	/**
 	 * Convert MessageObject to JSON String.
@@ -83,95 +58,103 @@ public class MwMessageUtil {
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 전송 요청 메시지 프로퍼티를 생성
 	 * 
-	 * @param msgDestId
+	 * @param msgSrcId 메시지 소스 ID
+	 * @param msgDestId 목적지 고유 ID
 	 * @return
 	 */
-	public static MessageProperties newReqMessageProp(String msgDestId) {
-		return MwMessageUtil.newMessageProp(msgDestId, new Date().getTime(), false);
+	public static MessageProperties newReqMessageProp(String msgSrcId, String msgDestId) {
+		return MwMessageUtil.newMessageProp(msgSrcId, msgDestId, new Date().getTime(), false);
 	}
 
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 전송 요청 메시지 프로퍼티를 생성
 	 * 
-	 * @param msgDestId
-	 * @param transmissionTime
+	 * @param msgSrcId 메시지 소스 ID
+	 * @param msgDestId 목적지 고유 ID
+	 * @param transmissionTime 전송 시간
 	 * @return
 	 */
-	public static MessageProperties newReqMessageProp(String msgDestId, long transmissionTime) {
-		return MwMessageUtil.newMessageProp(msgDestId, transmissionTime, false);
+	public static MessageProperties newReqMessageProp(String msgSrcId, String msgDestId, long transmissionTime) {
+		return MwMessageUtil.newMessageProp(msgSrcId, msgDestId, transmissionTime, false);
 	}
 
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 응답 메시지 프로퍼티를 생성
 	 * 
-	 * @param msgDestId
+	 * @param msgSrcId 메시지 소스 ID
+	 * @param msgDestId 목적지 고유 ID
 	 * @return
 	 */
-	public static MessageProperties newResMessageProp(String msgDestId) {
-		return MwMessageUtil.newMessageProp(msgDestId, new Date().getTime(), true);
+	public static MessageProperties newResMessageProp(String msgSrcId, String msgDestId) {
+		return MwMessageUtil.newMessageProp(msgSrcId, msgDestId, new Date().getTime(), true);
 	}
 
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 응답 메시지 프로퍼티를 생성
 	 * 
-	 * @param msgDestId
-	 * @param transmissionTime
+	 * @param msgSrcId 메시지 소스 ID
+	 * @param msgDestId 목적지 고유 ID
+	 * @param transmissionTime 전송 시간
 	 * @return
 	 */
-	public static MessageProperties newResMessageProp(String msgDestId, long transmissionTime) {
-		return MwMessageUtil.newMessageProp(msgDestId, transmissionTime, true);
+	public static MessageProperties newResMessageProp(String msgSrcId, String msgDestId, long transmissionTime) {
+		return MwMessageUtil.newMessageProp(msgSrcId, msgDestId, transmissionTime, true);
 	}
 
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 메시지 프로퍼티를 생성
 	 * 
-	 * @param msgDestId
+	 * @param msgSrcId 메시지 소스 ID
+	 * @param msgDestId 목적지 고유 ID
 	 * @param isReply
 	 * @return
 	 */
-	public static MessageProperties newMessageProp(String msgDestId, boolean isReply) {
-		return MwMessageUtil.newMessageProp(msgDestId, new Date().getTime(), isReply);
+	public static MessageProperties newMessageProp(String msgSrcId, String msgDestId, boolean isReply) {
+		return MwMessageUtil.newMessageProp(msgSrcId, msgDestId, new Date().getTime(), isReply);
 	}
 	
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 메시지 프로퍼티를 생성
 	 * 
-	 * @param msgId
+	 * @param msgId 메시지 소스 ID
+	 * @param msgSrcId 메시지 소스 ID
 	 * @param msgDestId
 	 * @param isReply
 	 * @return
 	 */
-	public static MessageProperties newMessageProp(String msgId, String msgDestId, boolean isReply) {
-		return MwMessageUtil.newMessageProp(msgId, msgDestId, new Date().getTime(), isReply);
+	public static MessageProperties newMessageProp(String msgId, String msgSrcId, String msgDestId, boolean isReply) {
+		return MwMessageUtil.newMessageProp(msgId, msgSrcId, msgDestId, new Date().getTime(), isReply);
 	}
 
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 메시지 프로퍼티를 생성  
 	 * 
+	 * @param msgSrcId 메시지 소스 ID
 	 * @param msgDestId 목적지 고유 ID
 	 * @param transmissionTime 메시지 전송 시간
 	 * @param isReply 응답 메시지 여부
 	 * @return
 	 */
-	public static MessageProperties newMessageProp(String msgDestId, long transmissionTime, boolean isReply) {
-		return MwMessageUtil.newMessageProp(null, msgDestId, transmissionTime, isReply);
+	public static MessageProperties newMessageProp(String msgSrcId, String msgDestId, long transmissionTime, boolean isReply) {
+		return MwMessageUtil.newMessageProp(null, msgSrcId, msgDestId, transmissionTime, isReply);
 	}
 	
 	/**
 	 * 메시징 서버로 던질 메시지의 공통 메시지 프로퍼티를 생성 
 	 * 
 	 * @param msgId 메시지 고유 ID
-	 * @param msgDestId 목적지 고유 ID
+	 * @param msgSrcId 메시지 소스 ID (물류에서는 스테이지 용 큐 이름)
+	 * @param msgDestId 목적지 고유 ID (예를 들면 게이트웨이 용 큐 이름)
 	 * @param transmissionTime 메시지 전송 시간
 	 * @param isReply 응답 메시지 여부
 	 * @return
 	 */
-	public static MessageProperties newMessageProp(String msgId, String msgDestId, long transmissionTime, boolean isReply) {
+	public static MessageProperties newMessageProp(String msgId, String msgSrcId, String msgDestId, long transmissionTime, boolean isReply) {
 		MessageProperties properties = new MessageProperties();
 		properties.setId(ValueUtil.isEmpty(msgId) ? UUID.randomUUID().toString() : msgId);
 		properties.setTime(transmissionTime);
 		properties.setDestId(msgDestId);
-		properties.setSourceId(MwMessageUtil.getMwSystemQueue());
+		properties.setSourceId(msgSrcId);
 		properties.setIsReply(isReply);
 		return properties;
 	}
