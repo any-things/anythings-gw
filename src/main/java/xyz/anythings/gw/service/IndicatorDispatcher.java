@@ -94,7 +94,17 @@ public class IndicatorDispatcher implements BeanFactoryAware {
 	 */
 	public IIndRequestService getIndicatorRequestServiceByBatch(String batchId) {
 		IndConfigSet configSet = this.indConfigSetService.getConfigSet(batchId);
-		return this.getIndicatorRequestService(configSet.getIndType());
+		return (configSet == null) ? null : this.getIndicatorRequestService(configSet.getIndType());
+	}
+	
+	/**
+	 * 배치 ID와 표시기 점등 설정 프로파일을 등록
+	 *  
+	 * @param batchId
+	 * @param configSet
+	 */
+	public void addIndicatorConfigSet(String batchId, IndConfigSet configSet) {
+		this.indConfigSetService.addConfigSet(batchId, configSet);
 	}
 	
 	/**
