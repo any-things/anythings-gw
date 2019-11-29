@@ -13,6 +13,7 @@ import xyz.anythings.gw.service.api.IIndConfigProfileService;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
+import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.util.ValueUtil;
 
@@ -104,7 +105,14 @@ public class IndConfigProfileService extends AbstractExecutionService implements
 	
 	@Override
 	public IndConfigSet addConfigSet(String batchId, IndConfigSet configSet) {
-		return this.configProfiles.put(batchId, configSet);
+		if(ValueUtil.isNotEmpty(configSet.getId())) {
+			List<IndConfig> sourceItems = AnyEntityUtil.searchDetails(configSet.getDomainId(), IndConfig.class, "indConfigSetId", configSet.getId());
+			configSet.setItems(sourceItems);
+			this.configProfiles.put(batchId, configSet);
+			return configSet;
+		} else {
+			throw new ElidomRuntimeException("작업 배치 [" + batchId + "]에 표시기 설정 프로파일이 설정되지 않았습니다.");
+		}
 	}
 
 	@Override
