@@ -147,6 +147,10 @@ public class GwConfigConstants extends SysConfigConstants {
 	 */
 	public static final String IND_MPI_BLOCK_SEC_CONTINOUS_FULL_REQ = "ind.block.sec.continous.full.request";
 	/**
+	 * 기본 업무 기본 표시기 색상
+	 */
+	public static final String IND_DEFAULT_COLOR_DEFAULT = "ind.job.color.default";
+	/**
 	 * DAS 업무 기본 표시기 색상
 	 */
 	public static final String IND_DEFAULT_COLOR_DAS = "ind.job.color.das";

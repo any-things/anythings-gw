@@ -21,6 +21,9 @@ import xyz.elidom.util.BeanUtil;
  *  - ind.action.show.string.before.on			다음 작업을 점등하기 전에 표시될 문자열입니다.
  *  - ind.action.show.string.delay.before.on	점등 전에 문자를 표시할 시간입니다. (100ms 단위)
  *  - ind.action.status.report.interval			표시기의 상태 보고 주기입니다. (초 단위)
+ *  - ind.job.color.das							DAS 업무 기본 표시기 색상
+ *  - ind.job.color.dps							DPS 업무 기본 표시기 색상
+ *  - ind.job.color.rtn							반품 업무 기본 표시기 색상
  *  - ind.job.color.rotation.seq				표시기 버튼 색상의 로테이션 순서입니다.
  *  - ind.job.color.stocktaking					재고 실사 작업에서 표시기 버튼의 기본 색상입니다.
  *  - ind.job.segment.roles.on					작업 점등 시 각 세그먼트가 나타낼 정보입니다 - 첫번째/두번째/세번째 세그먼트 역할 -> R(릴레이 순서)/B(Box)/P(PCS)
@@ -148,6 +151,10 @@ public class BatchIndConfigUtil {
 	 * 표시기 펌웨어 최신 릴리즈 버전 기본값
 	 */
 	public static final String DEFAULT_IND_LATEST_RELEASE_VERSION = "1.0.0";
+	/**
+	 * 기본 업무 표시기 색상
+	 */
+	public static final String DEFAULT_JOB_COLOR = "R";
 	
 	/**
 	 * DAS/RTN 분류 처리 후에 표시할 내용 중 사용 안 함 표시 (해당 세그먼트에 표시되는 내용이 없음)
@@ -543,6 +550,49 @@ public class BatchIndConfigUtil {
 //		// ind.gw.latest.release.version
 //		return getConfigValue(batchId, MwConfigConstants.GW_LATEST_RELEASE_VERSION, true);
 //	}
+	
+	/**
+	 * 기본 작업 표시기 색상 리턴
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	public static String getDefaultJobColor(String batchId) {
+		return getConfigValue(batchId, GwConfigConstants.IND_DEFAULT_COLOR_DEFAULT, DEFAULT_JOB_COLOR);
+	}
+	
+	/**
+	 * DAS 작업 표시기 색상 리턴
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	public static String getDasJobColor(String batchId) {
+		String color = getConfigValue(batchId, GwConfigConstants.IND_DEFAULT_COLOR_DAS, null);
+		return ValueUtil.isNotEmpty(color) ? color : getDefaultJobColor(batchId);
+	}
+	
+	/**
+	 * DPS 작업 표시기 색상 리턴
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	public static String getDpsJobColor(String batchId) {
+		String color = getConfigValue(batchId, GwConfigConstants.IND_DEFAULT_COLOR_DPS, null);
+		return ValueUtil.isNotEmpty(color) ? color : getDefaultJobColor(batchId);
+	}
+	
+	/**
+	 * 반품 작업 표시기 색상 리턴
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	public static String getRtnJobColor(String batchId) {
+		String color = getConfigValue(batchId, GwConfigConstants.IND_DEFAULT_COLOR_RTN, null);
+		return ValueUtil.isNotEmpty(color) ? color : getDefaultJobColor(batchId);
+	}
 
 	/**
 	 * 작업 배치 범위 내에서 다음 표시기 버튼 색상을 추출
