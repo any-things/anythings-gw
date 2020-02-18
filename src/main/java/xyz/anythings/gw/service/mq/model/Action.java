@@ -132,7 +132,7 @@ public enum Action {
         public static final String MiddlewareConnInfoModResponse = "MW_MOD_IP_RES";
         public static final String MiddlewareConnInfoModResponseAck = "MW_MOD_IP_RES_ACK";
         
-        public static final String EquipEvent = "EQUIP_EVENT";
+        public static final String DeviceCommand = "DEVICE_CMD";
         public static final String EquipStatusReport = "EQUIP_STATUS";
         public static final String EquipRefreshRequest = "EQUIP_REFRESH";
         

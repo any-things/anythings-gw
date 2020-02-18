@@ -101,11 +101,17 @@ public class GwConstants extends SysConstants {
 	 * 장비 상태 - Offline
 	 */
 	public static final String EQUIP_STATUS_OFFLINE = "offline";
-	
 	/**
 	 * 해당 없음 상수
 	 */
 	public static final String NOT_AVAILABLE = "_na_";
-	
+	/**
+	 * 문자열 - all
+	 */
+	public static final String ALL_STRING = "all";
+	/**
+	 * 문자열 - ALL
+	 */
+	public static final String ALL_CAP_STRING = "ALL";
 	
 }
