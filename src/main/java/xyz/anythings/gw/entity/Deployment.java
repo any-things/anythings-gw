@@ -14,7 +14,7 @@ import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
 @Table(name = "deployments", idStrategy = GenerationRule.UUID, indexes = {
-	@Index(name = "ix_deployments_0", columnList = "target_type,target_id,version,domainId")
+	@Index(name = "ix_deployments_0", columnList = "target_type,target_id,version,domain_id")
 })
 public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
