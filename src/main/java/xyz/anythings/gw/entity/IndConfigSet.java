@@ -28,7 +28,7 @@ public class IndConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
-	@Column (name = "stage_cd", nullable = false, length = 30)
+	@Column (name = "stage_cd", length = 30)
 	private String stageCd;
 	
 	@Column (name = "ind_type", length = 20)
@@ -49,7 +49,7 @@ public class IndConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "conf_set_cd", nullable = false, length = 30)
 	private String confSetCd;
 
-	@Column (name = "conf_set_nm", nullable = false, length = 100)
+	@Column (name = "conf_set_nm", length = 100)
 	private String confSetNm;
 
 	@Column (name = "default_flag", length = 1)
