@@ -1,7 +1,6 @@
 /* Copyright © HatioLab Inc. All rights reserved. */
 package xyz.anythings.gw.web.initializer;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,11 +14,12 @@ import org.springframework.stereotype.Component;
 
 import xyz.anythings.gw.config.ModuleProperties;
 import xyz.anythings.gw.service.api.IIndConfigProfileService;
-import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.config.ModuleConfigSet;
 import xyz.elidom.sys.entity.Domain;
+import xyz.elidom.sys.rest.DomainController;
 import xyz.elidom.sys.system.service.api.IEntityFieldCache;
 import xyz.elidom.sys.system.service.api.IServiceFinder;
+import xyz.elidom.util.BeanUtil;
 
 /**
  * 게이트웨이 모듈 Startup시 Framework 초기화 클래스
@@ -46,9 +46,6 @@ public class AnythingsGwInitializer {
 
 	@Autowired
 	private ModuleConfigSet configSet;
-	
-	@Autowired
-	private IQueryManager queryManager;
 	
 	@Autowired
 	private IIndConfigProfileService configSetSvc;
@@ -82,8 +79,7 @@ public class AnythingsGwInitializer {
 	 * 스테이지 설정 프로파일 초기화
 	 */
 	private void initStageConfigProfiles() {
-		String sql = "select id from domains";
-		List<Domain> domainList = this.queryManager.selectListBySql(sql, new HashMap<String, Object>(1), Domain.class, 0, 0);
+		List<Domain> domainList = BeanUtil.get(DomainController.class).domainList();
 		
 		for(Domain domain : domainList) {
 			this.configSetSvc.buildStageConfigSet(domain.getId());

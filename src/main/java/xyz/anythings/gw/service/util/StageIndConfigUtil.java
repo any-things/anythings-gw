@@ -8,7 +8,6 @@ import xyz.anythings.gw.service.mq.model.GatewayInitResIndConfig;
 import xyz.anythings.gw.service.mq.model.IndicatorOnInformation;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.sys.SysConstants;
-import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
@@ -104,7 +103,7 @@ public class StageIndConfigUtil {
 		IIndConfigProfileService configSvc = getConfigSetService();
 		
 		// 1. 작업 유형에 따른 설정값 조회
-		String value = configSvc.getStageConfigValue(Domain.currentDomainId(), stageCd, key);
+		String value = configSvc.getStageConfigValue(domainId, stageCd, key);
 		// 2. 조회 값이 없으면 기본값 조회
 		return ValueUtil.isEmpty(value) ? defaultValue : value;
 	}
