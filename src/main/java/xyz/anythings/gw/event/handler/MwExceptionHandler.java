@@ -1,4 +1,4 @@
-package xyz.anythings.gw.service.mq;
+package xyz.anythings.gw.event.handler;
 
 import java.lang.reflect.Field;
 
@@ -23,17 +23,17 @@ import xyz.elidom.util.ClassUtil;
 import xyz.elidom.util.DateUtil;
 
 /**
- * 비동기 예외 처리를 위한 핸들러
+ * 메시지 처리 중 발생한 예외 처리를 위한 핸들러
  * 
  * @author shortstop
  */
 @Component
-public class MqExceptionHandler {
+public class MwExceptionHandler {
 
 	/**
 	 * logger
 	 */
-	private Logger logger = LoggerFactory.getLogger(MqExceptionHandler.class);
+	private Logger logger = LoggerFactory.getLogger(MwExceptionHandler.class);
 	/**
 	 * 에러 로그 컨트롤러
 	 */
