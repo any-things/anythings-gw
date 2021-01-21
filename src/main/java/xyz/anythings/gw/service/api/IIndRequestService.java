@@ -208,7 +208,7 @@ public interface IIndRequestService {
 	public void requestIndListOff(Long domainId, String stageCd, List<IndCommonReq> indList, boolean forceOff);
 	
 	/**********************************************************************
-	 * 							3. 표시기 숫자, 문자 표시 요청
+	 * 						3. 표시기 숫자, 문자 표시 요청
 	 **********************************************************************/
 	
 	/**
@@ -229,6 +229,7 @@ public interface IIndRequestService {
 	 * 
 	 * @param domainId
 	 * @param stageCd
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -239,6 +240,7 @@ public interface IIndRequestService {
 	 * Fullbox시에 로케이션-공박스 매핑이 안 된 에러를 표시기에 표시하기 위한 요청
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -249,6 +251,7 @@ public interface IIndRequestService {
 	 * 표시기에 버튼 점등은 되지 않고 eaQty 정보로 표시 - 사용자 터치 반응 안함 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -261,6 +264,7 @@ public interface IIndRequestService {
 	 * 세그먼트 정보를 커스터마이징 한 표시기 표시 - 이 때 Fullbox가 되어야 하므로 readOnly는 false로
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -275,6 +279,7 @@ public interface IIndRequestService {
 	 * 각종 옵션으로 표시기에 표시 요청 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -291,6 +296,7 @@ public interface IIndRequestService {
 	 * 각종 옵션으로 표시기에 표시 요청 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -308,6 +314,7 @@ public interface IIndRequestService {
 	 * 총 처리한 수량 / 방금 처리한 수량을 표시
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -321,6 +328,7 @@ public interface IIndRequestService {
 	 * FullBox 표시기 표시 요청 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -333,6 +341,7 @@ public interface IIndRequestService {
 	 * 표시기에 문자열 표시 요청
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -345,6 +354,7 @@ public interface IIndRequestService {
 	 * 표시기 표시 방향과 숫자를 동시에 표시 - 왼쪽은 'L' or 'R' 표시 오른쪽은 숫자 표시
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -358,6 +368,7 @@ public interface IIndRequestService {
 	 * 왼쪽은 문자 오른쪽은 숫자 표시
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -371,6 +382,7 @@ public interface IIndRequestService {
 	 * 표시기 표시 방향과 표시 수량을 좌, 우측에 동시에 표시 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobType
 	 * @param gwPath
 	 * @param indCd
@@ -381,13 +393,14 @@ public interface IIndRequestService {
 	public void requestDisplayBothDirectionQty(Long domainId, String stageCd, String jobType, String gwPath, String indCd, String bizId, Integer leftQty, Integer rightQty);
 	
 	/**********************************************************************
-	 * 							4. LED 바 점등 / 소등 
-	 **********************************************************************/	
+	 * 							4. LED 바 점등 / 소등
+	 **********************************************************************/
 	
 	/**
 	 * 표시기 LED 점등 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param gwPath
 	 * @param indCd
 	 * @param ledBarBrightness
@@ -398,6 +411,7 @@ public interface IIndRequestService {
 	 * 표시기 LED 소등 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param gwPath
 	 * @param indCd
 	 */
@@ -407,6 +421,7 @@ public interface IIndRequestService {
 	 * 표시기 LED 리스트 점등 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param indList
 	 * @param ledBrightness
 	 */
@@ -416,13 +431,14 @@ public interface IIndRequestService {
 	 * 표시기 LED 리스트 소등 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param indList
 	 */
 	public void requestLedListOff(Long domainId, String stageCd, List<IndCommonReq> indList);
 	
 	/**********************************************************************
-	 * 							5. 게이트웨이 / 표시기 펌웨어 배포  
-	 **********************************************************************/	
+	 * 					5. 표시기 교체 / 게이트웨이, 표시기 펌웨어 배포
+	 **********************************************************************/
 	
 	/**
 	 * 펌웨어 배포 요청
@@ -435,6 +451,7 @@ public interface IIndRequestService {
 	 * 게이트웨이에 게이트웨이 펌웨어 배포 정보 전송 
 	 * 
 	 * @parma domainId
+	 * @param stageCd
 	 * @param gwChannel 게이트웨이 구분 채널 
 	 * @param gwVersion 게이트웨이 펌웨어 버전 
 	 * @param gwFwDownloadUrl 게이트웨이 펌웨어 다운로드 URL
@@ -447,6 +464,7 @@ public interface IIndRequestService {
 	 * 게이트웨이에 표시기 펌웨어 배포 정보 전송 
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param gwChannel 게이트웨이 구분 채널
 	 * @param indVersion 표시기 펌웨어 버전 
 	 * @param indFwDownloadUrl 표시기 펌웨어 다운로드 URL
@@ -454,5 +472,16 @@ public interface IIndRequestService {
 	 * @param forceFlag 강제 업데이트 여부
 	 */
 	public void deployIndFirmware(Long domainId, String stageCd, String gwChannel, String indVersion, String indFwDownloadUrl, String filename, Boolean forceFlag);
+	
+	/**
+	 * 표시기 교체
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param gwPath
+	 * @param fromIndCd
+	 * @param toIndCd
+	 */
+	public void changeIndicator(Long domainId, String stageCd, String gwPath, String fromIndCd, String toIndCd);
 
 }
