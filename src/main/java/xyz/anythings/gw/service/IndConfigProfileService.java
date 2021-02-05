@@ -52,7 +52,7 @@ public class IndConfigProfileService extends AbstractExecutionService implements
 	
 	@Override
 	public int buildStageConfigSet(Long domainId) {
-		String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd,ind_type from ind_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd is not null and equip_type is null and equip_cd is null and job_type is null and com_cd is null";
+		String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd,ind_type from ind_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd is not null and (equip_type is null or equip_type = '') and (equip_cd is null or equip_cd = '') and (job_type is null or job_type = '') and (com_cd is null or com_cd = '')";
 		List<IndConfigSet> confSetList = AnyEntityUtil.searchItems(domainId, false, IndConfigSet.class, sql, "domainId,defaultFlag", domainId, true);
 		
 		if(ValueUtil.isNotEmpty(confSetList)) {
