@@ -146,23 +146,5 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public static String buildGatewayPath(String siteCd, String areaCd, String stageCd, String gwCd) {
 		return siteCd + GwConstants.SLASH + areaCd + GwConstants.SLASH + stageCd + GwConstants.SLASH + gwCd;
 	}
-	
-	/*@Override
-	public void beforeCreate() {
-		super.beforeCreate();
-
-		Stage stage = LogisEntityUtil.findEntityByCode(this.domainId, true, Stage.class, "stageCd", this.stageCd);
-		Domain domain = Domain.currentDomain();
-		this.gwNm = Gateway.buildGatewayPath(domain.getMwSiteCd(), stage.getAreaCd(), stageCd, gwCd);
-	}
-	
-	@Override
-	public void beforeUpdate() {
-		super.beforeUpdate();
-		
-		Stage stage = LogisEntityUtil.findEntityByCode(this.domainId, true, Stage.class, "stageCd", this.stageCd);
-		Domain domain = Domain.currentDomain();
-		this.gwNm = Gateway.buildGatewayPath(domain.getMwSiteCd(), stage.getAreaCd(), stageCd, gwCd);
-	}*/
 
 }
