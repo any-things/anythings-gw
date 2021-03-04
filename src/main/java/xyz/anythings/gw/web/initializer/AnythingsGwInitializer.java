@@ -53,15 +53,14 @@ public class AnythingsGwInitializer {
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {
 		this.logger.info("Anythings Gw module initializing ready...");
+		this.configSet.addConfig(this.module.getName(), this.module);
+		this.scanServices();		
 	}
 
 	@EventListener({ ApplicationReadyEvent.class })
 	void ready(ApplicationReadyEvent event) {
 		this.logger.info("Anythings Gw module initializing started...");
 		
-		this.configSet.addConfig(this.module.getName(), this.module);
-		this.configSet.setApplicationModule(this.module.getName());
-		this.scanServices();
 		this.initStageConfigProfiles();
 		
 		this.logger.info("Anythings Gw initializing finished");
